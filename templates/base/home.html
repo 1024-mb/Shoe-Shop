@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>Home Page</h1>
+    <p>Welcome to HeatSneakers</p>
+
+    {% for item in clothing %}
+        <h2><a href='{% url "product" item.product_id %}'>{{ item.name }}</a></h2>
+    {% endfor %}
+
+{% endblock %}

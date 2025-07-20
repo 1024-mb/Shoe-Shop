@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+    {% block content %}
+
+        <h1>Product Page</h1>
+        <p>Welcome to the product page!</p>
+
+
+
+
+        <h1>{{ clothing.name }}</h1>
+
+        
+        {% for item in clothing.desc %}
+            <p>{{ item }}</p>
+
+        {% endfor %}
+
+
+        {% if clothing.gender == 'M' %}
+            <p>Men • {{ clothing.category }}</p>
+
+        {% elif clothing.gender == 'F' %}
+            <p>Women • {{ clothing.category }}</p>
+
+
+        {% elif clothing.gender == 'C' %}
+            <p>Kids • {{ clothing.category }}</p>
+
+        {% elif clothing.gender == 'U' %}
+            <p>Unisex •  {{ clothing.category }}</p>
+
+        {% endif %}
+
+    <p>S${{ clothing.price }}</p>
+
+    {% for item in clothing.size %}
+        <p>{{ item }}</p>
+
+    {% endfor %}
+
+   <p>{{ overall.avg }}</p> 
+
+
+    {% if reviews %}
+        <h2>Reviews</h1>
+        <a href="{% url 'add_review' clothing.product_id %}">create review</a>
+        {% for item in reviews %}
+            <hr>
+            <h6>{{ item.stars }}</h6>
+            <p>{{ item.user_id }}</p>
+            <p>{{ item.description_review }}</p>
+        {% endfor %}
+
+    {% else %}    
+        <h2>No reviews</h2>
+        <a href="{% url 'add_review' clothing.product_id %}">create review</a>  
+    {% endif %}
+
+    {% endblock %}
+
