@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if operation == 'login' %}
+        <form method="POST" action="">
+            {% csrf_token %}
+            <input type="username" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit" name="submit" placeholder="Login">
+        </form>
+    {% else %}
+        <form method="POST" action="">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Name">
+            <input type="text" name="username" placeholder="Username">
+            <input type="password" name="password" placeholder="Password">
+            <input type="submit" name="submit" placeholder="Login">
+        </form>
+
+    {% endif %}
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

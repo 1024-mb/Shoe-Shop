@@ -1,12 +1,65 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <style>
+        .home-container {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
 
-    <h1>Home Page</h1>
-    <p>Welcome to HeatSneakers</p>
+        }
 
-    {% for item in clothing %}
-        <h2><a href='{% url "product" item.product_id %}'>{{ item.name }}</a></h2>
-    {% endfor %}
+    </style>
+
+    <div class="home-container">
+        <div>
+            <h3>Browse Categories</h3>
+            <hr>
+            <h3>Men's</h3>
+            {% for subject in categories %}
+                {% if 'M' in subject.gender %}
+                    <a href="{% url 'home' %}?q={{ subject.category }}">     {{ subject.category }}</a><br>
+                {% endif %}
+            {% endfor %}
+
+            <h3>Women's</h3>
+            {% for subject in categories %}
+                {% if 'F' in subject.gender %}
+                    <a href="{% url 'home' %}?q={{ subject.category }}">     {{ subject.category }}</a><br>
+                {% endif %}
+            {% endfor %}
+
+            <h3>Children's</h3>
+            {% for subject in categories %}
+                {% if 'C' in subject.gender %}
+                    <a href="{% url 'home' %}?q={{ subject.category }}">     {{ subject.category }}</a><br>
+                {% endif %}
+            {% endfor %}
+
+        </div>
+
+        <div>
+            <h1>Home Page</h1>
+
+            {% if query == None or query == "" %}
+                <p>Welcome to HeatSneakers</p>
+        
+            {% elif result_count == 0 %}
+                <p>No results found   </p><a href="http://127.0.0.1:8000/home/">home</a>
+
+            
+            {% elif result_count == 1 %}
+                <p>1 result found</p> 
+            
+            {% else %}
+                <p>{{ result_count }} results found</p>
+            
+            {% endif %}
+
+
+            {% for item in clothing %}
+                <h2><a href='{% url "product" item.product_id %}'>     {{ item.name }}</a></h2>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endblock %}

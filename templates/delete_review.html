@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+    {% block content %}
+        <hr>
+            <h3>{{ review.stars }}</h3>
+            <p>{{ review.description_review }}</p>
+        <hr>
+
+        <form method='POST' action=''>
+            {% csrf_token %}
+
+            <p>Are you sure you would like to delete this review?</p>
+            <input type='submit' value='delete'/>
+        </form>
+    {% endblock %}

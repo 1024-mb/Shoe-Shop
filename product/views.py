@@ -3,10 +3,12 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.http import HttpResponse
 from base.forms import ReviewForm
-from base.models import Review
+from base.models import Review, User
+import uuid
 
 # Create your views here.
 def product(request, pk):
+
     from base.models import Clothing
     from base.models import Review
 
@@ -21,10 +23,10 @@ def product(request, pk):
         if cmp == pk:
             product = item
 
-            description = item.desc
+            description = item.description
             description = description.split(",")
 
-            product.desc = description
+            product.description = description
 
             sizes = item.size
             sizes = sizes.split(",")
@@ -40,6 +42,7 @@ def product(request, pk):
 
             try:
                 for Review in Reviews:
+
                     avg = avg + Review.stars
                     count += 1
 
@@ -48,10 +51,16 @@ def product(request, pk):
             except ZeroDivisionError:
                 Reviews = None
 
+
+            user = User.objects.get(username=request.user)
+
+ 
             context = {
                 "clothing": product,
                 "reviews": Reviews,
-                "overall": avg
+                "overall": avg,
+                "curr_usr": user,
+                "num_reviews": count,
             }
 
 
@@ -61,37 +70,76 @@ def product(request, pk):
 
     return HttpResponse("404 page not found ")
 
+
 def create_review(request, pk):
-    form = ReviewForm()
+    pk = uuid.UUID(pk)
+    if not Review.objects.filter(user_id=request.user, product_ID=pk).exists():
 
-    if request.method == 'POST':    # checks if submit button was pressed
+        if request.method == 'POST':    # checks if submit button was pressed
 
-        form = ReviewForm(request.POST)
+            form = ReviewForm(request.POST)
 
 
-        if form.is_valid():
-            form.save()     # saves the form contents to the database
+            if form.is_valid():
+                form.save()     # saves the form contents to the database
 
-        return redirect(request, 'http://127.0.0.1:8000')
+            return redirect('home')
 
-    context = {'form': form}
+        form = ReviewForm()
+        context = {'form': form}
 
-    return render(request, "product_review.html", context)
+        return render(request, "product_review.html", context)
+
+    else:
+        pk = str(pk)
+        return redirect(f'http://127.0.0.1:8000/product/{pk}/update_review')
 
 
 def update_review(request, pk):
-    review = Review.objects.get(review_id=pk)
-    form = ReviewForm(instance=review)
+    queryreview = uuid.UUID(pk)
 
-    if request.method == 'POST':
-        form = ReviewForm(request.POST, instance=review)
-        
-        url_add = request.POST.get('product_id')
-        if form.is_valid():
-            form.save()
-            return redirect(request, 'http://127.0.0.1:8000')
+
+    try:
+        curr_user = User.objects.get(username=request.user)
+        usr = curr_user.id
+
+        review = Review.objects.get(product_ID=queryreview, user_id=usr)
+        form = ReviewForm(instance=review)
+
+        if request.method == 'POST':
+            form = ReviewForm(request.POST, instance=review)
+            
+            url_add = str(pk)
+            if form.is_valid():
+                form.save()
+                return redirect(f'http://127.0.0.1:8000/product/{ url_add }')
+            
+    except:
+        return redirect('home')
 
 
     context = {'form': form}
 
-    return render(request, 'base/room_form.html', context)
+    return render(request, 'product_review.html', context)
+
+
+def delete_review(request, pk):
+    queryreview = uuid.UUID(pk)
+    url_add = str(pk)
+    
+    curr_user = User.objects.get(username=request.user)
+    usr = curr_user.id
+
+    review = Review.objects.get(product_ID=queryreview, user_id=usr)
+
+    if request.method == 'POST':
+        review.delete()
+
+        return redirect(f'http://127.0.0.1:8000/product/{ url_add }')
+
+    else:
+        context = {'review':review}
+
+
+        return render(request, 'delete_review.html', context)
+

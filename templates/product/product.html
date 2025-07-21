@@ -11,7 +11,7 @@
         <h1>{{ clothing.name }}</h1>
 
         
-        {% for item in clothing.desc %}
+        {% for item in clothing.description %}
             <p>{{ item }}</p>
 
         {% endfor %}
@@ -39,14 +39,19 @@
 
     {% endfor %}
 
-   <p>{{ overall.avg }}</p> 
+   <p>{{ overall }} • ({{ num_reviews }})</p> 
 
 
     {% if reviews %}
         <h2>Reviews</h1>
-        <a href="{% url 'add_review' clothing.product_id %}">create review</a>
+        <a href="{% url 'create_review' clothing.product_id %}">create review</a>
         {% for item in reviews %}
             <hr>
+            {% if item.user_id == curr_usr %}
+                <a href="{% url 'update_review' clothing.product_id %}">Edit review</a>
+                <a href="{% url 'delete_review' clothing.product_id %}">Delete review</a>
+            {% endif %}
+
             <h6>{{ item.stars }}</h6>
             <p>{{ item.user_id }}</p>
             <p>{{ item.description_review }}</p>
@@ -54,7 +59,7 @@
 
     {% else %}    
         <h2>No reviews</h2>
-        <a href="{% url 'add_review' clothing.product_id %}">create review</a>  
+        <a href="{% url 'create_review' clothing.product_id %}">create review</a>  
     {% endif %}
 
     {% endblock %}

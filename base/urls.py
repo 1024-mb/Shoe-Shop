@@ -10,6 +10,6 @@ def redirect_to_home(request):
 urlpatterns = [
     path('', redirect_to_home),
     path('home/',  views.home, name='home'),
-    
-    
+    path('login/', views.login_page, name='login'),
+    path('lougout/', views.logout, name='logout'),
 ]

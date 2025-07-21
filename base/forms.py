@@ -5,6 +5,5 @@ class ReviewForm(ModelForm):
     class Meta:
         model = Review
         fields = '__all__'
-        print("hsiss")
 
 

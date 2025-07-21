@@ -9,15 +9,16 @@ class Clothing(models.Model):
 
     # Listing Title + product description
     name = models.CharField(max_length=50)
-    desc = models.TextField(max_length=1000)
+    description = models.TextField(max_length=1000)
 
     # Nike/Addidas/Puma/ etc.
     brand = models.CharField(max_length=30)
 
     # shoes/trainers/jogging bottoms
-    category = models.CharField(max_length=30) 
+    category = models.CharField(max_length=20) 
 
     # M for Man, W for Women, C for child
+    
     gender = models.CharField(max_length=1) 
     size = models.TextField(max_length=40)
 
@@ -26,6 +27,9 @@ class Clothing(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    class meta:
+        ordering = ['-updated', '-created']
 
     
     def __str__(self):
@@ -49,8 +53,15 @@ class Review(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+
+    class meta:
+        ordering = ['-updated', '-created']
+
+
     def __str__(self):
         return self.description_review[0:50]
+    
+    
 
 
     
