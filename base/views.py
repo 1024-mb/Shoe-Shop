@@ -1,14 +1,87 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Clothing, User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from base.forms import LoginForm, SignupForm
 from django.db.models import Q
 from django.contrib import messages
 
+
+def login_page(request):
+    next_url = request.GET.get('next')
+
+    if request.method == "POST":
+        try:
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+
+            UserChecked = User.objects.get(username=username)
+
+            user = authenticate(request, username=username, password=password)
+
+            try:
+                login(request, user)
+
+                if next_url:
+                    return redirect(next_url)
+                
+                else:
+                    return redirect('home')
+
+            except AttributeError:
+                messages.warning(request, "Password is incorrect")
+                
+                context = {'operation': 'login'}
+                return render(request, 'login_register.html', context)
+            
+        except User.DoesNotExist:
+            messages.warning(request, "User does not exist")
+            context = {'operation': 'login'}
+            return render(request, 'login_register.html', context)
+            
+
+    else:
+        context = {'operation': 'login'}
+        return render(request, 'login_register.html', context)
+
+def signup(request):
+    Signupform = SignupForm()
+
+    if request.method == "POST":
+        if Signupform.is_valid():
+            try:
+                username = request.GET.get('username')
+                password = request.GET.get('password')
+
+                UserChecked = User.objects.get(username=username)
+
+                user = authenticate(request, username=username, password=password)
+
+                if UserChecked is not None:
+                    login(request, user)
+                    return redirect('home')
+                
+                else:
+                    messages.warning(request, "Username/Password incorrect")
+                    
+                    context = {'operation': 'login', 'form': Signupform}
+                    return render(request, 'login_register.html', context)
+                
+            except:
+                messages.warning(request, "User does not exist")
+
+            context = {'operation': 'login', 'form': Signupform}
+            return render(request, 'login_register.html', context)
+        
+
+    else:
+        
+        context = {'operation': 'login', 'form': Signupform}
+        return render(request, 'login_register.html', context)
+
 # Create your views here.
 def home(request):
-    if request.method =='POST':
-        print("Hi")
-    
     q = request.GET.get('q')
 
     if q != None:
@@ -36,33 +109,9 @@ def home(request):
                    'categories': extracted}
 
         return render(request, 'base/home.html', context)
-    
-def login_page(request):
-    
-    if request.method == "POST":
-        if form.is_valid() == True:
-            try:
-                username = request.GET.get('username')
-                password = request.GET.get('password')
 
-                UserChecked = User.objects.get(username=username)
+@login_required(login_url='login')
+def Logout(request):
+    logout(request)
+    return redirect('home')
 
-            except:
-                messages.warning(request, "Incorrect Username/Password")
-
-                context = {'operation': 'login'}
-                return render(request, 'login_register.html', context)
-    else:
-        context = {'operation': 'login'}
-        return render(request, 'login_register.html', context)
-    
-
-
-def logout(request):
-    if request.method == "POST":
-        pass
-
-    else:
-        context = {'operation': 'logout'}
-        return render(request, 'login_register.html', context)
-    

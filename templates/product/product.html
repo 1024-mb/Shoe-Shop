@@ -5,9 +5,6 @@
         <h1>Product Page</h1>
         <p>Welcome to the product page!</p>
 
-
-
-
         <h1>{{ clothing.name }}</h1>
 
         
@@ -47,9 +44,13 @@
         <a href="{% url 'create_review' clothing.product_id %}">create review</a>
         {% for item in reviews %}
             <hr>
-            {% if item.user_id == curr_usr %}
-                <a href="{% url 'update_review' clothing.product_id %}">Edit review</a>
-                <a href="{% url 'delete_review' clothing.product_id %}">Delete review</a>
+            {% if request.user.is_authenticated %}
+                {% if curr_usr != None %}
+                    {% if item.user_id == curr_usr %}
+                        <a href="{% url 'update_review' clothing.product_id %}">Edit review</a>
+                        <a href="{% url 'delete_review' clothing.product_id %}">Delete review</a>
+                    {% endif %}
+                {% endif %}
             {% endif %}
 
             <h6>{{ item.stars }}</h6>

@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from base.forms import ReviewForm
 from base.models import Review, User
 import uuid
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def product(request, pk):
@@ -51,26 +52,34 @@ def product(request, pk):
             except ZeroDivisionError:
                 Reviews = None
 
-
-            user = User.objects.get(username=request.user)
-
- 
-            context = {
+            try:
+                user = User.objects.get(username=request.user)
+                context = {
                 "clothing": product,
                 "reviews": Reviews,
                 "overall": avg,
                 "curr_usr": user,
                 "num_reviews": count,
-            }
+                }
 
+                return render(request, "product/product.html", context)
 
+            except User.DoesNotExist:
+                context = {
+                "clothing": product,
+                "reviews": Reviews,
+                "overall": avg,
+                "num_reviews": count,
+                }
 
-            return render(request, "product/product.html", context)
+                return render(request, "product/product.html", context)
+ 
+            
 
 
     return HttpResponse("404 page not found ")
 
-
+@login_required(login_url='login')
 def create_review(request, pk):
     pk = uuid.UUID(pk)
     if not Review.objects.filter(user_id=request.user, product_ID=pk).exists():
@@ -94,7 +103,7 @@ def create_review(request, pk):
         pk = str(pk)
         return redirect(f'http://127.0.0.1:8000/product/{pk}/update_review')
 
-
+@login_required(login_url='login')
 def update_review(request, pk):
     queryreview = uuid.UUID(pk)
 
@@ -122,7 +131,7 @@ def update_review(request, pk):
 
     return render(request, 'product_review.html', context)
 
-
+@login_required(login_url='login')
 def delete_review(request, pk):
     queryreview = uuid.UUID(pk)
     url_add = str(pk)
