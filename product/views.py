@@ -15,9 +15,9 @@ def product(request, pk):
 
     product = None
 
-    Products = Clothing.objects.order_by('-updated', '-created')
+    products = Clothing.objects.order_by('-updated', '-created')
 
-    for item in Products:
+    for item in products:
         id_product = item.product_id
         cmp = str(item.product_id)
 

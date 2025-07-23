@@ -3,7 +3,8 @@ from django.http import HttpResponse
 from .models import Clothing, User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from base.forms import LoginForm, SignupForm
+
+from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
 from django.contrib import messages
 
@@ -45,39 +46,24 @@ def login_page(request):
         context = {'operation': 'login'}
         return render(request, 'login_register.html', context)
 
-def signup(request):
-    Signupform = SignupForm()
-
+def register(request):
+    signup_form = UserCreationForm()
     if request.method == "POST":
-        if Signupform.is_valid():
-            try:
-                username = request.GET.get('username')
-                password = request.GET.get('password')
+        username = request.GET.get('username')
+        password = request.GET.get('password')
+        email = request.GET.get('email')
+        firstname = request.GET.get('firstname')
+        firstname = request.GET.get('lastname')
 
-                UserChecked = User.objects.get(username=username)
-
-                user = authenticate(request, username=username, password=password)
-
-                if UserChecked is not None:
-                    login(request, user)
-                    return redirect('home')
-                
-                else:
-                    messages.warning(request, "Username/Password incorrect")
-                    
-                    context = {'operation': 'login', 'form': Signupform}
-                    return render(request, 'login_register.html', context)
-                
-            except:
-                messages.warning(request, "User does not exist")
-
-            context = {'operation': 'login', 'form': Signupform}
-            return render(request, 'login_register.html', context)
+        try:
+            userchecked = User.objects.get(username=username)
         
+        except User.DoesNotExist:
+            pass
+
 
     else:
-        
-        context = {'operation': 'login', 'form': Signupform}
+        context = {'operation': 'Signup'}
         return render(request, 'login_register.html', context)
 
 # Create your views here.
