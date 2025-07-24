@@ -14,32 +14,42 @@
         <div>
             <h3>Browse Categories</h3>
             <hr>
+            <h3>All</h3>
+            {% for subject in all_categories %}
+                <a href="{% url 'home' %}?q={{ subject }}">     {{ subject }}</a><br>
+            {% endfor %}
+
             <h3>Men's</h3>
-            {% for subject in categories %}
-                {% if 'M' in subject.gender %}
-                    <a href="{% url 'home' %}?q={{ subject.category }}">     {{ subject.category }}</a><br>
-                {% endif %}
+            {% for subject in mens_categories %}
+                <a href="{% url 'home' %}?q=Mens%20{{ subject }}">     {{ subject }}</a><br>
             {% endfor %}
 
             <h3>Women's</h3>
-            {% for subject in categories %}
-                {% if 'F' in subject.gender %}
-                    <a href="{% url 'home' %}?q={{ subject.category }}">     {{ subject.category }}</a><br>
-                {% endif %}
+            {% for subject in womens_categories %}
+                <a href="{% url 'home' %}?q=Womens%20{{ subject }}">     {{ subject }}</a><br>
             {% endfor %}
 
             <h3>Children's</h3>
-            {% for subject in categories %}
-                {% if 'C' in subject.gender %}
-                    <a href="{% url 'home' %}?q={{ subject.category }}">     {{ subject.category }}</a><br>
-                {% endif %}
+            {% for subject in child_categories %}
+                <a href="{% url 'home' %}?q=Kids%20{{ subject }}">     {{ subject }}</a><br>
+
             {% endfor %}
 
         </div>
 
         <div>
             <h1>Home Page</h1>
-
+                <form method="POST">
+                    {% csrf_token %}
+                    <select name="order" id="order">
+                        <option name="top_rated" value="top_rated">Rating: Highest to Lowest</option>
+                        <option name="new_to_old" value="new_to_old">Added: Newest to Oldest</option>
+                        <option name="old_to_new" value="old_to_new">Added: Oldest to Newest</option>
+                        <option name="low_to_high" value="low_to_high">Price: Lowest to Highest</option>
+                        <option name="high_to_low" value="high_to_low">Price: Highest to Lowest</option>
+                    </select>
+                    <input type="submit" value="submit">
+                </form>
             {% if query == None or query == "" %}
                 <p>Welcome to HeatSneakers</p>
         
@@ -51,11 +61,12 @@
                 <p>1 result found</p> 
             
             {% else %}
+
                 <p>{{ result_count }} results found</p>
             
             {% endif %}
 
-
+            
             {% for item in clothing %}
                 <h2><a href='{% url "product" item.product_id %}'>     {{ item.name }}</a></h2>
             {% endfor %}
