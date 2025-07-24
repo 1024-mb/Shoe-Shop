@@ -2,8 +2,7 @@
 
     {% block content %}
 
-        <h1>Product Page</h1>
-        <p>Welcome to the product page!</p>
+        <h1>Product</h1>
 
         <h1>{{ clothing.name }}</h1>
 
@@ -54,7 +53,7 @@
             {% endif %}
 
             <h6>{{ item.stars }}</h6>
-            <p>{{ item.user_id }}</p>
+            <p>{{ item.user_id }}  •   {{ item.created|date:"M Y" }}</p>
             <p>{{ item.description_review }}</p>
         {% endfor %}
 

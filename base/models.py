@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+from django.core.validators import MaxValueValidator
 
 # Create your models here.
 
@@ -25,8 +26,8 @@ class Clothing(models.Model):
     price = models.DecimalField(decimal_places=2, max_digits=5)
     rating = models.DecimalField(decimal_places=1, max_digits=2)
 
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
+    created = models.DateField(auto_now_add=True)
 
     class meta:
         ordering = ['-updated', '-created']
@@ -48,7 +49,7 @@ class Review(models.Model):
 
 
     description_review = models.TextField(null=False, max_length=80)
-    stars = models.IntegerField(null=False)
+    stars = models.IntegerField(null=False, validators=[MaxValueValidator(5)])
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

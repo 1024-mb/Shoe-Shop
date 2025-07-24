@@ -123,36 +123,31 @@ def home(request):
         
         if order == 'new_to_old':
             order = '-created'
-            print('126')
 
         elif order == 'old_to_new':
             order = 'created'
-            print('130')        
 
         elif order == 'low_to_high':
             order = 'price'
-            print('134')
 
         elif order == 'high_to_low':
             order = '-price'
-            print('138')
 
         elif order == 'top_rated':
             order = '-rating'
-            print('142')
 
-    q = request.GET.get('q')
+    q = request.GET.get('q').replace('%20', ' ') if request.GET.get('q') != None else None
 
-    men_categories = ['T-Shirts & Tops', 'Jerseys', 'Hoodies',
-                    'Sweatshirts and Tracksuits', 'Pants', 'Tights', 'Shorts',
-                    'Sportswear']
+    all_categories = ['T-Shirts & Tops', 'Jerseys', 'Hoodies',
+                      'Sweatshirts and Tracksuits', 'Shorts']
+
+    men_categories = ['Pants', 'Tights',
+                      'Sportswear']
     
-    women_categories = ['T-Shirts & Tops', 'Jerseys', 'Hoodies',
-                        'Sweatshirts and Tracksuits', 'Sports Bras', 'Jerseys',
-                        'Hoodies', 'Jackets', 'Pants', 'Tights', 'Shorts',
-                        'Sportswear',]
+    women_categories = ['Sports Bras', 'Jackets', 'Pants', 'Tights', 
+                        'Sportswear']
     
-    children_categories = ['New Arrivals', 'Boys Clothing', 'Girls Clothing',
+    children_categories = ['Boys Clothing', 'Girls Clothing',
                             'Boys Shoes', 'Girls Shoes']
 
     if q != None:
@@ -165,11 +160,13 @@ def home(request):
 
 
         context = {'clothing': extracted,
+                   'all_categories': all_categories,
                    'mens_categories': men_categories,
                    'womens_categories': women_categories,
                    'child_categories': children_categories,
                    'query': q,
-                   'result_count': extracted.count()}
+                   'result_count': extracted.count(),
+                    'order': order}
 
 
         return render(request, 'base/home.html', context)
@@ -178,9 +175,11 @@ def home(request):
         extracted = Clothing.objects.order_by(order)
 
         context = {'clothing': extracted,
+                   'all_categories': all_categories,
                     'mens_categories': men_categories,
                     'womens_categories': women_categories,
-                    'child_categories': children_categories}
+                    'child_categories': children_categories,
+                    'order': order}
 
         return render(request, 'base/home.html', context)
 

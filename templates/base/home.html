@@ -38,7 +38,13 @@
         </div>
 
         <div>
-            <h1>Home Page</h1>
+            {% if request.user.is_authenticated %}
+                <h2>Welcome, {{ request.user }}</h2>
+
+            {% else %}
+                <h2>Browse products</h2>
+            {% endif %}
+        
                 <form method="POST">
                     {% csrf_token %}
                     <select name="order" id="order">
@@ -50,22 +56,42 @@
                     </select>
                     <input type="submit" value="submit">
                 </form>
-            {% if query == None or query == "" %}
-                <p>Welcome to HeatSneakers</p>
-        
-            {% elif result_count == 0 %}
-                <p>No results found   </p><a href="http://127.0.0.1:8000/home/">home</a>
 
-            
-            {% elif result_count == 1 %}
-                <p>1 result found</p> 
-            
-            {% else %}
+            <p>
+                {% if result_count == 0 %}
+                    No results found •   <a href="http://127.0.0.1:8000/home/">home</a> • 
 
-                <p>{{ result_count }} results found</p>
-            
-            {% endif %}
+                
+                {% elif result_count == 1 %}
+                    1 result found • 
+                
+                {% elif result_count > 1 %}
 
+                    {{ result_count }} results found • 
+                
+                {% endif %}
+
+                {% if order == '-rating' %}
+                    Top Rated
+                {% endif %}
+
+                {% if order == '-price' %}
+                    Highest Price
+                {% endif %}
+                
+                {% if order == '-created' %}
+                    Latest
+                {% endif %}
+
+                {% if order == 'created' %}
+                    Oldest
+                {% endif %}
+                
+                {% if order == 'price' %}
+                    Lowest Price
+                {% endif %}
+
+            <p>
             
             {% for item in clothing %}
                 <h2><a href='{% url "product" item.product_id %}'>     {{ item.name }}</a></h2>
