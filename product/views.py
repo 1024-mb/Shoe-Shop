@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def product(request, pk):
-
     from base.models import Clothing
     from base.models import Review
 
@@ -31,9 +30,6 @@ def product(request, pk):
 
             sizes = item.size
             sizes = sizes.split(",")
-            print(sizes)
-
-
 
             Reviews = Review.objects.filter(product_ID=id_product)
             avg = 0
@@ -45,7 +41,7 @@ def product(request, pk):
                     avg = avg + Review.stars
                     count += 1
 
-                avg = str(avg / count)
+                avg = str(round((avg / count), 1))
 
             except ZeroDivisionError:
                 Reviews = None
@@ -74,9 +70,6 @@ def product(request, pk):
 
                 return render(request, "product/product.html", context)
  
-            
-
-
     return HttpResponse("404 page not found ")
 
 @login_required(login_url='login')
@@ -101,7 +94,7 @@ def create_review(request, pk):
         form = ReviewForm()
         context = {'form': form}
 
-        return render(request, "product_review.html", context)
+        return render(request, "product/create_review.html", context)
 
     else:
         pk = str(pk)
@@ -133,7 +126,7 @@ def update_review(request, pk):
 
     context = {'form': form}
 
-    return render(request, 'product_review.html', context)
+    return render(request, 'product/create_review.html', context)
 
 @login_required(login_url='login')
 def delete_review(request, pk):
@@ -154,5 +147,5 @@ def delete_review(request, pk):
         context = {'review':review}
 
 
-        return render(request, 'delete_review.html', context)
+        return render(request, 'product/delete_review.html', context)
 

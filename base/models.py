@@ -42,9 +42,11 @@ class Review(models.Model):
     review_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # user associated with review - user deleted, delete review
+    # each user has multiple reviews
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # Product associated with review - product deleted, delete review
+    # each product has multiple reviews
     product_ID = models.ForeignKey(Clothing, on_delete=models.CASCADE)
 
 

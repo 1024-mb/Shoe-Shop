@@ -1,0 +1,24 @@
+{% if clothing.gender == 'M' %}
+                <p>Men • {{ clothing.category }}</p>
+
+            {% elif clothing.gender == 'F' %}
+                <p>Women • {{ clothing.category }}</p>
+
+
+            {% elif clothing.gender == 'C' %}
+                <p>Kids • {{ clothing.category }}</p>
+
+            {% elif clothing.gender == 'U' %}
+                <p>Unisex •  {{ clothing.category }}</p>
+
+            {% endif %}
+
+            <p>S${{ clothing.price }}</p>
+
+
+                {% for item in sizes %}
+                    <div class="sizes" style="display: inline-block">{{ item }}</div>
+                {% endfor %}
+
+
+            <p>{{ overall }} • ({{ num_reviews }})</p> 

@@ -119,7 +119,6 @@ def home(request):
     order = '-rating'
     if request.method == 'POST':
         order = request.POST.get('order')
-        print(order)
         
         if order == 'new_to_old':
             order = '-created'
