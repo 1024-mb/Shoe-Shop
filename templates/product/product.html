@@ -1,49 +1,44 @@
 {% extends "base.html" %}
     {% block content %}
+        <style>
+            p {
+                font-size: 3.5vh;
+            }
 
-    <style>
-        p {
-            font-size: 3.5vh;
-        }
+            .sizes {
+                border: 2px black solid;
+                padding: 1.5px
+            }
 
-        .sizes {
-            border: 2px black solid;
-            padding: 1.5px
-        }
+            .right-side {
+                position: fixed;
+                right: 0;
+                width: 370px;
+            }
+        </style>
 
-        .right-side {
-            position: fixed;
-            right: 0;
-            top: 13.5vh;
-            width: 370px;
+        <div class="room-container">
+            <div class="left-side" style="border-right: 1px solid black;">
+                <h1>Product</h1>
 
-        }
+                <h1>{{ clothing.name }}</h1>
 
-        
-    </style>
+                {% include 'product/image_container.html' %}
+                
+                {% for item in clothing.description %}
+                    <p>{{ item }}</p>
 
-    <div class="room-container">
-        <div class="left-side">
-            <h1>Product</h1>
+                {% endfor %}
+                
+                {% include 'product/reviews_bar.html' %}
 
-            <h1>{{ clothing.name }}</h1>
+            </div>
+            <div class="right-side">
 
-            {% include 'product/image_container.html' %}
-            
-            {% for item in clothing.description %}
-                <p>{{ item }}</p>
+                {% include 'product/right_side.html' %}
 
-            {% endfor %}
-            
-            {% include 'product/reviews_bar.html' %}
-
+            </div>
         </div>
-        <div class="right-side">
-
-            {% include 'product/right_side.html' %}
-
-        </div>
-    </div>
 
     {% endblock %}
 

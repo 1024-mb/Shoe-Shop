@@ -4,7 +4,7 @@ from .models import Clothing, User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-from .forms import SignUpForm
+from .forms import SignUpForm, UpdateForm
 from django.db.models import Q
 from django.contrib import messages
 
@@ -78,7 +78,7 @@ def register(request):
             if '@' not in request.POST.get('email'):
                 messages.error(request, 'Please enter a valid email address')
                 context = {'operation': 'Signup',
-                        'form': signup_form}
+                           'form': signup_form}
                 
                 return render(request, 'login_register.html', context)
             
@@ -181,6 +181,57 @@ def home(request):
                     'order': order}
 
         return render(request, 'base/home.html', context)
+
+@login_required(login_url='login')
+def user_profile(request):
+    update_detail = UpdateForm()
+
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name') if request.POST.get('first_name') != None else None
+        last_name = request.POST.get('last_name') if request.POST.get('last_name') != None else None
+        email = request.POST.get('email') if request.POST.get('email') != None else None
+
+        if request.POST.get('password1') != None and request.POST.get('password2') != None:
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
+
+        if '@' not in email or '.' not in email:
+            raise update_detail.ValidationError('email is invalid')
+
+        user = User.objects.get(username=request.user)
+        
+        
+        if first_name != None:
+            user.first_name = first_name
+
+        if last_name != None:
+            user.last_name = last_name
+
+        if email != None:
+            user.email = email
+
+        if request.POST.get('password1') != None and request.POST.get('password2') != None:
+            if password1 != password2:
+                raise update_detail.ValidationError('passwords must match')
+            
+            else:
+                user.password = password1
+
+
+        context = {'user_profile': user,
+                   'update_detail': update_detail}
+
+        return render(request, 'user_profile.html', context)
+    
+    else:
+        user = User.objects.get(username=request.user)
+
+        context = {'user_profile': user,
+                   'update_detail': update_detail}
+
+        return render(request, 'user_profile.html', context)
+    
+
 
 @login_required(login_url='login')
 def Logout(request):

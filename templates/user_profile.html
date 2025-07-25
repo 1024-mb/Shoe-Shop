@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="left-side">
+
+
+        </div>
+
+        <div class="right-side">
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{ update_detail.as_p }}
+
+                <input type="submit" value="register">
+
+            </form>
+        </div>
+
+        
+    </div>
+    
+
+
+{% endblock %}
+
+
+
+
+
