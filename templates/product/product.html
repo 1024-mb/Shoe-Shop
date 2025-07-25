@@ -1,66 +1,122 @@
 {% extends "base.html" %}
-
     {% block content %}
 
-        <h1>Product</h1>
+    <style>
+        .sizes {
+            outline: 1px black;
+            
+        }
 
-        <h1>{{ clothing.name }}</h1>
+        .room-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+        }
 
+
+        .img-container {
+            padding: 20px;
+
+        }
+
+
+        .product-img {
+            padding: 5px;
+            transition: transform .2s;
+            height: 44vh;
+            margin: 0 auto;
+        }
+        .product-img:hover {
+            transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+            padding: 5px;    
+        }
+        .product-img:click {
+            transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+            padding: 5px;  
+        }
         
-        {% for item in clothing.description %}
-            <p>{{ item }}</p>
-
-        {% endfor %}
 
 
-        {% if clothing.gender == 'M' %}
-            <p>Men • {{ clothing.category }}</p>
 
-        {% elif clothing.gender == 'F' %}
-            <p>Women • {{ clothing.category }}</p>
+    </style>
 
+    <div class="room-container">
+        <div class="left-side">
+            <h1>Product</h1>
 
-        {% elif clothing.gender == 'C' %}
-            <p>Kids • {{ clothing.category }}</p>
+            <h1>{{ clothing.name }}</h1>
 
-        {% elif clothing.gender == 'U' %}
-            <p>Unisex •  {{ clothing.category }}</p>
+            <div class="img-container">
+                <img src="/media/{{ clothing.product_id }}/img1.webp" class="product-img" alt="Product Image">
+                <img src="/media/{{ clothing.product_id }}/img2.webp" class="product-img" alt="Product Image">
 
-        {% endif %}
+                <img src="/media/{{ clothing.product_id }}/img2.webp" class="product-img" alt="Product Image">
 
-    <p>S${{ clothing.price }}</p>
+                <img src="/media/{{ clothing.product_id }}/img3.webp" class="product-img" alt="Product Image">
 
-    {% for item in clothing.size %}
-        <p>{{ item }}</p>
+                <img src="/media/{{ clothing.product_id }}/img4.webp" class="product-img" alt="Product Image">
+                <img src="/media/{{ clothing.product_id }}/img5.webp" class="product-img" alt="Product Image">
+            </div>
+            
+            {% for item in clothing.description %}
+                <p>{{ item }}</p>
 
-    {% endfor %}
-
-   <p>{{ overall }} • ({{ num_reviews }})</p> 
-
-
-    {% if reviews %}
-        <h2>Reviews</h1>
-        <a href="{% url 'create_review' clothing.product_id %}">create review</a>
-        {% for item in reviews %}
-            <hr>
-            {% if request.user.is_authenticated %}
-                {% if curr_usr != None %}
-                    {% if item.user_id == curr_usr %}
-                        <a href="{% url 'update_review' clothing.product_id %}">Edit review</a>
-                        <a href="{% url 'delete_review' clothing.product_id %}">Delete review</a>
+            {% endfor %}
+            
+            {% if reviews %}
+                <h2>Reviews</h1>
+                <a href="{% url 'create_review' clothing.product_id %}">create review</a>
+                {% for item in reviews %}
+                    <hr>
+                    {% if request.user.is_authenticated %}
+                        {% if curr_usr != None %}
+                            {% if item.user_id == curr_usr %}
+                                <a href="{% url 'update_review' clothing.product_id %}">Edit review</a>
+                                <a href="{% url 'delete_review' clothing.product_id %}">Delete review</a>
+                            {% endif %}
+                        {% endif %}
                     {% endif %}
-                {% endif %}
+
+                    <h6>{{ item.stars }}</h6>
+                    <p>{{ item.user_id }}  •   {{ item.created|date:"M Y" }}</p>
+                    <p>{{ item.description_review }}</p>
+                {% endfor %}
+
+            {% else %}    
+                <h2>No reviews</h2>
+                <a href="{% url 'create_review' clothing.product_id %}">create review</a>  
             {% endif %}
 
-            <h6>{{ item.stars }}</h6>
-            <p>{{ item.user_id }}  •   {{ item.created|date:"M Y" }}</p>
-            <p>{{ item.description_review }}</p>
-        {% endfor %}
+        </div>
+        <div class="right-side">
 
-    {% else %}    
-        <h2>No reviews</h2>
-        <a href="{% url 'create_review' clothing.product_id %}">create review</a>  
-    {% endif %}
+            {% if clothing.gender == 'M' %}
+                <p>Men • {{ clothing.category }}</p>
+
+            {% elif clothing.gender == 'F' %}
+                <p>Women • {{ clothing.category }}</p>
+
+
+            {% elif clothing.gender == 'C' %}
+                <p>Kids • {{ clothing.category }}</p>
+
+            {% elif clothing.gender == 'U' %}
+                <p>Unisex •  {{ clothing.category }}</p>
+
+            {% endif %}
+
+            <p>S${{ clothing.price }}</p>
+
+
+                {% for item in sizes %}
+                    <div class="sizes" style="display: inline-block">{{ item }}</div>
+                {% endfor %}
+
+
+            <p>{{ overall }} • ({{ num_reviews }})</p> 
+
+
+        </div>
+    </div>
 
     {% endblock %}
 

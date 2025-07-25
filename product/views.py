@@ -31,10 +31,8 @@ def product(request, pk):
 
             sizes = item.size
             sizes = sizes.split(",")
+            print(sizes)
 
-            product.size = sizes
-
-            context = {'clothing': product}
 
 
             Reviews = Review.objects.filter(product_ID=id_product)
@@ -60,6 +58,7 @@ def product(request, pk):
                 "overall": avg,
                 "curr_usr": user,
                 "num_reviews": count,
+                "sizes": sizes,
                 }
 
                 return render(request, "product/product.html", context)
@@ -70,6 +69,7 @@ def product(request, pk):
                 "reviews": Reviews,
                 "overall": avg,
                 "num_reviews": count,
+                "sizes": sizes,
                 }
 
                 return render(request, "product/product.html", context)
@@ -88,9 +88,13 @@ def create_review(request, pk):
 
             form = ReviewForm(request.POST)
 
-
             if form.is_valid():
-                form.save()     # saves the form contents to the database
+                reviewtext = request.POST.get('description_review')
+                stars = request.POST.get('stars')
+
+                new_item = Review(description_review=reviewtext, 
+                                  stars=stars, product_ID_id=pk, user_id=request.user)     # saves the form contents to the database
+                new_item.save()
 
             return redirect('home')
 

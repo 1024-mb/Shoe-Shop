@@ -14,10 +14,10 @@ def login_page(request):
 
     if request.method == "POST":
         try:
-            username = request.POST.get('username').lower()
+            username = request.POST.get('username')
             password = request.POST.get('password')
 
-            UserChecked = User.objects.get(username=username)
+            UserChecked = User.objects.get(username__iexact=username)
 
             user = authenticate(request, username=username, password=password)
 
@@ -61,12 +61,12 @@ def register(request):
             
 
             try:
-                userchecked = User.objects.get(username=request.POST.get('username'))
+                userchecked = User.objects.get(username__iexact=request.POST.get('username'))
                 raise form.ValidationError('username is already in use')
             
             except User.DoesNotExist:
                 user = form.save(commit=False)
-                user.username = user.username.lower()
+                user.username = user.username
                 user.save()
 
                 login(request, user)

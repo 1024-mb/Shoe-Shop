@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 class ReviewForm(ModelForm):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ['description_review', 'stars']
 
 
 class SignUpForm(UserCreationForm):
