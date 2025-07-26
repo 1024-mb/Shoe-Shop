@@ -17,7 +17,7 @@ def login_page(request):
             username = request.POST.get('username')
             password = request.POST.get('password')
 
-            UserChecked = User.objects.get(username__iexact=username)
+            UserChecked = User.objects.get(username__exact=username)
 
             user = authenticate(request, username=username, password=password)
 
@@ -61,7 +61,7 @@ def register(request):
             
 
             try:
-                userchecked = User.objects.get(username__iexact=request.POST.get('username'))
+                userchecked = User.objects.get(username__exact=request.POST.get('username'))
                 raise form.ValidationError('username is already in use')
             
             except User.DoesNotExist:

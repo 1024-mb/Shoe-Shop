@@ -1,5 +1,5 @@
 {% if reviews %}
-                <h2>Reviews</h1>
+                <h2 id="reviews">Reviews</h1>
                 <a href="{% url 'create_review' clothing.product_id %}">create review</a>
                 {% for item in reviews %}
                     <hr>
@@ -18,6 +18,6 @@
                 {% endfor %}
 
             {% else %}    
-                <h2>No reviews</h2>
+                <h2 id="reviews">No reviews</h2>
                 <a href="{% url 'create_review' clothing.product_id %}">create review</a>  
             {% endif %}

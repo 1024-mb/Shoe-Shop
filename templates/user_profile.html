@@ -23,8 +23,9 @@
                 {% if reviews %}
                     {% for item in reviews %}
                         <hr>
-                        {{ item.stars }}
-                        {{ item.description_review }}
+                        <h3>{{ item.stars }}              {{ item.product_ID_id }}</h3>
+                        <a href="/product/{{ item.product_ID_id }}#reviews">go to review</a>
+                        <p>{{ item.description_review }}</p>
                         <hr>
                     {% endfor %}
 

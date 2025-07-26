@@ -11,7 +11,7 @@
     </style>
 
     <div class="home-container">
-        <div>
+        <div class="left-side">
             <h3>Browse Categories</h3>
             <hr>
             <h3>All</h3>
@@ -37,7 +37,7 @@
 
         </div>
 
-        <div>
+        <div class="right-side">
             {% if request.user.is_authenticated %}
                 <h2>Welcome, {{ request.user }}</h2>
 
