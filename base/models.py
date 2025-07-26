@@ -50,7 +50,7 @@ class Review(models.Model):
     product_ID = models.ForeignKey(Clothing, on_delete=models.CASCADE)
 
 
-    description_review = models.TextField(null=False, max_length=80)
+    description_review = models.TextField(null=False, max_length=1000)
     stars = models.IntegerField(null=False, validators=[MaxValueValidator(5)])
 
     updated = models.DateTimeField(auto_now=True)

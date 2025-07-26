@@ -7,6 +7,11 @@ class ReviewForm(ModelForm):
         model = Review
         fields = ['description_review', 'stars']
 
+        labels = {
+            'description_review': 'A short review of the product (25 words or less)',
+            'stars': 'Product rating (1-5)'
+        }
+
 
 class SignUpForm(UserCreationForm):
     class Meta:

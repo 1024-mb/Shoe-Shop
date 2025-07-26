@@ -211,7 +211,6 @@ def user_profile(request):
 
 
         if request.POST.get('password1') != "" and request.POST.get('password2') != "":
-            print('214')
             print(request.POST.get('password1'))
             password1 = request.POST.get('password1')
             password2 = request.POST.get('password2')
@@ -223,21 +222,13 @@ def user_profile(request):
             else:
                 user.password = password1
 
-        print(type(first_name))
-        print(first_name)
-        print(last_name)
-        print(email)
-
         if first_name != None:
-            print('230')
             user.first_name = first_name
 
         if last_name != None:
-            print('234')
             user.last_name = last_name
 
         if email != None:
-            print('238')
             user.email = email
 
         user.save()
@@ -255,4 +246,5 @@ def Logout(request):
 
     else:
         return redirect('home')
+
 

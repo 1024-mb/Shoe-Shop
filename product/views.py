@@ -3,9 +3,18 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.http import HttpResponse
 from base.forms import ReviewForm
-from base.models import Review, User
+from base.models import Review, User, Clothing
 import uuid
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+"""
+    cart = request.session.get('cart', {})
+    cart[str(product_id)] = cart.get(str(product_id), 0) + 1
+    request.session['cart'] = cart
+    request.session.modified = True
+
+"""
 
 # Create your views here.
 def product(request, pk):
@@ -103,8 +112,6 @@ def create_review(request, pk):
 @login_required(login_url='login')
 def update_review(request, pk):
     queryreview = uuid.UUID(pk)
-
-
     try:
         curr_user = User.objects.get(username=request.user)
         usr = curr_user.id
@@ -141,11 +148,26 @@ def delete_review(request, pk):
     if request.method == 'POST':
         review.delete()
 
-        return redirect(f'http://127.0.0.1:8000/product/{ url_add }')
+        return redirect(f'http://127.0.0.1:8000/product/{url_add}')
 
     else:
         context = {'review':review}
 
 
         return render(request, 'product/delete_review.html', context)
+
+@login_required(login_url='login')
+def add_to_cart(request, pk):
+    cart = request.session.get('cart', {})
+    if Clothing.objects.filter(product_id=pk).exists():
+        try:
+            cart[pk] += 1
+            request.session['cart'] = cart
+
+        except KeyError as e:
+            cart[pk] = 1
+            request.session['cart'] = cart
+
+    messages.success(request, 'Added to cart')
+    return redirect('home')
 

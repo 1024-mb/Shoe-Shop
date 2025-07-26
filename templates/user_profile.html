@@ -20,18 +20,18 @@
 
             <hr>
             <h2>Activity</h2>
-                {% if reviews|length > 1 %}
+                {% if reviews|length >= 1 %}
                     {% for item in reviews %}
                         <hr>
-                        <h3>{{ item.stars }}              {{ item.product_ID_id }}</h3>
-                        <a href="/product/{{ item.product_ID_id }}#reviews">go to review</a>
+                         <p><a href="/product/{{ item.product_ID_id }}#reviews">left a review</a> • {{ item.updated|timesince }} ago</p>
+                        <h3>{{ item.stars }}</h3>
+                        
                         <p>{{ item.description_review }}</p>
                         <hr>
                     {% endfor %}
 
                 {% else %}
-                    <p>No recent activity</p>
-
+                    <h3>No Reviews</h3>
                 {% endif %}
         </div>
 
