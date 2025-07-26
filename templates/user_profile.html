@@ -17,6 +17,21 @@
                 <input type="submit" value="register">
 
             </form>
+
+            <hr>
+            <h2>Activity</h2>
+                {% if reviews %}
+                    {% for item in reviews %}
+                        <hr>
+                        {{ item.stars }}
+                        {{ item.description_review }}
+                        <hr>
+                    {% endfor %}
+
+                {% else %}
+                    <p>No recent activity</p>
+
+                {% endif %}
         </div>
 
         

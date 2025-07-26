@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Clothing, User
+from .models import Clothing, User, Review
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
@@ -200,7 +200,6 @@ def user_profile(request):
 
         user = User.objects.get(username=request.user)
         
-        
         if first_name != None:
             user.first_name = first_name
 
@@ -218,21 +217,37 @@ def user_profile(request):
                 user.password = password1
 
 
+        try:
+            reviews = Review.objects.get(user_id=user.id)
+            print(reviews)
+            print(type(reviews))
+
+        except Review.DoesNotExist:
+            reviews = None
+
         context = {'user_profile': user,
-                   'update_detail': update_detail}
+                   'update_detail': update_detail,
+                   'reviews': reviews}
+
 
         return render(request, 'user_profile.html', context)
     
     else:
         user = User.objects.get(username=request.user)
 
+        try:
+            reviews = Review.objects.filter(user_id=user.id)
+            reviews = list(reviews)
+
+        except Review.DoesNotExist:
+            reviews = None
+
         context = {'user_profile': user,
-                   'update_detail': update_detail}
+                   'update_detail': update_detail,
+                   'reviews': reviews}
 
         return render(request, 'user_profile.html', context)
     
-
-
 @login_required(login_url='login')
 def Logout(request):
     if request.user.is_authenticated:

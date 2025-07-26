@@ -61,10 +61,6 @@ class Review(models.Model):
         ordering = ['-updated', '-created']
 
 
-    def __str__(self):
-        return self.description_review[0:50]
-    
-    
 
 
     
