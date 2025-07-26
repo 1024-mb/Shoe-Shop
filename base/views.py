@@ -185,67 +185,66 @@ def home(request):
 @login_required(login_url='login')
 def user_profile(request):
     update_detail = UpdateForm()
+    user = User.objects.get(username=request.user)
+
+    try:
+        reviews = Review.objects.filter(user_id=user.id)
+        reviews = list(reviews)
+
+    except Review.DoesNotExist:
+        reviews = None
+
+    context = {'user_profile': user,
+        'update_detail': update_detail,
+        'reviews': reviews}
+
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name') if request.POST.get('first_name') != None else None
-        last_name = request.POST.get('last_name') if request.POST.get('last_name') != None else None
-        email = request.POST.get('email') if request.POST.get('email') != None else None
+        first_name = request.POST.get('first_name') if request.POST.get('first_name') != "" else None
+        last_name = request.POST.get('last_name') if request.POST.get('last_name') != "" else None
+        email = request.POST.get('email') if request.POST.get('email') != "" else None
 
-        if request.POST.get('password1') != None and request.POST.get('password2') != None:
+        if email:
+            if '@' not in email or '.' not in email:
+                messages.warning(request, 'invalid email address')
+                return render(request, 'user_profile.html', context)
+
+
+        if request.POST.get('password1') != "" and request.POST.get('password2') != "":
+            print('214')
+            print(request.POST.get('password1'))
             password1 = request.POST.get('password1')
             password2 = request.POST.get('password2')
 
-        if '@' not in email or '.' not in email:
-            raise update_detail.ValidationError('email is invalid')
-
-        user = User.objects.get(username=request.user)
-        
-        if first_name != None:
-            user.first_name = first_name
-
-        if last_name != None:
-            user.last_name = last_name
-
-        if email != None:
-            user.email = email
-
-        if request.POST.get('password1') != None and request.POST.get('password2') != None:
             if password1 != password2:
-                raise update_detail.ValidationError('passwords must match')
+                messages.warning(request, 'invalid password - passwords must match')
+                return render(request, 'user_profile.html', context)
             
             else:
                 user.password = password1
 
+        print(type(first_name))
+        print(first_name)
+        print(last_name)
+        print(email)
 
-        try:
-            reviews = Review.objects.get(user_id=user.id)
-            print(reviews)
-            print(type(reviews))
+        if first_name != None:
+            print('230')
+            user.first_name = first_name
 
-        except Review.DoesNotExist:
-            reviews = None
+        if last_name != None:
+            print('234')
+            user.last_name = last_name
 
-        context = {'user_profile': user,
-                   'update_detail': update_detail,
-                   'reviews': reviews}
+        if email != None:
+            print('238')
+            user.email = email
 
+        user.save()
 
         return render(request, 'user_profile.html', context)
     
     else:
-        user = User.objects.get(username=request.user)
-
-        try:
-            reviews = Review.objects.filter(user_id=user.id)
-            reviews = list(reviews)
-
-        except Review.DoesNotExist:
-            reviews = None
-
-        context = {'user_profile': user,
-                   'update_detail': update_detail,
-                   'reviews': reviews}
-
         return render(request, 'user_profile.html', context)
     
 @login_required(login_url='login')

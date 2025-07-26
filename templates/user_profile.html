@@ -14,13 +14,13 @@
                 {% csrf_token %}
                 {{ update_detail.as_p }}
 
-                <input type="submit" value="register">
+                <input type="submit" value="update">
 
             </form>
 
             <hr>
             <h2>Activity</h2>
-                {% if reviews %}
+                {% if reviews|length > 1 %}
                     {% for item in reviews %}
                         <hr>
                         <h3>{{ item.stars }}              {{ item.product_ID_id }}</h3>
