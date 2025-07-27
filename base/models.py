@@ -10,6 +10,8 @@ class Clothing(models.Model):
 
     # Listing Title + product description
     name = models.CharField(max_length=250)
+    details = models.TextField(max_length=1000)
+
     description = models.TextField(max_length=1000)
 
     # Nike/Addidas/Puma/ etc.
@@ -23,7 +25,7 @@ class Clothing(models.Model):
     gender = models.CharField(max_length=1) 
     size = models.TextField(max_length=40)
 
-    color = models.CharField(max_length=50)
+    color = models.CharField(null=True, blank=True, max_length=50)
     price = models.DecimalField(decimal_places=2, max_digits=5)
     rating = models.DecimalField(decimal_places=1, max_digits=2)
 
@@ -83,7 +85,7 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     
     paid = models.BooleanField(default=False)
-    paid_time = models.DateTimeField()
+    paid_time = models.DateTimeField(null=True, blank=True)
 
     class meta:
         ordering = ['-updated', '-created']

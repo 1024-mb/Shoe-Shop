@@ -7,6 +7,7 @@ from base.models import Review, User, Clothing
 import uuid
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from base.views import set_review
 
 """
     cart = request.session.get('cart', {})
@@ -103,6 +104,8 @@ def create_review(request, pk):
         form = ReviewForm()
         context = {'form': form}
 
+        set_review(pk)
+
         return render(request, "product/create_review.html", context)
 
     else:
@@ -125,14 +128,13 @@ def update_review(request, pk):
             url_add = str(pk)
             if form.is_valid():
                 form.save()
+                set_review(pk)
                 return redirect(f'http://127.0.0.1:8000/product/{ url_add }')
             
     except:
         return redirect('home')
 
-
     context = {'form': form}
-
     return render(request, 'product/create_review.html', context)
 
 @login_required(login_url='login')
@@ -147,12 +149,12 @@ def delete_review(request, pk):
 
     if request.method == 'POST':
         review.delete()
-
+        set_review(pk)
+        
         return redirect(f'http://127.0.0.1:8000/product/{url_add}')
 
     else:
         context = {'review':review}
-
 
         return render(request, 'product/delete_review.html', context)
 

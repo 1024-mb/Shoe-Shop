@@ -8,6 +8,24 @@ from .forms import SignUpForm, UpdateForm
 from django.db.models import Q
 from django.contrib import messages
 
+def set_review(id_product):
+    Reviews = Review.objects.filter(product_ID=id_product)
+    avg = 0
+    count = 0
+
+    try:
+        for Review in Reviews:
+            avg = avg + Review.stars
+            count += 1
+
+        avg = str(round((avg / count), 1))
+
+    except ZeroDivisionError:
+        Reviews = None
+
+    Product = Clothing.objects.get(product_id=id_product)
+    Product.rating = avg
+    Product.save()
 
 def login_page(request):
     next_url = request.GET.get('next')
@@ -156,7 +174,6 @@ def home(request):
             Q(description__icontains=q) |
             Q(category__icontains=q) |
             Q(brand__icontains=q)).order_by(order)
-
 
         context = {'clothing': extracted,
                    'all_categories': all_categories,

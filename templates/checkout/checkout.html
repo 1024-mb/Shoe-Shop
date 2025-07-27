@@ -1,16 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout Page</title>
-
-</head>
-
-<body>
-    
-    {% include 'navbar.html' %}
-    <h1>Checkout</h1>
+    <head> 
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Checkout Page</title>
+    </head>
 
 
+    <body>
+
+        {% include 'navbar.html' %}
+
+        <script src="https://js.stripe.com/v3/"></script>
+
+        <form id="payment-form">
+            <input type="text" name="AddressLine1" id="line1" placeholder="Address Line 1" required/>
+            <input type="text" name="City" id="city" placeholder="City" required/>
+            <input type="text" name="PostCode" id="postal_code" placeholder="Postal Code" required/>
+
+            <div id="card-element"></div>
+            <button id="submit">Pay</button>
+        </form>
+            
+        <script>
+            document.addEventListener("DOMContentLoaded", async function () {
+            const stripe = Stripe("pk_test_51Rp61ECiz5Qob8MPz2fKkvsX7PTHrvon8wrBE2jpna2vYdKq621Zg5pvl0W4OEhoRpwsmaiKBzwUGbSA3mhpdEpV00REGIOpI5"); // Replace with your public key
+            const elements = stripe.elements();
+            const card = elements.create("card");
+            card.mount("#card-element");
+
+            const response = await fetch("/get-client-secret/");
+            const { client_secret } = await response.json();
+
+            document.getElementById("submit").addEventListener("click", async () => {
+                const result = await stripe.confirmCardPayment(client_secret, {
+                payment_method: { card: card }
+                });
+
+                if (result.error) {
+                alert(result.error.message);
+                } else {
+                alert("Payment succeeded!");
+                }
+            });
+            });
+        </script>
+
+
+        
+    </body>
 </html>

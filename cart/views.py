@@ -9,10 +9,14 @@ def cart(request):
     if request.method == 'POST':
         total = 0
         for item in cart:
-            quantity = request.POST.get(f'{item}')
+            quantity = float(request.POST.get(f'{item}'))
+
             NewItem = Clothing.objects.get(product_id=item)
             
-            total += (NewItem.price * quantity)
+            price = float(NewItem.price)
+
+
+            total += (price * quantity)
             
             request.session['total'] = total
             (request.session['cart'])[item] = quantity
