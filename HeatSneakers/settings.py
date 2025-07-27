@@ -25,7 +25,16 @@ SECRET_KEY = 'django-insecure-j^-z3m#f9mb4rfjc8as=%*62u544c)$yyhwj3(i3jysq5z$852
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+# Get a variable with no default
+value = os.getenv('stripekey')
+
 ALLOWED_HOSTS = []
+
+STRIPE_LIVE_SECRET_KEY = os.environ.get('STRIPE_LIVE_SECRET_KEY', value)
+STRIPE_TEST_SECRET_KEY = os.environ.get('STRIPE_TEST_SECRET_KEY', value)
+STRIPE_LIVE_MODE = False  # Change to True in production
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = 'id'
 
 
 # Application definition
@@ -33,13 +42,6 @@ ALLOWED_HOSTS = []
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
-
 
 
 INSTALLED_APPS = [
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
+    "djstripe",
 ]
 
 MIDDLEWARE = [

@@ -14,30 +14,32 @@
 
     {% if products|length > 0 %}
         
-        {% for item, qty in products %}
+        <form method="POST" action="">
+            {% csrf_token %}
+            {% for item, qty in products %}
+                <hr>
+                <div class="product">
+                    <div class="left-side">
+                        <img style="height: 30vh" src="/media/{{ item.product_id }}/img1.webp" alt="product-image">
+                    </div>
+
+                    <div class="right-side">
+                        <a href="{% url 'product' item.product_id %}">{{ item.name }}    </a>
+                        <h4>S$ {{ item.price }}</h4>
+
+                        <label>Quantity (max 10)</label> 
+                        <p><input name="{{ item.product_id }}" type="number" value="{{ qty }}" max="10" min="0">  </p>
+                            
+                        <p>{{ item.description|truncatewords:10 }}</p>
+                    </div>
+                </div>
+            {% endfor %}
             <hr>
-            <div class="product">
-                <div class="left-side">
-                    <img style="height: 30vh" src="/media/{{ item.product_id }}/img1.webp" alt="product-image">
-                </div>
+            <strong>Your Total: S${{ total }}</strong>
 
-                <div class="right-side">
-                    <a href="{% url 'product' item.product_id %}">{{ item.name }}    </a>
-                    <h4>S$ {{ item.price }}</h4>
+            <input type="submit">Checkout</inpu>
 
-                    <label>Quantity (max 10)</label> 
-                    <p><input type="number" value="{{ qty }}" max="10" min="0">  </p>
-                        
-                    <p>{{ item.description|truncatewords:10 }}</p>
-                </div>
-            </div>
-        {% endfor %}
-        <hr>
-        <strong>Your Total: S${{ total }}</strong>
-
-        <a href="{% url 'checkout' %}">Checkout</a>
-
-
+        </form>
 
         <hr>
     {% else %}
