@@ -25,6 +25,11 @@
 
                 {% include 'product/image_container.html' %}
                 
+                <h1>Description</h1>
+                <p>{{ clothing.details }}</p>
+
+                <h1>Details</h1>
+
                 {% for item in clothing.description %}
                     <p>{{ item }}</p>
 

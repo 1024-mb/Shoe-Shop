@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
-from djstripe.event_handlers import djstripe_receiver
+
 from djstripe.models import Event, Charge, PaymentMethod
 from base.models import Clothing, Order, OrderItem, User
 
@@ -20,11 +20,6 @@ from django.http import JsonResponse
 
 stripe.api_key = os.getenv('stripekey')
 
-
-
-
-# webhook signing secret: 
-# path('checkout/', include('checkout.urls'), name='checkout'),
 @csrf_exempt
 @login_required(login_url='login')
 def checkout(request):
@@ -45,24 +40,23 @@ def checkout(request):
             NewItem = Clothing.objects.get(product_id=item)
             total += NewItem.price
 
-            description = description + strquantity + NewItem.name[:5]
+            description = description + strquantity + NewItem.name[:10] + "... "
 
 
         create_order = Order(amount=total, paid=False, 
-                            user_id_id=request.user.id)
+                            user_id_id=request.user.id,)
         create_order.save()
-        
+
         for item in cart:
             Priceobj = Clothing.objects.get(product_id=item)
             
             order_item = OrderItem(purchase=create_order,
                                 product_id=Priceobj, 
                                 quantity=cart[item],
-                                purchase_price=Priceobj,)
+                                purchase_price=Priceobj.price,)
 
         
             order_item.save()
-
 
         total = round(total, 2)
 
@@ -71,25 +65,17 @@ def checkout(request):
             currency='sgd',
             description=description,
             receipt_email=email,
-            automatic_payment_methods={"enabled": True}
+            automatic_payment_methods={"enabled": True},
+            metadata={'order_id': str(create_order.purchase_id)},
+            
         )
 
-        return JsonResponse({'client_secret': payment_intent.client_secret}), render(request, 'checkout/checkout.html')
+        client_secret_str = str(payment_intent.client_secret)
+        print(type(client_secret_str))
+
+        return JsonResponse({'client_secret': str(client_secret_str),})
+
     
     else:
         return render(request, 'checkout/checkout.html')
-
-
-@login_required(login_url='login')
-@csrf_exempt
-def stripe_webhook(request):
-    payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    event = stripe.Webhook.construct_event(payload, sig_header, 'whsec_1709d3d9f617576b171944a41c57eb6ba8e8ac16682a96593015280d92de2763')
-
-    if event['type'] == 'payment_intent.succeeded':
-        intent = event['data']['object']
-        # Mark order as paid, update inventory, etc.
-
-
 

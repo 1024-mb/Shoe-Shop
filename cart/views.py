@@ -9,12 +9,10 @@ def cart(request):
     if request.method == 'POST':
         total = 0
         for item in cart:
-            quantity = float(request.POST.get(f'{item}'))
-
+            quantity = int(request.POST.get(f'{item}'))
             NewItem = Clothing.objects.get(product_id=item)
             
             price = float(NewItem.price)
-
 
             total += (price * quantity)
             
@@ -30,7 +28,7 @@ def cart(request):
 
         for item in cart:
             NewItem = Clothing.objects.get(product_id=item)
-            products.append([NewItem, cart[item]])
+            products.append([NewItem, int(cart[item])])
 
             total += NewItem.price
 

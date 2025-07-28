@@ -1,12 +1,23 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Clothing, User, Review
+from .models import Clothing, User, Review, Order, OrderItem
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import SignUpForm, UpdateForm
 from django.db.models import Q
 from django.contrib import messages
+from django.http import JsonResponse
+from django.contrib.sessions.models import Session
+
+
+import stripe
+import os
+import uuid
+
+stripe.api_key = os.getenv('stripekey')
+
 
 def set_review(id_product):
     Reviews = Review.objects.filter(product_ID=id_product)
@@ -228,7 +239,6 @@ def user_profile(request):
 
 
         if request.POST.get('password1') != "" and request.POST.get('password2') != "":
-            print(request.POST.get('password1'))
             password1 = request.POST.get('password1')
             password2 = request.POST.get('password2')
 
@@ -263,5 +273,69 @@ def Logout(request):
 
     else:
         return redirect('home')
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+ 
+    endpoint_secret = 'whsec_1709d3d9f617576b171944a41c57eb6ba8e8ac16682a96593015280d92de2763'
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+ 
+    except ValueError as e:
+        print(e)
+        print("Invalid payload")
+        return HttpResponse(status=400)  # Invalid payload
+    
+    except stripe.error.SignatureVerificationError as e:
+        print(e)
+        print("Invalid signature")
+        return HttpResponse(status=400)  # Invalid signature
+
+
+    intent = event['data']['object']
+    order_id = uuid.UUID(intent['metadata'].get('order_id') )
+
+    order_return = Order.objects.get(purchase_id=order_id)
+    
+
+    if event['type'] == 'payment_intent.succeeded':
+        order_return.paid = True
+        cart = request.session.get('cart', {})
+
+        for item in cart:
+            quantity = cart[item]
+
+            queryID = uuid.UUID(item)
+            product = Clothing.objects.get(product_id=queryID)
+
+            product.stock -= quantity
+            product.save()
+
+            OrderedItem = OrderItem(purchase=order_return,
+                                    quantity=quantity,
+                                    product_id=product,
+                                    purchase_price=product.price,)
+
+
+    elif event['type'] == 'payment_intent.payment_failed':
+        order_return.paid = False
+        stripe.PaymentIntent.cancel(intent['metadata'].get('order_id'))
+
+
+    elif event['type'] == 'payment_intent.canceled':
+        order_return.paid = False
+        stripe.PaymentIntent.cancel(intent['metadata'].get('order_id'))
+
+
+    elif event['type'] == 'payment_intent.processing':
+        order_return.paid = True
+
+    order_return.save()
+    return HttpResponse(status=200)
+
 
 

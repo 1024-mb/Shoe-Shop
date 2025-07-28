@@ -13,7 +13,8 @@
 
         <script src="https://js.stripe.com/v3/"></script>
 
-        <form id="payment-form">
+        <form id="payment-form" method="POST">
+
             <input type="text" name="AddressLine1" id="line1" placeholder="Address Line 1" required/>
             <input type="text" name="City" id="city" placeholder="City" required/>
             <input type="text" name="PostCode" id="postal_code" placeholder="Postal Code" required/>
@@ -29,7 +30,12 @@
             const card = elements.create("card");
             card.mount("#card-element");
 
-            const response = await fetch("/get-client-secret/");
+            const formData = new FormData(document.getElementById("payment-form"));
+
+            const response = await fetch("/checkout/", {
+            method: "POST",
+            body: formData
+            });
             const { client_secret } = await response.json();
 
             document.getElementById("submit").addEventListener("click", async () => {
@@ -45,8 +51,6 @@
             });
             });
         </script>
-
-
         
     </body>
 </html>
