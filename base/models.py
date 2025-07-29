@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
@@ -62,7 +62,7 @@ class Review(models.Model):
     
     title = models.CharField(null=False, max_length=50)
     description_review = models.TextField(null=False, max_length=1000)
-    stars = models.IntegerField(null=False, validators=[MaxValueValidator(5)])
+    stars = models.IntegerField(null=False, validators=[MaxValueValidator(5), MinValueValidator(0)])
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)

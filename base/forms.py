@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 class ReviewForm(ModelForm):
     class Meta:
         model = Review
-        fields = ['description_review', 'stars']
+        fields = ['title', 'description_review', 'stars']
 
         labels = {
             'description_review': 'A short review of the product (25 words or less)',

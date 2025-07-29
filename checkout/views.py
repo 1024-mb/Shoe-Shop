@@ -40,7 +40,7 @@ def checkout(request):
             NewItem = Clothing.objects.get(product_id=item)
             total += NewItem.price
 
-            description = description + strquantity + NewItem.name[:10] + "... "
+            description = description + strquantity + ' ' + NewItem.name[:20] + "... "
 
 
         create_order = Order(amount=total, paid=False, 
@@ -65,17 +65,48 @@ def checkout(request):
             currency='sgd',
             description=description,
             receipt_email=email,
-            automatic_payment_methods={"enabled": True},
+            payment_method_types=['card'],  # or ['card'] if you're using card
+            automatic_payment_methods={'enabled': False},  # 👈 Explicitly disable
+
             metadata={'order_id': str(create_order.purchase_id)},
             
         )
 
         client_secret_str = str(payment_intent.client_secret)
-        print(type(client_secret_str))
 
-        return JsonResponse({'client_secret': str(client_secret_str),})
+        return JsonResponse({'client_secret': str(client_secret_str)})
+    
 
     
     else:
-        return render(request, 'checkout/checkout.html')
+        cart = request.session.get('cart', {})
+        items = []
+        total = 0.00
 
+        for item in cart:  
+            quantity = float(cart[item])
+
+            NewItem = Clothing.objects.get(product_id=item)
+            
+            price = float(NewItem.price)
+            addition = price * quantity
+            total += addition
+            
+            items.append([NewItem, quantity])
+            
+            request.session['total'] = float(total)
+
+        total = round(total, 2)
+  
+        context = {'items': items,
+                   'total': total}
+        
+        return render(request, 'checkout/checkout.html', context)
+
+@login_required(login_url='login')
+def payment_succeeded(request):
+    return render(request, 'checkout/payment_succeeded.html')
+
+@login_required(login_url='login')
+def payment_failed(request):
+    return render(request, 'checkout/payment_failed.html')

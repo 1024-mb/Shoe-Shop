@@ -25,8 +25,8 @@ def set_review(id_product):
     count = 0
 
     try:
-        for Review in Reviews:
-            avg = avg + Review.stars
+        for review in Reviews:
+            avg = avg + review.stars
             count += 1
 
         avg = str(round((avg / count), 1))
@@ -268,6 +268,8 @@ def user_profile(request):
 @login_required(login_url='login')
 def Logout(request):
     if request.user.is_authenticated:
+
+        messages.success(request, 'Successfully logged out!')
         logout(request)
         return redirect('home')
 
@@ -279,63 +281,91 @@ def stripe_webhook(request):
     payload = request.body
 
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
- 
     endpoint_secret = 'whsec_1709d3d9f617576b171944a41c57eb6ba8e8ac16682a96593015280d92de2763'
 
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
- 
+
+        intent = event['data']['object']
+        order_id = uuid.UUID(intent['metadata'].get('order_id')) 
+
+        order_return = Order.objects.get(purchase_id=order_id)
+        
+
+        if event['type'] == 'payment_intent.succeeded':
+            order_return.paid = True
+            cart = request.session.get('cart', {})
+
+            for item in cart:
+                quantity = cart[item]
+
+                queryID = uuid.UUID(item)
+                product = Clothing.objects.get(product_id=queryID)
+
+                product.stock -= quantity
+                product.save()
+
+                OrderedItem = OrderItem(purchase=order_return,
+                                        quantity=quantity,
+                                        product_id=product,
+                                        purchase_price=product.price,)
+
+                OrderedItem.save()
+
+            messages.success(request, 'Order confirmed!')
+            return redirect('home')
+
+        elif event['type'] == 'payment_intent.payment_failed':
+            order_return.paid = False
+
+            messages.error(request, 'payment failed, please try again later')
+            return redirect('home')
+
+        elif event['type'] == 'payment_intent.canceled':
+            order_return.paid = False
+          
+            messages.error(request, 'Payment cancelled - please try again later')
+            return redirect('home')
+
+        elif event['type'] == 'payment_intent.processing':
+            order_return.paid = False
+
+            messages.info(request, 'Payment Processing')
+            return redirect('home')
+        
+        elif event['type'] == 'payment_intent.confirmed':
+            order_return.paid = False
+            
+            messages.info(request, 'Payment Processing')
+            return redirect('home')
+        
+        elif event['type'] == 'charge.succeeded':
+            order_return.paid = True
+            
+            messages.info(request, 'Payment Processing')
+            return redirect('home')            
+
+        order_return.save()
+
+
+        messages.success(request, 'Payment was successful! ')
+
+        return render(request, 'checkout/checkout.html', status=200)
+    
+    except TypeError:
+        print('347')
+        messages.error(request, "We are so sorry, but the payment was unsuccessful. Please try again later")
+        return redirect('home')
+
     except ValueError as e:
         print(e)
+        print('353')
         print("Invalid payload")
         return HttpResponse(status=400)  # Invalid payload
     
     except stripe.error.SignatureVerificationError as e:
         print(e)
+        print('359')
         print("Invalid signature")
         return HttpResponse(status=400)  # Invalid signature
-
-
-    intent = event['data']['object']
-    order_id = uuid.UUID(intent['metadata'].get('order_id') )
-
-    order_return = Order.objects.get(purchase_id=order_id)
-    
-
-    if event['type'] == 'payment_intent.succeeded':
-        order_return.paid = True
-        cart = request.session.get('cart', {})
-
-        for item in cart:
-            quantity = cart[item]
-
-            queryID = uuid.UUID(item)
-            product = Clothing.objects.get(product_id=queryID)
-
-            product.stock -= quantity
-            product.save()
-
-            OrderedItem = OrderItem(purchase=order_return,
-                                    quantity=quantity,
-                                    product_id=product,
-                                    purchase_price=product.price,)
-
-
-    elif event['type'] == 'payment_intent.payment_failed':
-        order_return.paid = False
-        stripe.PaymentIntent.cancel(intent['metadata'].get('order_id'))
-
-
-    elif event['type'] == 'payment_intent.canceled':
-        order_return.paid = False
-        stripe.PaymentIntent.cancel(intent['metadata'].get('order_id'))
-
-
-    elif event['type'] == 'payment_intent.processing':
-        order_return.paid = True
-
-    order_return.save()
-    return HttpResponse(status=200)
-
-
 

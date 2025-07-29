@@ -3,11 +3,15 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.http import HttpResponse
 from base.forms import ReviewForm
-from base.models import Review, User, Clothing
+from base.models import Review, User, Clothing, Order
 import uuid
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from base.views import set_review
+
+from glin_profanity import Filter
+
+filter = Filter()
 
 """
     cart = request.session.get('cart', {})
@@ -85,28 +89,44 @@ def product(request, pk):
 @login_required(login_url='login')
 def create_review(request, pk):
     pk = uuid.UUID(pk)
+
+    # Checks if the review already exists (in that case, updates it)
     if not Review.objects.filter(user_id=request.user, product_ID=pk).exists():
 
         if request.method == 'POST':    # checks if submit button was pressed
+            title = request.POST.get('title')
+            reviewtext = request.POST.get('description_review')
+            stars = int(request.POST.get('stars'))
 
-            form = ReviewForm(request.POST)
+            id = uuid.UUID(pk)
+            Prod = Clothing.objects.get(product_id=id)
 
-            if form.is_valid():
-                reviewtext = request.POST.get('description_review')
-                stars = request.POST.get('stars')
+            if filter.is_profane(title) or filter.is_profane(reviewtext):
+                active=False
 
-                new_item = Review(description_review=reviewtext, 
-                                  stars=stars, product_ID_id=pk, user_id=request.user)     # saves the form contents to the database
-                new_item.save()
+            else:
+                active=True
 
+            if Order.objects.get(user_id=request.user, product_ID=Prod).exists() == True:
+                verified=True
+
+            else:
+                verified=False
+
+            new_item = Review(user_id=request.user,
+                            description_review=reviewtext, 
+                            stars=stars,product_ID_id=pk, 
+                            verified=verified,title=title,)
+                
+                
+            new_item.save()
+
+            set_review(pk)
             return redirect('home')
 
-        form = ReviewForm()
-        context = {'form': form}
 
-        set_review(pk)
-
-        return render(request, "product/create_review.html", context)
+        else:
+            return render(request, "product/create_review.html", context={})
 
     else:
         pk = str(pk)
@@ -115,27 +135,55 @@ def create_review(request, pk):
 @login_required(login_url='login')
 def update_review(request, pk):
     queryreview = uuid.UUID(pk)
+
+    curr_user = User.objects.get(username=request.user)
+    usr = curr_user.id
+    review = Review.objects.get(product_ID=queryreview, user_id=usr)
+
+    curr_title = review.title
+    curr_desc = review.description_review
+    curr_stars = review.stars
+
     try:
-        curr_user = User.objects.get(username=request.user)
-        usr = curr_user.id
 
-        review = Review.objects.get(product_ID=queryreview, user_id=usr)
-        form = ReviewForm(instance=review)
-
-        if request.method == 'POST':
-            form = ReviewForm(request.POST, instance=review)
-            
+        if request.method == 'POST':         
             url_add = str(pk)
-            if form.is_valid():
-                form.save()
-                set_review(pk)
-                return redirect(f'http://127.0.0.1:8000/product/{ url_add }')
+
+            new_title = request.POST.get('title') if request.POST.get('title') != '' else None
+            new_desc = request.POST.get('description_review') if request.POST.get('description_review') != '' else None
+            new_stars = request.POST.get('stars') if request.POST.get('stars') != '' else None
+
+            id = uuid.UUID(pk)
+            Prod = Clothing.objects.get(product_id=id)
+
+            if filter.is_profane(new_title) or filter.is_profane(new_desc):
+                review.is_active = False
+
+            else:
+                review.is_active = True
+
+            if new_title:
+                review.title = new_title
+
+            if new_desc:
+                review.description_review = new_desc
+
+            if new_stars:
+                review.stars = new_stars
+
+
+            review.save()
+
+            set_review(pk)
+            return redirect(f'http://127.0.0.1:8000/product/{ url_add }')
             
     except:
         return redirect('home')
 
-    context = {'form': form}
-    return render(request, 'product/create_review.html', context)
+    return render(request, 'product/create_review.html', context={'curr_title': curr_title,
+                                                                  'curr_desc': curr_desc,
+                                                                  'curr_stars': curr_stars,})
+
 
 @login_required(login_url='login')
 def delete_review(request, pk):
