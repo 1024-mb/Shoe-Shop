@@ -14,18 +14,22 @@
 {% endif %}
 
 <p>S${{ clothing.price }}</p>
-
-
-    {% for item in sizes %}
-        <div class="sizes" style="display: inline-block">{{ item }}</div>
-    {% endfor %}
-
-
 <a href="#reviews">{{ overall }} • ({{ num_reviews }})</a> 
 
-
-<form action="{% url 'add_to_cart' clothing.product_id %}" method="POST" style="margin-top: 10vh">
+<form action="" method="POST" style="margin-top: 10vh">
     {% csrf_token %}
-    <input type="submit" value="Add to cart">
+  
+    <label for="size">Size</label>
+    <select title="size" value="size" name="size" style="height: 4vh">
+        {% for item in sizes %}
+            <option class="sizes" name="{{ item }}">{{ item }}</option>
+        {% endfor %}
+    </select>
+
+
+
+
+
+  <input type="submit" value="Add to cart">
 </form>
 

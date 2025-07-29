@@ -23,85 +23,60 @@ stripe.api_key = os.getenv('stripekey')
 @csrf_exempt
 @login_required(login_url='login')
 def checkout(request):
+    order_id = request.session.get('order_id')
+    items_list = []
+    description = ''
+
     if request.method=='POST':
         Address = request.POST.get('AddressLine1')
         City = request.POST.get('City')
         PostCode = request.POST.get('PostCode')
+        email = request.user.email
 
-        cart = request.session.get('cart', {})
-        total = 0
-        description = ''
+        items = OrderItem.objects.filter(order_id=order_id)
+        order = Order.objects.get(purchase_id=order_id)
 
-        user = User.objects.get(id=request.user.id)
-        email = user.email
+        total = round(float(order.amount), 2)
 
-        for item in cart:
-            strquantity = str(cart[item])
+        for item in items:
+            strquantity = str(item.quantity)
             NewItem = Clothing.objects.get(product_id=item)
-            total += NewItem.price
 
             description = description + strquantity + ' ' + NewItem.name[:20] + "... "
 
-
-        create_order = Order(amount=total, paid=False, 
-                            user_id_id=request.user.id,)
-        create_order.save()
-
-        for item in cart:
-            Priceobj = Clothing.objects.get(product_id=item)
-            
-            order_item = OrderItem(purchase=create_order,
-                                product_id=Priceobj, 
-                                quantity=cart[item],
-                                purchase_price=Priceobj.price,)
-
-        
-            order_item.save()
-
-        total = round(total, 2)
 
         payment_intent = stripe.PaymentIntent.create(
             amount= int(total*100),
             currency='sgd',
             description=description,
             receipt_email=email,
-            payment_method_types=['card'],  # or ['card'] if you're using card
-            automatic_payment_methods={'enabled': False},  # 👈 Explicitly disable
-
-            metadata={'order_id': str(create_order.purchase_id)},
-            
-        )
+            payment_method_types=['card'],
+            automatic_payment_methods={'enabled': False},
+            metadata={"order_id": order_id},)
 
         client_secret_str = str(payment_intent.client_secret)
 
         return JsonResponse({'client_secret': str(client_secret_str)})
     
 
-    
     else:
-        cart = request.session.get('cart', {})
-        items = []
-        total = 0.00
+        order = Order.objects.get(purchase_id=order_id.replace('-', ''))
 
-        for item in cart:  
-            quantity = float(cart[item])
+        total = round(int(order.amount), 2)
 
-            NewItem = Clothing.objects.get(product_id=item)
-            
-            price = float(NewItem.price)
-            addition = price * quantity
-            total += addition
-            
-            items.append([NewItem, quantity])
-            
-            request.session['total'] = float(total)
+        items = OrderItem.objects.filter(order_id=order_id)
 
-        total = round(total, 2)
-  
-        context = {'items': items,
-                   'total': total}
-        
-        return render(request, 'checkout/checkout.html', context)
+        for item in items:
+            product_id = item.product_id
+            print(product_id)
+            stock_item = Clothing.objects.filter(product_id=product_id)
+            stock = stock_item.stock
+
+            items_list.append([item, item.quantity, stock])
+
+        return render(request, 'checkout/checkout.html', context={'items': items_list,
+                                                                  'total': total})
+
 
 @login_required(login_url='login')
 def payment_succeeded(request):

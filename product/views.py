@@ -23,68 +23,81 @@ filter = Filter()
 
 # Create your views here.
 def product(request, pk):
-    from base.models import Clothing
-    from base.models import Review
+    if request.method=='POST':
+        cart = request.session.get('cart', {})
 
-    product = None
-
-    products = Clothing.objects.order_by('-updated', '-created')
-
-    for item in products:
-        id_product = item.product_id
-        cmp = str(item.product_id)
-
-        if cmp == pk:
-            product = item
-
-            description = item.description
-            description = description.split(",")
-
-            product.description = description
-
-            sizes = item.size
-            sizes = sizes.split(",")
-
-            Reviews = Review.objects.filter(product_ID=id_product)
-            avg = 0
-            count = 0
-
+        if Clothing.objects.filter(product_id=pk).exists():
             try:
-                for Review in Reviews:
+                cart[pk + ':' + request.POST.get('size')] += 1
+                request.session['cart'] = cart
 
-                    avg = avg + Review.stars
-                    count += 1
+                messages.success(request, 'Added to cart')
+                return redirect('home')
 
-                avg = str(round((avg / count), 1))
+            except KeyError as e:
+                cart[pk + ':' + request.POST.get('size')] = 1
+                request.session['cart'] = cart
 
-            except ZeroDivisionError:
-                Reviews = None
+                messages.success(request, 'Added to cart')
+                return redirect('home')
 
-            try:
-                user = User.objects.get(username=request.user)
-                context = {
-                "clothing": product,
-                "reviews": Reviews,
-                "overall": avg,
-                "curr_usr": user,
-                "num_reviews": count,
-                "sizes": sizes,
-                }
+    
+    else:
+        product = None
+        products = Clothing.objects.order_by('-updated', '-created')
 
-                return render(request, "product/product.html", context)
+        for item in products:
+            id_product = item.product_id
+            cmp = str(item.product_id)
 
-            except User.DoesNotExist:
-                context = {
-                "clothing": product,
-                "reviews": Reviews,
-                "overall": avg,
-                "num_reviews": count,
-                "sizes": sizes,
-                }
+            if cmp == pk:
+                product = item
 
-                return render(request, "product/product.html", context)
- 
-    return HttpResponse("404 page not found ")
+                description = item.description
+                description = description.split(",")
+
+                product.description = description
+
+                sizes = item.size
+                sizes = sizes.split(",")
+
+                Reviews = Review.objects.filter(product_ID=id_product)
+                avg = 0
+                count = 0
+
+                try:
+                    for review in Reviews:
+                        avg = avg + review.stars
+                        count += 1
+
+                    avg = str(round((avg / count), 1))
+
+                except ZeroDivisionError:
+                    Reviews = None
+
+                try:
+                    user = User.objects.get(username=request.user)
+                    context = {
+                        "clothing": product,
+                        "reviews": Reviews,
+                        "overall": avg,
+                        "curr_usr": user,
+                        "num_reviews": count,
+                        "sizes": sizes,
+                    }
+
+                    return render(request, "product/product.html", context)
+
+                except User.DoesNotExist:
+                    context = {
+                        "clothing": product,
+                        "reviews": Reviews,
+                        "overall": avg,
+                        "num_reviews": count,
+                        "sizes": sizes,
+                    }
+
+                    return render(request, "product/product.html", context)
 
 @login_required(login_url='login')
 def create_review(request, pk):
@@ -184,7 +197,6 @@ def update_review(request, pk):
                                                                   'curr_desc': curr_desc,
                                                                   'curr_stars': curr_stars,})
 
-
 @login_required(login_url='login')
 def delete_review(request, pk):
     queryreview = uuid.UUID(pk)
@@ -205,19 +217,4 @@ def delete_review(request, pk):
         context = {'review':review}
 
         return render(request, 'product/delete_review.html', context)
-
-@login_required(login_url='login')
-def add_to_cart(request, pk):
-    cart = request.session.get('cart', {})
-    if Clothing.objects.filter(product_id=pk).exists():
-        try:
-            cart[pk] += 1
-            request.session['cart'] = cart
-
-        except KeyError as e:
-            cart[pk] = 1
-            request.session['cart'] = cart
-
-    messages.success(request, 'Added to cart')
-    return redirect('home')
 

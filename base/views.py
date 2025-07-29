@@ -287,30 +287,27 @@ def stripe_webhook(request):
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
 
         intent = event['data']['object']
-        order_id = uuid.UUID(intent['metadata'].get('order_id')) 
+        order_id = intent['metadata'].get('order_id')
 
         order_return = Order.objects.get(purchase_id=order_id)
         
+        print(event['type'])
 
-        if event['type'] == 'payment_intent.succeeded':
+        if event['type'] == 'payment_intent.succeeded' or event['type'] == 'charge.succeeded':
             order_return.paid = True
-            cart = request.session.get('cart', {})
+            items = OrderItem.objects.filter(order_id=order_id)
 
-            for item in cart:
-                quantity = cart[item]
+            for item in items:
+                quantity = item.quantity
+                product = Clothing.objects.get(product_id=item.product_id)
 
-                queryID = uuid.UUID(item)
-                product = Clothing.objects.get(product_id=queryID)
+                if product.quantity > quantity:
+                    product.quantity -= quantity
+                    product.save()
 
-                product.stock -= quantity
-                product.save()
-
-                OrderedItem = OrderItem(purchase=order_return,
-                                        quantity=quantity,
-                                        product_id=product,
-                                        purchase_price=product.price,)
-
-                OrderedItem.save()
+                else:
+                    messages.error(request, 'Order failed - insufficient stock')
+                    return redirect('home')
 
             messages.success(request, 'Order confirmed!')
             return redirect('home')
