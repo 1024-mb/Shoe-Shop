@@ -25,6 +25,7 @@ filter = Filter()
 def product(request, pk):
     if request.method=='POST':
         cart = request.session.get('cart', {})
+        print('cart')
 
         if Clothing.objects.filter(product_id=pk).exists():
             try:

@@ -12,13 +12,12 @@ def cart(request):
         total = 0
         for item in cart:
             pos_id = item.index(':')
-            id = item[:pos_id]            
-            quantity = float(request.POST.get(f'{id}')) if request.POST.get(f'{id}') != None else 0
+            id = item[:pos_id]
 
+            quantity = float(request.POST.get(f'{id}')) if request.POST.get(f'{id}') != None else 0
 
             NewItem = Clothing.objects.get(product_id=id)
             price = float(NewItem.price)
-            print(price)
 
             total += (price * quantity)
 
@@ -31,6 +30,7 @@ def cart(request):
         for item in cart:
             pos_id = item.index(':')
             id = item[:pos_id]
+
             NewItem = Clothing.objects.get(product_id=id)
             
             price = float(NewItem.price)
@@ -44,9 +44,6 @@ def cart(request):
 
         request.session['order_id'] = str(create_order.purchase_id)
 
-        
-        print(request.session['order_id'])
-
         return redirect('checkout')
 
     else:
@@ -54,9 +51,9 @@ def cart(request):
         total = 0
 
         for item in cart:
-            position_size = item.index(":")
-            size=item[(position_size+1):]
-            id = item[:position_size]
+            pos_id = item.index(":")
+            size=item[(pos_id+1):]
+            id = item[:pos_id]
 
             NewItem = Clothing.objects.get(product_id=id)
             quantity = int(cart[item])

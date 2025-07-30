@@ -296,6 +296,7 @@ def stripe_webhook(request):
         if event['type'] == 'payment_intent.succeeded' or event['type'] == 'charge.succeeded':
             order_return.paid = True
             items = OrderItem.objects.filter(order_id=order_id)
+            print('299')
 
             for item in items:
                 quantity = item.quantity
