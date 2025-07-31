@@ -34,7 +34,7 @@ def create_quotation(latitude, longitude, location_address, quantity):
     method = "POST"
     path = "/v3/quotations"
     timestamp = str(int(time.time() * 1000))
-    weight = (quantity * 0.5) + 0.5
+    weight = (quantity * 1.5) + 0.5
 
     if weight > 8:
         service = 'CAR'
@@ -54,7 +54,7 @@ def create_quotation(latitude, longitude, location_address, quantity):
                         "lat": "1.304833",
                         "lng": "103.831833"
                     },
-                    "address": "Midpoint Mall, Orchard"
+                    "address": "Midpoint Mall, 220 Orchard Road, Orchard"
                 },
                 {
                     "coordinates": {
@@ -68,7 +68,7 @@ def create_quotation(latitude, longitude, location_address, quantity):
                 "quantity": str(quantity),
                 "weight": f"LESS_THAN_{weight}KG",
                 "categories": ["SHOES", "CLOTHES", "WEARABLE_ACCESSORIES"],
-                "handlingInstructions": ["KEEP_UPRIGHT"]
+                "handlingInstructions": ["KEEP_DRY"]
             }
         }
     }
@@ -94,7 +94,6 @@ def create_quotation(latitude, longitude, location_address, quantity):
 
     # ✅ Handle the response
     if response.status_code == 201:
-        print('97')
         return response.json()  # Parsed JSON response
     
     else:
@@ -102,6 +101,9 @@ def create_quotation(latitude, longitude, location_address, quantity):
         return None
 
 def place_order(api_key, api_secret, quotation_id, stop_ids, name, number, order_id):
+    request_id = str(uuid.uuid4())
+    
+
     url = "https://rest.sandbox.lalamove.com/v3/orders"
     method = "POST"
     path = "/v3/orders"
@@ -119,6 +121,7 @@ def place_order(api_key, api_secret, quotation_id, stop_ids, name, number, order
                     "stopId": stop_ids[1],
                     "name": name,
                     "phone": number.replace(' ', ''),
+                    "remarks": "HeatSneakers Clothing & Apparel delivery"
                 }
             ],
             "metadata": {
@@ -134,7 +137,7 @@ def place_order(api_key, api_secret, quotation_id, stop_ids, name, number, order
         "Authorization": f"hmac {api_key}:{timestamp}:{signature}",
         "Market": "SG",
         "Content-Type": "application/json",
-        "Request-ID": "unique-request-id-456"
+        "Request-ID": request_id
     }
 
     response = requests.post(url, headers=headers, data=body_json)
@@ -149,111 +152,168 @@ def generate_signature(secret, method, path, body):
 @csrf_exempt
 @login_required(login_url='login')
 def checkout(request):
-    order_id = request.session.get('order_id')
+    if request.session.get('order_id', None) != None:
+        order_id = request.session.get('order_id').replace('-', '')
 
-    quantityObj = OrderItem.objects.filter(purchase_id=order_id)
-    quantity = 0
+        order = None
+        check = None
+        items_list = []
+        description = ''
 
-    for item in quantityObj:
-        quantity += item.quantity
+        order = Order.objects.get(purchase_id=order_id)
 
-    items_list = []
-    description = ''
-
-    if request.method=='POST':
-        address = request.POST.get('address-input')
-        postcode = request.POST.get('postcode')
-        phone = request.POST.get('phone')
-
-        print(postcode)
-        print(address)
-        print(phone)
-
-
-
-        email = request.user.email
-        
-        loc = Nominatim(user_agent="Geopy Library")
-
-        # entering the location name
-        location = loc.geocode(postcode + ', Singapore')
-
-        latitude = location.latitude
-        longitude = location.longitude
-
-        
-        quotation = create_quotation(latitude, longitude, address, quantity)
-
-        if quotation:
-            quotation_id = quotation['data']
-            quotation_id = quotation_id['quotationId']
-
-            stop_ids = []
-
-            stops = quotation['data']['stops']
-            for item in stops:
-                stop_ids.append(item['stopId'])
-
-            id = request.session.get('order_id')
-
-            order = place_order(api_key, api_secret, quotation_id, stop_ids,
-                                request.user.first_name+' '+request.user.last_name,phone, id)
-
-            print(order)
-
+        if request.method=='POST':
+            address = request.POST.get('address-input')
+            postcode = request.POST.get('postcode')
+            phone = request.POST.get('phone')
             email = request.user.email
 
-            items = OrderItem.objects.filter(order_id=order_id)
-            order = Order.objects.get(purchase_id=order_id)
+            loc = Nominatim(user_agent="Geopy Library")
 
-            total = round(float(order.amount), 2)
+            # entering the location name
+            location = loc.geocode(postcode + ', Singapore')
+
+            latitude = location.latitude
+            longitude = location.longitude
+
+            items = OrderItem.objects.filter(purchase_id=order_id)
+            quantity = 0
 
             for item in items:
-                strquantity = str(item.quantity)
-                NewItem = Clothing.objects.get(product_id=item)
+                quantity += item.quantity
+            
+            quotation = create_quotation(latitude, longitude, address, quantity)
 
-                description = description + strquantity + ' ' + NewItem.name[:20] + "... "
+            if quotation:
+                quotation_id = quotation['data']
+                quotation_id = quotation_id['quotationId']
+
+                stop_ids = []
+                stops = quotation['data']['stops']
+
+                for item in stops:
+                    stop_ids.append(item['stopId'])
+
+                id = request.session.get('order_id')
+
+                order = place_order(api_key, api_secret, quotation_id, stop_ids,
+                                    request.user.first_name+' '+request.user.last_name, phone, id)
+
+                print(order)
+                request.session['request_id'] = 'p'
+
+                items = OrderItem.objects.filter(order_id=order_id)
+                order = Order.objects.get(purchase_id=order_id)
+
+                total = round(float(order.amount), 2)
+
+                for item in items:
+                    strquantity = str(item.quantity)
+                    NewItem = Clothing.objects.get(product_id=item)
+
+                    description = description + strquantity + ' ' + NewItem.name[:20] + "... "
 
 
-            payment_intent = stripe.PaymentIntent.create(
-                amount= int(total*100),
-                currency='sgd',
-                description=description,
-                receipt_email=email,
-                payment_method_types=['card'],
-                automatic_payment_methods={'enabled': False},
-                metadata={"order_id": order_id},)
+                payment_intent = stripe.PaymentIntent.create(
+                    amount= int(total*100),
+                    currency='sgd',
+                    description=description,
+                    receipt_email=email,
+                    automatic_payment_methods={'enabled': True},
+                    metadata={"order_id": order_id},)
 
-            client_secret_str = str(payment_intent.client_secret)
+                client_secret_str = str(payment_intent.client_secret)
 
-            return JsonResponse({'client_secret': str(client_secret_str),
-                                'quotation': quotation})
-    
+                return JsonResponse({'client_secret': str(client_secret_str),
+                                    'quotation': quotation})
+        
+            else:
+                messages.error(request, 'Sorry, We are unable to process your order at the moment. Please try again later')
+                if order != None:
+                    total = round(float(order.amount), 2)
+
+                    items = OrderItem.objects.filter(order_id=order_id)
+
+                    for item in items:
+                        product_id = item.product_id
+                        stock_item = Clothing.objects.filter(product_id=product_id)
+                        stock = stock_item.stock
+
+                        items_list.append([item, item.quantity, stock])
+
+                    return render(request, 'checkout/checkout.html', context={'items': items_list,
+                                                                            'total': total})
+                
+                else:
+                    return redirect('cart')
+
         else:
-            messages.error(request, 'Sorry, We are unable to process your order at the moment. Please try again later')
+            if order != None:
+                total = round(float(order.amount), 2)
+                items = OrderItem.objects.filter(order_id=order_id)
+
+                for item in items:
+                    product_id = item.product_id
+                    stock_item = Clothing.objects.filter(product_id=product_id)
+                    stock = stock_item.stock
+
+                    items_list.append([item, item.quantity, stock])
+
+                return render(request, 'checkout/checkout.html', context={'items': items_list,
+                                                                        'total': total})
+            
+            else:
+                return redirect('cart')
 
     else:
-        order = Order.objects.get(purchase_id=order_id.replace('-', ''))
+        return redirect('cart')
 
-        total = round(int(order.amount), 2)
+@csrf_exempt
+@login_required(login_url='login')
+def get_order_status(request):
+    order_id = request.session.get("order_id").replace('-', '')
+    print('259')
 
-        items = OrderItem.objects.filter(order_id=order_id)
+    try:
+        order = Order.objects.get(purchase_id=order_id)
 
-        for item in items:
-            product_id = item.product_id
-            stock_item = Clothing.objects.filter(product_id=product_id)
-            stock = stock_item.stock
+        if order.paid:
+            return JsonResponse({"status": "confirmed"})
+        
+        else:
+            return JsonResponse({"status": "pending"})
+        
+    except Order.DoesNotExist:
+        return JsonResponse({"status": "failed"})
 
-            items_list.append([item, item.quantity, stock])
+@csrf_exempt
+@login_required(login_url='login')
+def payment_processing(request):
+    return render(request, 'checkout/payment_processing.html')
 
-        return render(request, 'checkout/checkout.html', context={'items': items_list,
-                                                                  'total': total})
-
-
+@csrf_exempt
 @login_required(login_url='login')
 def payment_succeeded(request):
-    return render(request, 'checkout/payment_succeeded.html')
+    order_id = request.session.get('order_id').replace('-', '')
 
+    print(order_id)
+
+    amount_paid = Order.objects.get(purchase_id=order_id)
+    paid = round(float(amount_paid.amount), 2)
+
+    items = OrderItem.objects.filter(purchase_id=order_id)
+
+
+    context = {
+        'order_id': order_id,
+        'total': paid,
+        'email': request.user.email,
+    }
+
+
+    return render(request, 'checkout/payment_succeeded.html', context=context)
+
+@csrf_exempt
 @login_required(login_url='login')
 def payment_failed(request):
     return render(request, 'checkout/payment_failed.html')

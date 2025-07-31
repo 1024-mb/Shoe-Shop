@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Clothing, User, Review, Order, OrderItem
+from .models import Clothing, Review, Order, OrderItem
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+
+from django.contrib.auth.models import User
+
 
 from .forms import SignUpForm, UpdateForm
 from django.db.models import Q
@@ -11,10 +14,12 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.sessions.models import Session
 
+from email.message import EmailMessage
 
 import stripe
 import os
 import uuid
+import smtplib
 
 stripe.api_key = os.getenv('stripekey')
 
@@ -264,7 +269,7 @@ def user_profile(request):
     
     else:
         return render(request, 'user_profile.html', context)
-    
+
 @login_required(login_url='login')
 def Logout(request):
     if request.user.is_authenticated:
@@ -278,92 +283,115 @@ def Logout(request):
 
 @csrf_exempt
 def stripe_webhook(request):
+    total = 0
     payload = request.body
 
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     endpoint_secret = 'whsec_1709d3d9f617576b171944a41c57eb6ba8e8ac16682a96593015280d92de2763'
 
-    try:
-        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
 
-        intent = event['data']['object']
-        order_id = intent['metadata'].get('order_id')
+    intent = event['data']['object']
+    order_id = intent['metadata'].get('order_id')
 
-        order_return = Order.objects.get(purchase_id=order_id)
-        
-        print(event['type'])
-
-        if event['type'] == 'payment_intent.succeeded' or event['type'] == 'charge.succeeded':
-            order_return.paid = True
-            items = OrderItem.objects.filter(order_id=order_id)
-            print('299')
-
-            for item in items:
-                quantity = item.quantity
-                product = Clothing.objects.get(product_id=item.product_id)
-
-                if product.quantity > quantity:
-                    product.quantity -= quantity
-                    product.save()
-
-                else:
-                    messages.error(request, 'Order failed - insufficient stock')
-                    return redirect('home')
-
-            messages.success(request, 'Order confirmed!')
-            return redirect('home')
-
-        elif event['type'] == 'payment_intent.payment_failed':
-            order_return.paid = False
-
-            messages.error(request, 'payment failed, please try again later')
-            return redirect('home')
-
-        elif event['type'] == 'payment_intent.canceled':
-            order_return.paid = False
-          
-            messages.error(request, 'Payment cancelled - please try again later')
-            return redirect('home')
-
-        elif event['type'] == 'payment_intent.processing':
-            order_return.paid = False
-
-            messages.info(request, 'Payment Processing')
-            return redirect('home')
-        
-        elif event['type'] == 'payment_intent.confirmed':
-            order_return.paid = False
-            
-            messages.info(request, 'Payment Processing')
-            return redirect('home')
-        
-        elif event['type'] == 'charge.succeeded':
-            order_return.paid = True
-            
-            messages.info(request, 'Payment Processing')
-            return redirect('home')            
-
-        order_return.save()
-
-
-        messages.success(request, 'Payment was successful! ')
-
-        return render(request, 'checkout/checkout.html', status=200)
+    order_return = Order.objects.get(purchase_id=order_id)
     
-    except TypeError:
-        print('347')
-        messages.error(request, "We are so sorry, but the payment was unsuccessful. Please try again later")
-        return redirect('home')
+    if event['type'] == 'payment_intent.succeeded' or event['type'] == 'charge.succeeded':
+        order_return.paid = True
+        items = OrderItem.objects.filter(order_id=order_id)
 
-    except ValueError as e:
-        print(e)
-        print('353')
-        print("Invalid payload")
-        return HttpResponse(status=400)  # Invalid payload
-    
-    except stripe.error.SignatureVerificationError as e:
-        print(e)
-        print('359')
-        print("Invalid signature")
-        return HttpResponse(status=400)  # Invalid signature
+        print('299')
+        receipt_items = []
+
+        for item in items:
+            quantity = item.quantity
+            product = Clothing.objects.get(product_id=item.product_id_id)
+
+            product.stock -= quantity
+            product.save()
+
+            price = round(float(quantity * product.price), 2)
+            total += price
+
+            receipt_items.append([product, quantity, price])
+
+
+        userID = order_return.user_id_id
+        user = User.objects.get(id=userID)
+        emailAddress = user.email
+
+
+        receipt = EmailMessage()
+        receipt['Subject'] = 'Receipt: Order ID ' + order_id
+        receipt['From'] = 'm.sajjad.2007.jan@gmail.com'
+        receipt['To'] = emailAddress
+
+        receipt.set_content(' Email follows')
+
+
+        first_component = """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <style></style>
+        </head>
+
+        <body>
+            <table border="1">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+
+        for item, quantity, price in receipt_items:
+            first_component += f"""
+            <tr>
+                <td>{item.category}</td>
+                <td>{item.name}</td>
+                <td>{quantity}</td>
+                <td>S$ {price}</td>
+            </tr>
+            """
+
+        first_component += f"""
+            </tbody>
+            </table>
+
+            Total amount: S$ {total}
+        </body>
+        </html>
+        """
+
+        receipt.add_alternative(first_component, subtype='html')
+
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
+            smtp.send_message(receipt)
+
+        print('done')
+
+    elif event['type'] == 'payment_intent.payment_failed':
+        order_return.paid = False
+        
+
+    elif event['type'] == 'payment_intent.canceled':
+        order_return.paid = False
+
+
+    elif event['type'] == 'payment_intent.processing':
+        order_return.paid = False
+
+    elif event['type'] == 'payment_intent.confirmed':
+        order_return.paid = False
+
+        
+
+    order_return.save()
+    return HttpResponse(status=200)
 

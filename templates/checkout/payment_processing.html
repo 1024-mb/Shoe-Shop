@@ -1,0 +1,27 @@
+<h2>Processing your payment...</h2>
+<p>Please wait while we confirm your order.</p>
+<div id="spinner">🔄</div>
+
+<script>
+
+
+    async function checkStatus() {
+        try {
+            const response = await fetch(`/checkout/get_order_status/`);
+            const data = await response.json();
+
+            if (data.status === "confirmed") {
+                window.location.href = "/checkout/payment_succeeded/";
+            } else if (data.status === "failed") {
+                window.location.href = "/checkout/payment_failed/";
+            } else {
+                setTimeout(checkStatus, 3000); // Retry after 3 seconds
+            }
+        } catch (err) {
+            console.error("Error checking status:", err);
+            setTimeout(checkStatus, 5000);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", checkStatus);
+</script>

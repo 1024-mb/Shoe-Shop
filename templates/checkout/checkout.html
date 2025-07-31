@@ -13,11 +13,9 @@
     </style>
 
     <body>
-        
-
         {% include 'navbar.html' %}
 
-        {% csrf_token %}
+
         {% if total > 0.0 %}
             {% for item, qty, stock in items %}
                 {% if qty > 0 and qty >= stock %}
@@ -67,18 +65,18 @@
                 <form id="payment-form" method="POST" action="">
                     <p>
                         <label for="address-input">Address</label>
-                        <input name="address-input" id="address-input" type="text" placeholder="Enter your address" autocomplete="off"/>
+                        <input name="address-input" id="address-input" type="text" placeholder="Enter your address" size="30" autocomplete="off"/>
                         <ul id="suggestions-list"></ul>
                     </p>
 
                     <p>
                         <label for="postcode">Postcode</label>
-                        <input name="postcode" id="postcode" type="text" placeholder="Postcode">
+                        <input name="postcode" id="postcode" type="text" size="6" placeholder="Postcode" maxlength="6">
                     </p>
 
                     <p>
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" name="phone" id="phone" required/>
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" name="phone" id="phone" size="20" required/>
                     </p>
 
                     <p>
@@ -143,20 +141,80 @@
                         payment_method: { card: card }
                     });
 
-                    if (result.error) {
-                        alert(result.error.message);
-                        window.location.href = "payment_failed";
-                    } else if (result.paymentIntent.status === "succeeded") {
-                        alert("Payment succeeded!");
-                        window.location.href = "payment_succeeded";
+                    if (result.paymentIntent.status === "succeeded") {
+                        window.location.href = "payment_processing/";
                     }
                     } catch (error) {
-                    console.error("Payment error:", error);
-                    alert("Something went wrong. Please try again.");
-                    window.location.href = "payment_failed";
+                        console.error("Payment error:", error);
+                        window.location.href = "payment_failed/";
                     }
                 });
                 });
+
+                const sessionToken = crypto.randomUUID();
+                const inputBox = document.getElementById("address-input");
+                const suggestionsList = document.getElementById("suggestions-list");
+                const API_KEY = "AIzaSyDNZzfTqz-metD4fAhrQ5nIVXAB2TP1fq8";  // Replace with your actual key
+
+                let debounceTimer;
+                inputBox.addEventListener("input", () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(fetchSuggestions, 300);
+                });
+
+                async function fetchSuggestions() {
+                    try {
+                        const requestBody = {
+                        input: inputBox.value,
+                        locationBias: {
+                            circle: {
+                            center: {
+                                latitude: 1.5584,
+                                longitude: 103.6670
+                            },
+                            radius: 50000.0
+                            }
+                        },
+                        sessionToken: sessionToken
+                        };
+
+                        const response = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-Goog-Api-Key": "AIzaSyDNZzfTqz-metD4fAhrQ5nIVXAB2TP1fq8",
+                            "X-Goog-FieldMask": "suggestions.placePrediction.text.text,suggestions.placePrediction.placeId"
+                        },
+                        body: JSON.stringify(requestBody)
+                        });
+
+                        if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API error: ${response.status} - ${errorText}`);
+                        }
+
+                        const data = await response.json();
+                        suggestionsList.innerHTML = "";
+
+                        data.suggestions?.forEach(suggestion => {
+                        const text = suggestion.placePrediction?.text?.text;
+                        if (text) {
+                            const li = document.createElement("li");
+                            li.textContent = text;
+                            li.onclick = () => {
+                            inputBox.value = text;
+                            suggestionsList.innerHTML = "";
+                            };
+                            suggestionsList.appendChild(li);
+                        }
+                        });
+
+                    } catch (error) {
+                        console.error("Autocomplete error:", error);
+                        suggestionsList.innerHTML = "<li>Error fetching suggestions</li>";
+                    }
+                }
+
 
             </script>
         {% else %}

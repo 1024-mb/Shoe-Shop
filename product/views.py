@@ -25,18 +25,30 @@ filter = Filter()
 def product(request, pk):
     if request.method=='POST':
         cart = request.session.get('cart', {})
-        print('cart')
+        key = pk + ':' + request.POST.get('size')
 
         if Clothing.objects.filter(product_id=pk).exists():
             try:
-                cart[pk + ':' + request.POST.get('size')] += 1
-                request.session['cart'] = cart
+                item_stock = Clothing.objects.filter(product_id=pk)
+                stock = item_stock[0].stock
 
-                messages.success(request, 'Added to cart')
-                return redirect('home')
+                if cart[key] < 20 and stock > cart[key]:
+                    cart[pk + ':' + request.POST.get('size')] += 1
+                    request.session['cart'] = cart
+
+                    messages.success(request, 'Added to cart')
+                    return redirect('home')
+                
+                elif stock <= cart[key]:
+                    cart[key] = stock
+                    return redirect('home')
+                
+                else:
+                    messages.error(request, 'Maximum order number per item is 20')
+                    return redirect('home')    
 
             except KeyError as e:
-                cart[pk + ':' + request.POST.get('size')] = 1
+                cart[key] = 1
                 request.session['cart'] = cart
 
                 messages.success(request, 'Added to cart')

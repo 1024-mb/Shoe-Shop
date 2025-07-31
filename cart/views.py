@@ -26,6 +26,8 @@ def cart(request):
         create_order = Order(amount=total, paid=False, 
                              user_id_id=request.user.id,)
         create_order.save()
+        
+        request.session['order_id'] = str(create_order.purchase_id)
 
         for item in cart:
             pos_id = item.index(':')
@@ -42,11 +44,45 @@ def cart(request):
             
             order_item.save()
 
-        request.session['order_id'] = str(create_order.purchase_id)
+
 
         return redirect('checkout')
 
     else:
+        '''
+        if request.method == 'GET' and 'update_cart' in request.GET:
+            total = 0
+            products = []
+
+            for item in cart:
+                pos_id = item.index(":")
+                id = item[:pos_id].replace('-', '')
+                size=item[(pos_id+1):]
+
+                print(id)
+
+                new_quantity = request.GET.get(f'{id}')
+
+                print(new_quantity)
+
+                request.session['cart'][id] = new_quantity
+                
+                priceObj = Clothing.objects.get(product_id=id)
+                price = float(priceObj.price)
+
+                products.append([priceObj, new_quantity, priceObj.stock, size])
+
+                total += price
+                
+                context = {'products': products,
+                           'cart': request.session.get('cart', {}),
+                           'total': total}
+
+                return render(request, 'cart/cart.html', context)
+
+                
+        else:
+        '''
         products = []
         total = 0
 
@@ -67,17 +103,18 @@ def cart(request):
         request.session['total'] = total
 
         context = {'products': products,
-                   'cart': request.session.get('cart', {}),
-                   'total': total}
+                'cart': request.session.get('cart', {}),
+                'total': total}
 
         return render(request, 'cart/cart.html', context)
+    
 
 
 @login_required(login_url='login')
 def clear_cart(request):
     request.session['cart'] = {}
     
-    messages.success(request, 'Cart cleared successfully')
+    messages.success(request, 'Cart cleared!')
     return redirect('home')
 
 

@@ -18,5 +18,5 @@ urlpatterns = [
 
     path('profile/', views.user_profile, name='profile'),
 
-    path('stripe/webhook/', views.stripe_webhook, name='stripe_webhook')
+    path('stripe/webhook', views.stripe_webhook, name='stripe_webhook')
 ]
