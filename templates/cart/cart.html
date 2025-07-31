@@ -32,18 +32,19 @@
 
                             <p>Size: {{ size }}</p>
 
-                            {% if stock > 20 %}
-                                <label for="{{ item.product_id }}">Quantity (max 20)</label> 
-                                
-                                <p><input title="{{ item.product_id }}" class="quantity-input" name="{{ item.product_id }}" type="number" value="{{ qty }}" max="20" min="0" data-price="{{ item.price }}">  </p>
+
+                                {% if stock > 20 %}
+                                    <label for="{{ item.product_id }}">Quantity (max 20)</label> 
                                     
-                            {% else %}
-                                <label for="{{ item.product_id }}">Quantity (max {{ stock }})</label>
-                                {% if qty > 0 and qty >= stock %}
-                                    <p style="color:red">ERROR: Max order for this product is {{ stock }}</p>
+                                    <p><input title="{{ item.product_id }}" class="quantity-input" name="{{ item.product_id }}" type="number" value="{{ qty }}" max="20" min="0" data-price="{{ item.price }}">  </p>
+                                        
+                                {% else %}
+                                    <label for="{{ item.product_id }}">Quantity (max {{ stock }})</label>
+                                    {% if qty > 0 and qty >= stock %}
+                                        <p style="color:red">ERROR: Max order for this product is {{ stock }}</p>
+                                    {% endif %}
+                                    <p><input title="{{ item.product_id }}" class="quantity-input" name="{{ item.product_id }}" type="number" value="{{ qty }}" max="{{ stock }}" min="0" data-price="{{ item.price }}">  </p>
                                 {% endif %}
-                                <p><input title="{{ item.product_id }}" class="quantity-input" name="{{ item.product_id }}" type="number" value="{{ qty }}" max="{{ stock }}" min="0" data-price="{{ item.price }}">  </p>
-                            {% endif %}
                             
                             <p>{{ item.description|truncatewords:10 }}</p>
                         </div>

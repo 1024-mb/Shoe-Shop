@@ -29,19 +29,28 @@ class Clothing(models.Model):
     price = models.DecimalField(decimal_places=2, max_digits=5)
     rating = models.DecimalField(decimal_places=1, max_digits=2)
 
-    stock = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
 
-    updated = models.DateField(auto_now=True)
-    created = models.DateField(auto_now_add=True)
 
-    class meta:
-        ordering = ['-updated', '-created']
 
+class ClothingColor(models.Model):
+    color_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    color = models.CharField(null=True, blank=True)
+    product_id = models.ForeignKey(Clothing, on_delete=models.PROTECT)
     
-    def __str__(self):
-        return self.name
-    
+    color = models.CharField(null=True, blank=True)
+        
+
+class ProductVariant(models.Model):
+    variant_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    color_variant = models.ForeignKey(ClothingColor, on_delete=models.PROTECT, related_name='sizes')
+    product_id = models.ForeignKey(Clothing, on_delete=models.PROTECT)
+
+    size = models.CharField(max_length=10)  # e.g. US 9
+    stock = models.PositiveIntegerField(default=0)
+
+
 
 class Review(models.Model):
     #Unique ID for each review
@@ -49,7 +58,7 @@ class Review(models.Model):
 
     # user associated with review - user deleted, delete review
     # each user has multiple reviews
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
 
     # Product associated with review - product deleted, delete review
     # each product has multiple reviews
@@ -67,9 +76,6 @@ class Review(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
-
-    class meta:
-        ordering = ['-updated', '-created']
 
 class Order(models.Model):
     # primary key

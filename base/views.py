@@ -271,7 +271,7 @@ def user_profile(request):
         return render(request, 'user_profile.html', context)
 
 @login_required(login_url='login')
-def Logout(request):
+def logout_page(request):
     if request.user.is_authenticated:
 
         messages.success(request, 'Successfully logged out!')
@@ -298,9 +298,8 @@ def stripe_webhook(request):
     
     if event['type'] == 'payment_intent.succeeded' or event['type'] == 'charge.succeeded':
         order_return.paid = True
-        items = OrderItem.objects.filter(order_id=order_id)
+        items = OrderItem.objects.filter(purchase_id=order_id)
 
-        print('299')
         receipt_items = []
 
         for item in items:
@@ -311,7 +310,7 @@ def stripe_webhook(request):
             product.save()
 
             price = round(float(quantity * product.price), 2)
-            total += price
+            total += round(price, 2)
 
             receipt_items.append([product, quantity, price])
 
@@ -319,17 +318,17 @@ def stripe_webhook(request):
         userID = order_return.user_id_id
         user = User.objects.get(id=userID)
         emailAddress = user.email
-
+        name = user.first_name
 
         receipt = EmailMessage()
-        receipt['Subject'] = 'Receipt: Order ID ' + order_id
+        receipt['Subject'] = 'HeatSneakers | Receipt of purchase'
         receipt['From'] = 'm.sajjad.2007.jan@gmail.com'
         receipt['To'] = emailAddress
 
-        receipt.set_content(' Email follows')
+        receipt.set_content('Email follows')
 
 
-        first_component = """
+        first_component = f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -337,6 +336,15 @@ def stripe_webhook(request):
         </head>
 
         <body>
+            <h2>Order ID: { order_id }</h2>
+            <p>Dear {name},
+               This is the receipt for your recent purchase on our website.
+               We hope you are satisfied with your purchase, and our service.
+               Should you have any queries, please don't hesitate to 
+               <a href="mailto:m.sajjad.2007.jan@gmail.com"> reach out</a>
+            
+            </p>
+
             <table border="1">
             <thead>
                 <tr>
@@ -350,20 +358,34 @@ def stripe_webhook(request):
         """
 
         for item, quantity, price in receipt_items:
+            price = round(price, 2)
             first_component += f"""
             <tr>
                 <td>{item.category}</td>
                 <td>{item.name}</td>
                 <td>{quantity}</td>
-                <td>S$ {price}</td>
+                <td>S$ {price:.2f}</td>
             </tr>
             """
 
+        total = round(total, 2)
         first_component += f"""
             </tbody>
             </table>
 
-            Total amount: S$ {total}
+            <hr>
+            Total amount: S$ {total:.2f}
+            <hr>
+
+            <p>Thank you for shopping with HeatSneakers. We wish you all
+               the best and hope our services are to your standards.
+               Please do not heistate 
+               <a href="mailto:m.sajjad.2007.jan@gmail.com">to submit feedback.</a>
+               Your feedback is of immense value to our services
+
+            </p>
+
+            
         </body>
         </html>
         """
@@ -374,7 +396,6 @@ def stripe_webhook(request):
             smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
             smtp.send_message(receipt)
 
-        print('done')
 
     elif event['type'] == 'payment_intent.payment_failed':
         order_return.paid = False

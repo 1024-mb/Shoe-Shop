@@ -29,21 +29,27 @@ def product(request, pk):
 
         if Clothing.objects.filter(product_id=pk).exists():
             try:
-                item_stock = Clothing.objects.filter(product_id=pk)
-                stock = item_stock[0].stock
+                item = Clothing.objects.get(product_id=pk)
+                stock = item.stock
 
-                if cart[key] < 20 and stock > cart[key]:
-                    cart[pk + ':' + request.POST.get('size')] += 1
+
+                if cart[key] < 20 and stock > cart[key] and stock > 7:
+                    cart[key] += 1
                     request.session['cart'] = cart
 
                     messages.success(request, 'Added to cart')
                     return redirect('home')
                 
-                elif stock <= cart[key]:
-                    cart[key] = stock
+                elif stock <= 7:
+                    del cart[key]
+                    messages.error(request, 'Item out of stock')
                     return redirect('home')
+
+                elif stock < cart[key]:
+                    cart[key] = stock - 7
+                    return redirect('home')                     
                 
-                else:
+                elif cart[key] >= 20:
                     messages.error(request, 'Maximum order number per item is 20')
                     return redirect('home')    
 
@@ -55,62 +61,62 @@ def product(request, pk):
                 return redirect('home')
 
     
+    elif Clothing.objects.filter(product_id=pk).exists():
+        item = Clothing.objects.get(product_id=pk)
+
+        description = item.description
+        description = description.split(",")
+
+        sizes = item.size
+        sizes = sizes.split(",")
+
+        stock = item.stock
+
+        Reviews = Review.objects.filter(product_ID=pk)
+        avg = 0
+        count = 0
+
+        try:
+            for review in Reviews:
+                avg = avg + review.stars
+                count += 1
+
+            avg = str(round((avg / count), 1))
+
+        except ZeroDivisionError:
+            Reviews = None
+
+        try:
+            user = User.objects.get(username=request.user)
+            context = {
+                "clothing": item,
+                "reviews": Reviews,
+                "description": description,
+                "overall": avg,
+                "curr_usr": user,
+                "num_reviews": count,
+                "sizes": sizes,
+                "stock": stock,
+            }
+            return render(request, "product/product.html", context)
+        
+
+        except User.DoesNotExist:
+            context = {
+                "clothing": item,
+                "description": description,
+                "reviews": Reviews,
+                "overall": avg,
+                "num_reviews": count,
+                "sizes": sizes,
+                "stock": stock,
+            }
+            return render(request, "product/product.html", context)
+
+
     else:
-        product = None
-        products = Clothing.objects.order_by('-updated', '-created')
-
-        for item in products:
-            id_product = item.product_id
-            cmp = str(item.product_id)
-
-            if cmp == pk:
-                product = item
-
-                description = item.description
-                description = description.split(",")
-
-                product.description = description
-
-                sizes = item.size
-                sizes = sizes.split(",")
-
-                Reviews = Review.objects.filter(product_ID=id_product)
-                avg = 0
-                count = 0
-
-                try:
-                    for review in Reviews:
-                        avg = avg + review.stars
-                        count += 1
-
-                    avg = str(round((avg / count), 1))
-
-                except ZeroDivisionError:
-                    Reviews = None
-
-                try:
-                    user = User.objects.get(username=request.user)
-                    context = {
-                        "clothing": product,
-                        "reviews": Reviews,
-                        "overall": avg,
-                        "curr_usr": user,
-                        "num_reviews": count,
-                        "sizes": sizes,
-                    }
-
-                    return render(request, "product/product.html", context)
-
-                except User.DoesNotExist:
-                    context = {
-                        "clothing": product,
-                        "reviews": Reviews,
-                        "overall": avg,
-                        "num_reviews": count,
-                        "sizes": sizes,
-                    }
-
-                    return render(request, "product/product.html", context)
+        messages.error(request, 'Product does not exist')
+        return redirect('home')
 
 @login_required(login_url='login')
 def create_review(request, pk):

@@ -237,7 +237,7 @@ def checkout(request):
                     for item in items:
                         product_id = item.product_id
                         stock_item = Clothing.objects.filter(product_id=product_id)
-                        stock = stock_item.stock
+                        stock = stock_item
 
                         items_list.append([item, item.quantity, stock])
 
@@ -255,7 +255,7 @@ def checkout(request):
                 for item in items:
                     product_id = item.product_id
                     stock_item = Clothing.objects.filter(product_id=product_id)
-                    stock = stock_item.stock
+                    stock = stock_item
 
                     items_list.append([item, item.quantity, stock])
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Clothing, Review
+from .models import Clothing, Review, ClothingColor, ProductVariant
 
 
 # Register your models here.
@@ -8,3 +8,5 @@ from .models import Clothing, Review
 admin.site.register(Clothing)
 
 admin.site.register(Review)
+admin.site.register(ClothingColor)
+admin.site.register(ProductVariant)

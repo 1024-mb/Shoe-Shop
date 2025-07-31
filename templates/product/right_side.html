@@ -27,9 +27,16 @@
     </select>
 
 
+    {% if stock < 7 %}
+        
+        <input type="submit" value="Add to cart" disabled>
+        <p style="color: red">Out of stock</p>
+
+    {% else %}
+        <input type="submit" value="Add to cart">
+
+    {% endif %}
 
 
-
-  <input type="submit" value="Add to cart">
 </form>
 
