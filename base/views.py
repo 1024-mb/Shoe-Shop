@@ -296,7 +296,9 @@ def stripe_webhook(request):
 
     order_return = Order.objects.get(purchase_id=order_id)
     
-    if event['type'] == 'payment_intent.succeeded' or event['type'] == 'charge.succeeded':
+    print('299')
+
+    if event['type'] == 'charge.succeeded':
         order_return.paid = True
         items = OrderItem.objects.filter(purchase_id=order_id)
 
@@ -338,7 +340,7 @@ def stripe_webhook(request):
 
         <body>
             <h2>Order ID: { order_id }</h2>
-            <p>Dear {name},
+            <p>Dear {name.capitalize()},
                This is the receipt for your recent purchase on our website.
                We hope you are satisfied with your purchase, and our service.
                Should you have any queries, please don't hesitate to 
@@ -359,15 +361,16 @@ def stripe_webhook(request):
         """
 
         for item, quantity, price in receipt_items:
-            price = round(price, 2)
-            first_component += f"""
-            <tr>
-                <td>{item.category}</td>
-                <td>{item.name}</td>
-                <td>{quantity}</td>
-                <td>S$ {price:.2f}</td>
-            </tr>
-            """
+            if quantity > 0:
+                price = round(price, 2)
+                first_component += f"""
+                <tr>
+                    <td>{item.category}</td>
+                    <td>{item.name}</td>
+                    <td>{quantity}</td>
+                    <td>S$ {price:.2f}</td>
+                </tr>
+                """
 
         total = round(total, 2)
         first_component += f"""

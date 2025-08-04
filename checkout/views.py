@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 from djstripe.models import Event, Charge, PaymentMethod
-from base.models import Clothing, Order, OrderItem, User
+from base.models import Clothing, Order, OrderItem, User, ProductVariant
 
 import time
 import hmac
@@ -224,6 +224,7 @@ def checkout(request):
 
                 client_secret_str = str(payment_intent.client_secret)
 
+                request.session['cart'] = {}
                 return JsonResponse({'client_secret': str(client_secret_str),
                                     'quotation': quotation})
         
@@ -244,13 +245,19 @@ def checkout(request):
                     return redirect('cart')
 
         else:
+            items_list = []
             if order != None:
                 total = round(float(order.amount), 2)
+
                 items = OrderItem.objects.filter(purchase_id=order_id)
 
                 for item in items:
-                    items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price])
+                    product_id = item.product_id_id
+                    product = Clothing.objects.get(product_id=product_id)
+                    qty = item.quantity
+                    price = item.purchase_price
 
+                    items_list.append([product, qty, product_id, price])
 
                 return render(request, 'checkout/checkout.html', context={'items': items_list,
                                                                         'total': total})

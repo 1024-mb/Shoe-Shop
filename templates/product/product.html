@@ -79,7 +79,7 @@
                         {% if colors %}
                             <select title="color" id="color" value="color" name="color" style="height: 4vh"> 
                                     {% for color, colorID in colors %} 
-                                            <option class="color-label" title="{{ colorID }}" value="{{ color }}" name="{{ colorID }}">{{ color }}</option>
+                                            <option class="color-label" title="{{ colorID }}" value="{{ colorID }}" id="{{ colorID }}" name="{{ colorID }}">{{ color }}</option>
                                     {% endfor %}
                             </select>
                         
@@ -115,10 +115,12 @@
 
                     if (sizeSelected != null) {
                         size = sizeSelected.value;
+                        console.log(size);
                     }
 
                     if (colorSelected != null) {
                         color = colorSelected.value;
+                        console.log(color);
                     }
 
                     let match = null;

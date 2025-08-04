@@ -22,21 +22,37 @@ filter = Filter()
 """
 
 def product(request, pk):
+    pk = pk.replace('-', '')
     if request.method=='POST':
-        colorCode = request.POST.get('color')
+        color = request.POST.get('color')
         cart = request.session.get('cart', {})
         size = request.POST.get('size')
 
+        print(color)
+        print(size)
 
-        if colorCode:
-            key = pk + ':' + size + ';' + colorCode
-            stock = ProductVariant.objects.get(color_variant_id=colorCode, 
+        if color != None:
+            color = color.replace('-', '') if color != '' or color != None else None
+        
+
+        if color != None and size != '':
+            key = pk + ':' + size + ';' + color
+            stock = ProductVariant.objects.get(color_id=color, 
                                                product_id_id=pk, size=size).stock
 
-        else:
-            key = pk + ':' + size + ';'
+        elif color == None and size != '':
+            key = pk + ':' + size
             stock = ProductVariant.objects.get(product_id_id=pk, size=size).stock
 
+        elif color != None and size == '':
+            key = pk + ';' + color
+            stock = ProductVariant.objects.get(product_id_id=pk, color_id=color).stock
+
+        else:
+            key = pk
+            stock = ProductVariant.objects.get(product_id_id=pk).stock
+
+        print(key)
 
         if Clothing.objects.filter(product_id=pk).exists():
             try:
@@ -71,34 +87,36 @@ def product(request, pk):
     
     elif Clothing.objects.filter(product_id=pk).exists():
         pk = uuid.UUID(pk)
+
         product_variant = ProductVariant.objects.filter(product_id_id=pk)
+        colors = ClothingColor.objects.filter(product_id_id=pk)
+
         variants = []
         colors = []
+        sizes = []
 
         for item in product_variant:
-            color_id = item.color_variant_id
-            product = str(pk).replace('-', '')
+            color_id = item.color_id
+            size = item.size
+            colorName = ClothingColor.objects.get(color_id=color_id).color
 
-            item_color = ClothingColor.objects.get(color_id=color_id, product_id_id=product).color
+            variants.append([color_id, item.stock, item.size])            
 
-            variants.append([item_color, item.stock, item.size])
+            if not(any(colorName in row for row in colors)):
+                colors.append([colorName, color_id])
 
-            if not(any(item_color in row for row in colors)):
-                colors.append([item_color, color_id])
+            if not(any(size in row for row in sizes)):
+                sizes.append(item.size)
+
 
         colors = None if colors[0][0] == None else colors
 
         variant_dicts = [{'color': c, 'stock': s, 'size': sz} for c, s, sz in variants]
 
-
         item = Clothing.objects.get(product_id=pk)
 
         description = item.description
         description = description.split(",")
-
-        sizes = item.size
-        sizes = sizes.split(",")
-
 
         Reviews = Review.objects.filter(product_ID=pk)
         avg = 0
@@ -166,14 +184,12 @@ def create_review(request, pk):
             else:
                 active=True
 
-            print('170')
             if OrderItem.objects.filter(product_id=Prod).exists() == True:
                 verified=True
 
             else:
                 verified=False
 
-            print('177')
             new_item = Review(user_id=request.user,
                             description_review=reviewtext, 
                             is_active=active,

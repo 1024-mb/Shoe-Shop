@@ -46,11 +46,12 @@ class ClothingColor(models.Model):
 class ProductVariant(models.Model):
     variant_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    color_variant = models.ForeignKey(ClothingColor, on_delete=models.PROTECT, related_name='sizes')
+    color = models.ForeignKey(ClothingColor, on_delete=models.PROTECT, related_name='sizes')
     product_id = models.ForeignKey(Clothing, on_delete=models.PROTECT)
 
     size = models.CharField(max_length=10)  # e.g. US 9
     stock = models.PositiveIntegerField(default=0)
+
 
 
 class Review(models.Model):

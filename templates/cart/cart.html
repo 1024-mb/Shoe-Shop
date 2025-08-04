@@ -19,7 +19,7 @@
         
         <form method="POST" action="">
             {% csrf_token %}
-            {% for item, qty, stock, size in products %}
+            {% for id, item, qty, stock, size, color in products %}
                     <hr>
                     <div class="product">
                         <div class="left-side">
@@ -31,23 +31,23 @@
                             <h4>S$ {{ item.price|floatformat:2}}</h4>
 
                             <p>Size: {{ size }}</p>
-
-
-                                {% if stock > 20 %}
-                                    <label for="{{ item.product_id }}">Quantity (max 20)</label> 
-                                    
-                                    <p><input title="{{ item.product_id }}" class="quantity-input" name="{{ item.product_id }}" type="number" value="{{ qty }}" max="20" min="0" data-price="{{ item.price }}">  </p>
-                                        
+                            {% if color %}
+                                <p>Color: {{ color }}</p>
+                            {% endif %}
+                                {% if stock > 4 %}
+                                    <label for="{{ id|cut:'-' }}">Quantity (max 20)</label> 
+                                    <p><input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="{{ qty }}" max="20" min="0" data-price="{{ item.price }}"></p>
                                 {% else %}
-                                    <label for="{{ item.product_id }}">Quantity (max {{ stock }})</label>
-                                    {% if qty > 0 and qty >= stock and stock != 0 %}
+                                    <label for="{{ id }}">Quantity (max {{ stock }})</label>
+                                    {% if qty >= stock and stock != 0 %}
                                         <p style="color:rgb(255, 86, 86)">You’ve requested more items than are currently available. Please reduce the quantity.</p>
+                                        <p><input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="{{ qty }}" max="{{ stock }}" min="0" data-price="{{ item.price }}">  </p>
 
                                     {% elif stock <= 4 %}
-                                        <p style="color:red">Sorry, this item is currently out of stock.</p>
-                                        
+                                        <p style="color:red">Sorry, this item is currently out of stock.
+                                        <input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="0" max="0" min="0" data-price="{{ item.price }}">  </p>
                                     {% endif %}
-                                    <p><input title="{{ item.product_id }}" class="quantity-input" name="{{ item.product_id }}" type="number" value="{{ qty }}" max="{{ stock }}" min="0" data-price="{{ item.price }}">  </p>
+                                    
                                 {% endif %}
                             
                             <p>{{ item.description|truncatewords:10 }}</p>
@@ -74,6 +74,9 @@
 
 
 <script>
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
         const quantityInputs = document.querySelectorAll('.quantity-input');
         const totalDisplay = document.getElementById('total-amt');
