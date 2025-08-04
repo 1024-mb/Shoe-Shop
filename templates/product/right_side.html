@@ -1,3 +1,9 @@
+{% load json_script %}
+
+{% json_script variants "variant-data" %}
+
+
+
 {% if clothing.gender == 'M' %}
     <p>Men • {{ clothing.category }}</p>
 
@@ -20,23 +26,52 @@
     {% csrf_token %}
   
     <label for="size">Size</label>
-    <select title="size" value="size" name="size" style="height: 4vh">
+    <select title="size" id="size" value="size" name="size" style="height: 4vh">
         {% for item in sizes %}
-            <option class="sizes" name="{{ item }}">{{ item }}</option>
+            <option class="size-label" name="{{ item }}">{{ item }}</option>
         {% endfor %}
     </select>
 
 
-    {% if stock < 7 %}
-        
-        <input type="submit" value="Add to cart" disabled>
-        <p style="color: red">Out of stock</p>
-
-    {% else %}
-        <input type="submit" value="Add to cart">
-
-    {% endif %}
-
+    <label for="color"></label>
+    <select title="color" id="color" value="color" name="color" style="height: 4vh">
+        {% for color, stock, size in variants %}    
+            <option class="size-label" name="{{ color }}">{{ color }}</option>
+        {% endfor %}
+    </select>
 
 </form>
+<script>
+    const size = JSON.parse(document.getElementById('variant-data').textContent);
+
+    const filteredVariants = variantData.filter(variant => {
+    return variant.size === size && variant.stock > 7;
+    });
+    const colorOptions = document.getElementById('colorOptions');
+    colorOptions.innerHTML = '';  // Clear previous
+
+    filteredVariants.forEach(variant => {
+    const btn = document.createElement('button');
+    btn.textContent = variant.color;
+    btn.className = 'color-button';
+    btn.onclick = () => {
+        console.log(`Selected color: ${variant.color}`);
+        // You can also update hidden inputs or trigger cart logic here
+    };
+    colorOptions.appendChild(btn);
+    });
+
+    if (filteredVariants.length === 0) {
+        colorOptions.innerHTML = '<p>No colors available for this size with sufficient stock.</p>';
+        }
+
+
+
+</script>
+
+
+{% for color, stock, quantity in variants %}
+
+
+{% endfor %}
 

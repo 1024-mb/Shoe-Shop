@@ -32,7 +32,6 @@ class Clothing(models.Model):
     is_active = models.BooleanField(default=True)
 
 
-
 class ClothingColor(models.Model):
     color_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     color = models.CharField(null=True, blank=True)
@@ -49,7 +48,6 @@ class ProductVariant(models.Model):
 
     size = models.CharField(max_length=10)  # e.g. US 9
     stock = models.PositiveIntegerField(default=0)
-
 
 
 class Review(models.Model):

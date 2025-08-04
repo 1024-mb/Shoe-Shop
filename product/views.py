@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.http import HttpResponse
 from base.forms import ReviewForm
-from base.models import Review, User, Clothing, Order
+from base.models import Review, User, Clothing, Order, ProductVariant, ClothingColor
 import uuid
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -27,11 +27,12 @@ def product(request, pk):
         cart = request.session.get('cart', {})
         key = pk + ':' + request.POST.get('size')
 
+        colorCode = request.POST.get('colour')
+
+        pk = uuid.UUID(pk)
         if Clothing.objects.filter(product_id=pk).exists():
             try:
                 item = Clothing.objects.get(product_id=pk)
-                stock = item.stock
-
 
                 if cart[key] < 20 and stock > cart[key] and stock > 7:
                     cart[key] += 1
@@ -62,6 +63,16 @@ def product(request, pk):
 
     
     elif Clothing.objects.filter(product_id=pk).exists():
+        pk = uuid.UUID(pk)
+        product_variant = ProductVariant.objects.filter(product_id_id=pk)
+        variants = []
+
+        for item in product_variant:
+            color_id = item.color_variant_id
+            item_color = ClothingColor.objects.get(color_id=color_id)
+            variants.append([item_color.color, item.stock, item.size])
+
+
         item = Clothing.objects.get(product_id=pk)
 
         description = item.description
@@ -70,7 +81,6 @@ def product(request, pk):
         sizes = item.size
         sizes = sizes.split(",")
 
-        stock = item.stock
 
         Reviews = Review.objects.filter(product_ID=pk)
         avg = 0
@@ -95,8 +105,8 @@ def product(request, pk):
                 "overall": avg,
                 "curr_usr": user,
                 "num_reviews": count,
+                "variants": variants,
                 "sizes": sizes,
-                "stock": stock,
             }
             return render(request, "product/product.html", context)
         
@@ -109,7 +119,7 @@ def product(request, pk):
                 "overall": avg,
                 "num_reviews": count,
                 "sizes": sizes,
-                "stock": stock,
+                "variants": variants,
             }
             return render(request, "product/product.html", context)
 
