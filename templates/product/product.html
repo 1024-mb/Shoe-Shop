@@ -1,6 +1,12 @@
 {% extends "base.html" %}
     {% block content %}
+    
         <style>
+            .notAvailable {
+                color: red;
+                font-size: 1rem;
+            }
+
             p {
                 font-size: 3.5vh;
             }
@@ -16,34 +22,154 @@
                 width: 370px;
             }
         </style>
+        <body>
+            <div class="room-container">
+                <div class="left-side" style="border-right: 1px solid black;">
+                    <h1>{{ clothing.brand }}</h1>
 
-        <div class="room-container">
-            <div class="left-side" style="border-right: 1px solid black;">
-                <h1>Product</h1>
+                    <h1>{{ clothing.name }}</h1>
 
-                <h1>{{ clothing.name }}</h1>
+                    {% include 'product/image_container.html' %}
+                    
+                    <h1>Description</h1>
+                    <p>{{ clothing.details }}</p>
 
-                {% include 'product/image_container.html' %}
-                
-                <h1>Description</h1>
-                <p>{{ clothing.details }}</p>
+                    <h1>Details</h1>
 
-                <h1>Details</h1>
+                    {% for item in description %}
+                        <p>{{ item }}</p>
 
-                {% for item in description %}
-                    <p>{{ item }}</p>
+                    {% endfor %}
+                    
+                    {% include 'product/reviews_bar.html' %}
 
-                {% endfor %}
-                
-                {% include 'product/reviews_bar.html' %}
+                </div>
+                <div class="right-side">
+                    {% if clothing.gender == 'M' %}
+                        <p>Men • {{ clothing.category }}</p>
 
+                    {% elif clothing.gender == 'F' %}
+                        <p>Women • {{ clothing.category }}</p>
+
+
+                    {% elif clothing.gender == 'C' %}
+                        <p>Kids • {{ clothing.category }}</p>
+
+                    {% elif clothing.gender == 'U' %}
+                        <p>Unisex •  {{ clothing.category }}</p>
+
+                    {% endif %}
+
+                    <p>S${{ clothing.price }}</p>
+                    <a href="#reviews">{{ overall }} • ({{ num_reviews }})</a> 
+
+                    <form action="" method="POST" style="margin-top: 10vh">
+                        {% csrf_token %}
+                    
+                        <label for="size">Size</label>
+                        <select title="size" id="size" value="size" name="size" style="height: 4vh">
+                            {% for size in sizes %}
+                                <option class="size-label" name="size" title="size" id="size">{{ size }}</option>
+                            {% endfor %}
+                        </select>
+
+
+                        <label for="color"></label>
+
+                        {% if colors %}
+                            <select title="color" id="color" value="color" name="color" style="height: 4vh"> 
+                                    {% for color, colorID in colors %} 
+                                            <option class="color-label" title="{{ colorID }}" value="{{ color }}" name="{{ colorID }}">{{ color }}</option>
+                                    {% endfor %}
+                            </select>
+                        
+                        {% endif %}
+
+                        <p id="notAvailable" style="color:red"></p>
+
+                        <input type="submit" id="add_cart" value="Add to cart">
+
+                    </form>
+                </div>
             </div>
-            <div class="right-side">
 
-                {% include 'product/right_side.html' %}
+            {{ variant_dicts|json_script:"variant_dicts" }}
 
-            </div>
-        </div>
+            <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const variant_dicts = JSON.parse(document.getElementById("variant_dicts").textContent);
+                
+                console.log(variant_dicts);
 
+                console.log(typeof variant_dicts); // should be 'object'
+                console.log(Array.isArray(variant_dicts)); // should be true
+
+                const sizeSelected = document.getElementById("size");
+                const colorSelected = document.getElementById("color");
+                const notAvailable = document.getElementById("notAvailable");
+                const addCart = document.getElementById("add_cart");
+
+                function CalcStock() {
+                    let size = null;
+                    let color = null;
+
+                    if (sizeSelected != null) {
+                        size = sizeSelected.value;
+                    }
+
+                    if (colorSelected != null) {
+                        color = colorSelected.value;
+                    }
+
+                    let match = null;
+
+                    if (size && color) {
+                        match = variant_dicts.find(variant =>
+                            variant.size === size && variant.color === color,
+
+                        );
+                    } else if (color) {
+                        match = variant_dicts.find(variant =>
+                            variant.color === color,
+
+                        );
+                    } else if (size) {
+                        match = variant_dicts.find(variant =>
+                            variant.size === size,
+
+                        );
+                    }
+
+                    let stock = match.stock;
+
+
+
+                    if(!match || stock <= 4){
+                        notAvailable.style.display = 'block';
+                        notAvailable.textContent = 'Sorry - this size and color is not in stock';
+                        add_cart.disabled = true;
+                    } else {
+                        notAvailable.style.display = 'none';
+                        add_cart.disabled = false;
+                    }
+
+                }
+
+                
+
+                    if (sizeSelected != null) {
+                        sizeSelected.addEventListener("change", CalcStock);
+                    }
+
+                    if (colorSelected != null) {
+                        colorSelected.addEventListener("change", CalcStock);
+                    }
+
+                    CalcStock();
+            });
+
+            
+            </script>
+        </body>
     {% endblock %}
 

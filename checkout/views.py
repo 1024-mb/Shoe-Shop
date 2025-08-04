@@ -199,8 +199,8 @@ def checkout(request):
                 order = place_order(api_key, api_secret, quotation_id, stop_ids,
                                     request.user.first_name+' '+request.user.last_name, phone, id)
 
-                print(order)
-                request.session['request_id'] = 'p'
+
+                request.session['request_id'] = str(uuid.uuid4())
 
                 items = OrderItem.objects.filter(order_id=order_id)
                 order = Order.objects.get(purchase_id=order_id)
@@ -231,15 +231,11 @@ def checkout(request):
                 messages.error(request, 'Sorry, We are unable to process your order at the moment. Please try again later')
                 if order != None:
                     total = round(float(order.amount), 2)
-
-                    items = OrderItem.objects.filter(order_id=order_id)
+                    items = OrderItem.objects.filter(purchase_id=order_id)
 
                     for item in items:
-                        product_id = item.product_id
-                        stock_item = Clothing.objects.filter(product_id=product_id)
-                        stock = stock_item
+                        items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price])
 
-                        items_list.append([item, item.quantity, stock])
 
                     return render(request, 'checkout/checkout.html', context={'items': items_list,
                                                                             'total': total})
@@ -250,14 +246,11 @@ def checkout(request):
         else:
             if order != None:
                 total = round(float(order.amount), 2)
-                items = OrderItem.objects.filter(order_id=order_id)
+                items = OrderItem.objects.filter(purchase_id=order_id)
 
                 for item in items:
-                    product_id = item.product_id
-                    stock_item = Clothing.objects.filter(product_id=product_id)
-                    stock = stock_item
+                    items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price])
 
-                    items_list.append([item, item.quantity, stock])
 
                 return render(request, 'checkout/checkout.html', context={'items': items_list,
                                                                         'total': total})
@@ -272,7 +265,6 @@ def checkout(request):
 @login_required(login_url='login')
 def get_order_status(request):
     order_id = request.session.get("order_id").replace('-', '')
-    print('259')
 
     try:
         order = Order.objects.get(purchase_id=order_id)
@@ -296,13 +288,8 @@ def payment_processing(request):
 def payment_succeeded(request):
     order_id = request.session.get('order_id').replace('-', '')
 
-    print(order_id)
-
     amount_paid = Order.objects.get(purchase_id=order_id)
     paid = round(float(amount_paid.amount), 2)
-
-    items = OrderItem.objects.filter(purchase_id=order_id)
-
 
     context = {
         'order_id': order_id,

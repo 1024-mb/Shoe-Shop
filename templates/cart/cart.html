@@ -40,8 +40,12 @@
                                         
                                 {% else %}
                                     <label for="{{ item.product_id }}">Quantity (max {{ stock }})</label>
-                                    {% if qty > 0 and qty >= stock %}
-                                        <p style="color:red">ERROR: Max order for this product is {{ stock }}</p>
+                                    {% if qty > 0 and qty >= stock and stock != 0 %}
+                                        <p style="color:rgb(255, 86, 86)">You’ve requested more items than are currently available. Please reduce the quantity.</p>
+
+                                    {% elif stock <= 4 %}
+                                        <p style="color:red">Sorry, this item is currently out of stock.</p>
+                                        
                                     {% endif %}
                                     <p><input title="{{ item.product_id }}" class="quantity-input" name="{{ item.product_id }}" type="number" value="{{ qty }}" max="{{ stock }}" min="0" data-price="{{ item.price }}">  </p>
                                 {% endif %}

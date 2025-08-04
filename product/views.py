@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 # Create your views here.
 from django.http import HttpResponse
 from base.forms import ReviewForm
-from base.models import Review, User, Clothing, Order, ProductVariant, ClothingColor
+from base.models import Review, User, Clothing, OrderItem, Order, ProductVariant, ClothingColor
 import uuid
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -21,33 +21,41 @@ filter = Filter()
 
 """
 
-# Create your views here.
 def product(request, pk):
     if request.method=='POST':
+        colorCode = request.POST.get('color')
         cart = request.session.get('cart', {})
-        key = pk + ':' + request.POST.get('size')
+        size = request.POST.get('size')
 
-        colorCode = request.POST.get('colour')
 
-        pk = uuid.UUID(pk)
+        if colorCode:
+            key = pk + ':' + size + ';' + colorCode
+            stock = ProductVariant.objects.get(color_variant_id=colorCode, 
+                                               product_id_id=pk, size=size).stock
+
+        else:
+            key = pk + ':' + size + ';'
+            stock = ProductVariant.objects.get(product_id_id=pk, size=size).stock
+
+
         if Clothing.objects.filter(product_id=pk).exists():
             try:
                 item = Clothing.objects.get(product_id=pk)
 
-                if cart[key] < 20 and stock > cart[key] and stock > 7:
+                if cart[key] < 20 and stock > cart[key] and stock > 4:
                     cart[key] += 1
                     request.session['cart'] = cart
 
                     messages.success(request, 'Added to cart')
                     return redirect('home')
                 
-                elif stock <= 7:
+                elif stock <= 4:
                     del cart[key]
                     messages.error(request, 'Item out of stock')
                     return redirect('home')
 
                 elif stock < cart[key]:
-                    cart[key] = stock - 7
+                    cart[key] = stock - 4
                     return redirect('home')                     
                 
                 elif cart[key] >= 20:
@@ -60,17 +68,27 @@ def product(request, pk):
 
                 messages.success(request, 'Added to cart')
                 return redirect('home')
-
     
     elif Clothing.objects.filter(product_id=pk).exists():
         pk = uuid.UUID(pk)
         product_variant = ProductVariant.objects.filter(product_id_id=pk)
         variants = []
+        colors = []
 
         for item in product_variant:
             color_id = item.color_variant_id
-            item_color = ClothingColor.objects.get(color_id=color_id)
-            variants.append([item_color.color, item.stock, item.size])
+            product = str(pk).replace('-', '')
+
+            item_color = ClothingColor.objects.get(color_id=color_id, product_id_id=product).color
+
+            variants.append([item_color, item.stock, item.size])
+
+            if not(any(item_color in row for row in colors)):
+                colors.append([item_color, color_id])
+
+        colors = None if colors[0][0] == None else colors
+
+        variant_dicts = [{'color': c, 'stock': s, 'size': sz} for c, s, sz in variants]
 
 
         item = Clothing.objects.get(product_id=pk)
@@ -105,7 +123,8 @@ def product(request, pk):
                 "overall": avg,
                 "curr_usr": user,
                 "num_reviews": count,
-                "variants": variants,
+                "variant_dicts": variant_dicts,
+                "colors": colors,
                 "sizes": sizes,
             }
             return render(request, "product/product.html", context)
@@ -114,15 +133,15 @@ def product(request, pk):
         except User.DoesNotExist:
             context = {
                 "clothing": item,
-                "description": description,
                 "reviews": Reviews,
+                "description": description,
                 "overall": avg,
                 "num_reviews": count,
+                "variant_dicts": variant_dicts,
+                "colors": colors,
                 "sizes": sizes,
-                "variants": variants,
             }
             return render(request, "product/product.html", context)
-
 
     else:
         messages.error(request, 'Product does not exist')
@@ -130,17 +149,15 @@ def product(request, pk):
 
 @login_required(login_url='login')
 def create_review(request, pk):
-    pk = uuid.UUID(pk)
-
+    pk = pk.replace('-', '')
     # Checks if the review already exists (in that case, updates it)
-    if not Review.objects.filter(user_id=request.user, product_ID=pk).exists():
-
+    id = uuid.UUID(pk)
+    if not Review.objects.filter(user_id=request.user, product_ID=id).exists():
         if request.method == 'POST':    # checks if submit button was pressed
             title = request.POST.get('title')
             reviewtext = request.POST.get('description_review')
             stars = int(request.POST.get('stars'))
 
-            id = uuid.UUID(pk)
             Prod = Clothing.objects.get(product_id=id)
 
             if filter.is_profane(title) or filter.is_profane(reviewtext):
@@ -149,15 +166,18 @@ def create_review(request, pk):
             else:
                 active=True
 
-            if Order.objects.get(user_id=request.user, product_ID=Prod).exists() == True:
+            print('170')
+            if OrderItem.objects.filter(product_id=Prod).exists() == True:
                 verified=True
 
             else:
                 verified=False
 
+            print('177')
             new_item = Review(user_id=request.user,
                             description_review=reviewtext, 
-                            stars=stars,product_ID_id=pk, 
+                            is_active=active,
+                            stars=stars,product_ID_id=id, 
                             verified=verified,title=title,)
                 
                 
@@ -171,7 +191,6 @@ def create_review(request, pk):
             return render(request, "product/create_review.html", context={})
 
     else:
-        pk = str(pk)
         return redirect(f'http://127.0.0.1:8000/product/{pk}/update_review')
 
 @login_required(login_url='login')

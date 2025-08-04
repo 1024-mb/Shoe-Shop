@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Clothing, Review, Order, OrderItem
+from .models import Clothing, Review, Order, OrderItem, ProductVariant
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -304,15 +304,16 @@ def stripe_webhook(request):
 
         for item in items:
             quantity = item.quantity
-            product = Clothing.objects.get(product_id=item.product_id_id)
+            product = ProductVariant.objects.get(variant_id=item.variant_id_id)
+            productPrice = Clothing.objects.get(product_id=product.product_id_id)
 
             product.stock -= quantity
             product.save()
 
-            price = round(float(quantity * product.price), 2)
+            price = round(float(quantity * productPrice.price), 2)
             total += round(price, 2)
 
-            receipt_items.append([product, quantity, price])
+            receipt_items.append([productPrice, quantity, price])
 
 
         userID = order_return.user_id_id
@@ -412,7 +413,13 @@ def stripe_webhook(request):
         order_return.paid = False
 
         
+    try:
+        order_return.save()
+        return HttpResponse(status=200)
 
-    order_return.save()
-    return HttpResponse(status=200)
+    except Exception as e:
+        print(e + 'line 421 views.py base')
+        return HttpResponse(status=500)
+    
+    
 

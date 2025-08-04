@@ -1,9 +1,15 @@
-<h2>Processing your payment...</h2>
+<h2 id="dots">Processing your payment...</h2>
 <p>Please wait while we confirm your order.</p>
-<div id="spinner">🔄</div>
+
 
 <script>
+    const loadingElement = document.getElementById("dots");
+    let dots = "";
 
+    setInterval(() => {
+        dots = dots.length < 3 ? dots + "." : "";
+        loadingElement.textContent = `Loading${dots}`;
+    }, 500); // Adjust the interval as needed
 
     async function checkStatus() {
         try {
