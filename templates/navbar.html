@@ -1,6 +1,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 <style>
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .search-form {
+        display: flex;
+        align-items: center;
+        border: 2px solid #E31E27;
+        border-radius: 5px;
+        padding: 5px 10px;
+        transition: width 0.3s ease;
+        overflow: hidden;
+    }
+
+    .search-form input {
+        border: none;
+        outline: none;
+        flex: 1;
+        padding: 5px;
+        font-size: 16px;
+        color: #e31e289d;
+    }
+
+    .search-form button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        color: #E31E27;
+    }
+
+    /* 🔻 Collapse on small screens */
+    @media screen and (max-width: 600px) {
+        .search-form {
+            width: 0;
+            padding: 0;
+            border: none;
+        }
+
+    }
+
+    @media screen and (min-width: 600px){
+        .search-toggle {
+            display: none;
+        }
+    }
+
+    .close-search {
+        height: 4vh;
+        background-color: white;
+        outline: none;
+        border: none;
+        color: red;
+    }
+
+    .search-toggle {
+        height: 4vh;
+        background-color: white;
+        outline: none;
+        border: none;
+        color: red;
+
+    }
+
     .search-box {
         
         display: flex;
@@ -8,7 +74,7 @@
         border: 2px solid #E31E27;
         border-radius: 5px;
         padding: 5px 10px;
-        width: 90%;
+        width: 70%;
         
     }
 
@@ -85,7 +151,8 @@
         display: none;
         position: absolute;
         background-color: #f9f9f9;
-        min-width: 160px;
+        min-width: 100px;
+        width: 100px;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 1;
     }
@@ -111,51 +178,56 @@
 
 
 <div class="navbar">
-    <div style="display: flex;">
-        <div>
+    <div style="display: flex;" id="items">
+        <div style="margin-right: 0.5vw;" class="dropdown"> 
+            
+                <div style="color: #E31E27;">
+                    <svg xmlns="http://www.w3.org/2000/svg"  width="4vh" height="4vh" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/> </svg>                
+                    <div class="dropdown-content" style="color: #E31E27;">
+                        {% if request.user.is_authenticated %}
+                            
+                            
+                        {% else %}
+                            <a href="#">Link 2</a>
+                        {% endif %}
+                        <a href="#">Link 3</a>
+                    </div>
+                     
+                </div>
+             
+        </div>
+        <div class="menu-home"  style="margin-left: 2vw; color: #E31E27;" >
             {% if request.path == "/home" or request.path == "/home/" or request.path == "" or request.path == "/" %}
-                <div id="menu" style="margin-right: 1.0vw;" onclick="w3_open()"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="black" class="bi bi-layout-sidebar-inset" viewBox="0 0 16 16"> <path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/> <path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/> </svg></div> 
+                <div id="menu" style="margin-right: 1.0vw;"  onclick="w3_open()"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-layout-sidebar-inset" viewBox="0 0 16 16"> <path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/> <path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/> </svg></div> 
                 
             {% else %}
-                <a href="http://127.0.0.1:8000/home" style="margin-right: 1.0vw;"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16"> <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/> </svg></a>
+                <a href="/home" style="margin-right: 1.0vw;"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16"> <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/> </svg></a>
             {% endif %}
         </div>
-        <div style="margin-right: 0.5vw;">
-            
-            <div class="dropdown">
-                <svg xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/> </svg>
-                <div class="dropdown-content">
-
-                    {% if request.user.is_authenticated %}
-                        <a href="#">Link 1</a>
-                    {% else %}
-                        <a href="#">Link 2</a>
-                    {% endif %}
-                    <a href="#">Link 3</a>
-                </div>
-            </div>
-
-        </div>
+ 
 
 
     </div>
 
 
-    <form method="GET" action="{% url 'home' %}" style="margin: 0">
-        
-        <div class="search-box" style="display: flex; position: relative;">
-            {% if query == None %}
-                <input type="text" class="search" height="4vh" name="q" placeholder="Search...">
-                <button class="search-button"><svg style="color: #E31E27" xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></button>
 
-            {% else %}
-                <input type="text" class="search" name="q" value="{{ query }}" placeholder="Search...">
-                <button class="search-button"><svg style="color:#E31E27" xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></button>
 
-            {% endif %}
-        </div>
-        
-    </form>
+    <div class="search-wrapper">
+        <a id="cart" href="/cart" style="font-size: 3vh; color:black; margin-right: 2vw;"><svg xmlns="http://www.w3.org/2000/svg" style="font-size: 3vh; color: #E31E27;" width="4vh" height="4vh" fill="currentColor" style="margin-right: 5px;" class="bi bi-cart" viewBox="0 0 16 16"> <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></a>
+        <button class="search-toggle" id="search-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/> </svg>
+        </button>
+        <form method="GET" action="{% url 'home' %}" style="margin-bottom: 0;" class="search-form">
+            <input type="text" name="q" placeholder="Search..." />
+            <button type="submit">
+                <i class="fa fa-search"></i>
+            </button>
+            
+        </form>
+        <button type="submit" class="close-search" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" height="4vh" width="4vh" class="bi bi-x-circle" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/> <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/> </svg></button>
+    </div>
+
+
 
 
 

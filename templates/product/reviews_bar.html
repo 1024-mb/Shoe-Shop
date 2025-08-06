@@ -4,6 +4,7 @@
         <h2 id="reviews">Reviews ({{num_reviews}})</h1>
         <a href="{% url 'create_review' clothing.product_id %}">create review</a>
         {% for item in reviews %}
+            <hr>
             {% if item.is_active == True %}
                 {% if request.user.is_authenticated %}
                     {% if curr_usr != None %}
@@ -13,12 +14,13 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-
+                
                 <h6>{{ item.stars }}</h6>
                 <p>{{ item.user_id }}  •   {{ item.created|date:"M Y" }}</p>
                 <h3>{{ item.title }}</h3>
                 <p>{{ item.description_review }}</p>
             {% endif %}
+            <hr>
         {% endfor %}
 
     {% else %}    

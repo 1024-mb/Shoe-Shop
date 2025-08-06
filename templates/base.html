@@ -10,6 +10,7 @@
         
         <title>Home Page</title>
         <style>
+            
             hr {
                 border: 1px solid #ccc;
                 
@@ -138,24 +139,39 @@
         </div>
 
         <script>
-
-            const search = document.querySelector(".search-box");
-            const screenWidth = window.screen.width;
-
-            if (screenWidth < 760) {
-                search.addEventListener("mouseover", () => {
-                    if (!search.classList.contains("active")) {
-                        search.classList.add("active");
-                    }
-                    });
+            /*
+            width: 80vw;
+            padding: 5px 10px;
+            border: 2px solid #E31E27;
+            */
+            const toggleBtn = document.querySelector('.search-toggle');
+            const closeBtn = document.querySelector('.close-search');
+            const searchWrapper = document.querySelector('.search-wrapper');
+            const searchForm = document.querySelector('.search-form')
                 
-                search.addEventListener("mouseout", () => {
-                    if (search.classList.contains("active")) {
-                        search.classList.remove("active");
-                    }
-                });
-            }
+            toggleBtn.addEventListener('click', () => {
+                searchWrapper.classList.toggle('active');
+                searchForm.style.width = '70vw';
+                searchForm.style.padding = '5px 10px';
+                searchForm.style.border = '2px solid #E31E27';
 
+                document.getElementById('search-toggle').style.display = 'none';     
+                document.getElementById('items').style.display = 'none';
+                document.getElementById('cart').style.display = 'none';
+                closeBtn.style.display = 'block';
+
+            });
+
+            closeBtn.addEventListener('click', () => {
+                searchWrapper.classList.toggle('active');
+                document.getElementById('items').style.display = 'flex';
+                searchForm.style.width = 0;
+                searchForm.style.padding = 0;
+                searchForm.style.border = 0;
+                toggleBtn.style.display = 'block';
+                closeBtn.style.display = 'none';
+                document.getElementById('cart').style.display = 'block';
+            });
 
 
             let opened = true;

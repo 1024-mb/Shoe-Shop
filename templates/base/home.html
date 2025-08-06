@@ -27,19 +27,28 @@
         @media screen and (max-width: 600px) {
             .left-side {
                 display: none;
+                width: 100%;
+                
             }
             .right-side {
-                margin-top: 5vh;
+                margin-top: 3vh;
                 width: 100%;
             }
 
             .home-container {
                 grid-template-columns: 1fr;
+                margin:0;
+                margin-left: 1em;
+                margin-bottom: 1px solid #ccc;
             }
+
+
+
+
+            
         }
 
         .products-grid {
-            margin-top: 7.5%;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 2em;
@@ -121,7 +130,7 @@
             cursor: pointer;
         }
 
-        
+
 
     </style>
 
@@ -134,14 +143,14 @@
                     <form method="POST">
                         {% csrf_token %}
 
-                        <select name="order" id="order"style="height: 5vh; border-radius: 5px;">
+                        <select name="order" height="4vh" class="order" style="padding: 5px; outline: none; border-radius: 5px; font-size: 2vh;">
                             <option name="top_rated" value="top_rated">Rating: Highest to Lowest</option>
                             <option name="new_to_old" value="new_to_old">Added: Newest to Oldest</option>
                             <option name="old_to_new" value="old_to_new">Added: Oldest to Newest</option>
                             <option name="low_to_high" value="low_to_high">Price: Lowest to Highest</option>
                             <option name="high_to_low" value="high_to_low">Price: Highest to Lowest</option>
                         </select>
-                        <button class="filter" style="background-color: #E31E27; border-radius: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="2vw" height="2vh" fill="white" class="bi bi-filter-circle" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/> <path d="M7 11.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/> </svg></button>
+                        <button class="filter" style="background-color: #E31E27; border-radius: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="2vh" height="2vh" fill="white" class="bi bi-filter-circle" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/> <path d="M7 11.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/> </svg></button>
 
                     </form>
 
@@ -190,31 +199,39 @@
         </div>
 
         <div class="right-side">
-            <div class="top">
-                {% if request.user.is_authenticated %}
-                    <h2>Welcome, {{ request.user }}</h2>
 
-                {% else %}
-                    <h2>Browse products</h2>
-                {% endif %}
+            {% if clothing|length > 0 %}
+                <div class="top">
+                    {% if request.user.is_authenticated %}
+                        <h2>Welcome, {{ request.user }}</h2>
 
-            </div>    
-            <div class="products-grid">
-                {% for item in clothing %}
-                    <div class="product-card">
-                        <a href='{% url "product" item.product_id %}'>
-                            <img alt="product image" width="90%;" src="/media/{{ item.product_id }}/img1.webp">
-                            <div class="product-info">
-                                <p class="brand">{{ item.brand }}</p>
-                                <p class="category">{{ item.category }}</p>
-                                <h3 class="title">{{ item.name }}</h3>
-                                <p class="price">RM {{ item.price }}</p>
-                            </div>
-                        </a>
-                    </div>
+                    {% else %}
+                        <h2>Browse products</h2>
+                    {% endif %}
 
-                {% endfor %}
-            </div>
+                </div>    
+                <div class="products-grid">
+                    {% for item in clothing %}
+                        <div class="product-card">
+                            <a href='{% url "product" item.product_id %}'>
+                                <img alt="product image" width="90%;" src="/media/{{ item.product_id }}/img1.webp">
+                                <div class="product-info">
+                                    <p class="brand">{{ item.brand }}</p>
+                                    <p class="category">{{ item.category }}</p>
+                                    <h3 class="title">{{ item.name }}</h3>
+                                    <p class="price">RM {{ item.price }}</p>
+                                </div>
+                            </a>
+                        </div>
+
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <p>No results found</p>
+                <a href="/home" style="color: red; text-decoration: underline;">reset filters</a>
+
+            {% endif %}
         </div>
     </div>
 
