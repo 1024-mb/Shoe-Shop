@@ -2,100 +2,219 @@
 
 {% block content %}
     <style>
+
+
+        .left-side a {
+            line-height: 1.5;
+            font-size: 90%;
+        }
+
         .home-container {
             display: grid;
-            grid-template-columns: 1fr 3fr;
-
+            grid-template-columns: 1.2fr 3fr;
+            
+            margin: 1em;
+            margin-top: 0em;
+            
+            margin-bottom: 0;
         }
+
+        .left-side {
+            border-right: 1px solid #ccc;
+            
+        }
+
+        @media screen and (max-width: 600px) {
+            .left-side {
+                display: none;
+            }
+            .right-side {
+                margin-top: 5vh;
+                width: 100%;
+            }
+
+            .home-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .products-grid {
+            margin-top: 7.5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2em;
+            padding: 2em;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            border: 1px solid #E31E27;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1em;
+        }
+
+        .category {
+            font-size: 0.9em;
+            color: #888;
+            margin-bottom: 0.5em;
+        }
+
+        .title {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 0.5em;
+        }
+
+        .price {
+            font-size: 1em;
+            color: #E31E27;
+            font-weight: bold;
+        }
+
+        .results {
+            width: 100%;
+            margin-bottom: 1px solid #ccc;
+            margin-top: 1px solid #000000;
+        }
+
+        .top {
+            margin-left: 2em;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.5em; /* spacing between dropdown and button */
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .variant-dropdown {
+            flex: 1; /* optional: lets dropdown grow */
+            padding: 0.5em;
+        }
+
+        .filter {
+            
+            padding: 0.5em 1em;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        
 
     </style>
 
     <div class="home-container">
-        <div class="left-side">
+        <div class="left-side" id="left-side">
             <h3>Browse Categories</h3>
+            <hr>
+            <div class="results" >
+                <div class="filter-container" style="display: flex; height: 4vh;">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <select name="order" id="order"style="height: 5vh; border-radius: 5px;">
+                            <option name="top_rated" value="top_rated">Rating: Highest to Lowest</option>
+                            <option name="new_to_old" value="new_to_old">Added: Newest to Oldest</option>
+                            <option name="old_to_new" value="old_to_new">Added: Oldest to Newest</option>
+                            <option name="low_to_high" value="low_to_high">Price: Lowest to Highest</option>
+                            <option name="high_to_low" value="high_to_low">Price: Highest to Lowest</option>
+                        </select>
+                        <button class="filter" style="background-color: #E31E27; border-radius: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="2vw" height="2vh" fill="white" class="bi bi-filter-circle" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/> <path d="M7 11.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/> </svg></button>
+
+                    </form>
+
+                </div>
+                <div class="result-count">
+                    <p>
+                        {% if result_count == 0 %}
+                            No results found •   <a href="http://127.0.0.1:8000/home/">home</a> • 
+
+                        
+                        {% elif result_count == 1 %}
+                            Showing 1 of 1 
+                        
+                        {% elif result_count > 1 %}
+
+                            Showing {{result_count}} of {{ result_count }}
+                        
+                        {% endif %}
+
+                       
+                    </p>
+                </div>
+            </div>
             <hr>
             <h3>All</h3>
             {% for subject in all_categories %}
                 <a href="{% url 'home' %}?q={{ subject }}">     {{ subject }}</a><br>
             {% endfor %}
-
+            <hr>
             <h3>Men's</h3>
             {% for subject in mens_categories %}
                 <a href="{% url 'home' %}?q=Mens%20{{ subject }}">     {{ subject }}</a><br>
             {% endfor %}
-
+            <hr>
             <h3>Women's</h3>
             {% for subject in womens_categories %}
                 <a href="{% url 'home' %}?q=Womens%20{{ subject }}">     {{ subject }}</a><br>
             {% endfor %}
-
+            <hr>
             <h3>Children's</h3>
             {% for subject in child_categories %}
                 <a href="{% url 'home' %}?q=Kids%20{{ subject }}">     {{ subject }}</a><br>
 
             {% endfor %}
-
+            
         </div>
 
         <div class="right-side">
-            {% if request.user.is_authenticated %}
-                <h2>Welcome, {{ request.user }}</h2>
+            <div class="top">
+                {% if request.user.is_authenticated %}
+                    <h2>Welcome, {{ request.user }}</h2>
 
-            {% else %}
-                <h2>Browse products</h2>
-            {% endif %}
-        
-                <form method="POST">
-                    {% csrf_token %}
-                    <select name="order" id="order">
-                        <option name="top_rated" value="top_rated">Rating: Highest to Lowest</option>
-                        <option name="new_to_old" value="new_to_old">Added: Newest to Oldest</option>
-                        <option name="old_to_new" value="old_to_new">Added: Oldest to Newest</option>
-                        <option name="low_to_high" value="low_to_high">Price: Lowest to Highest</option>
-                        <option name="high_to_low" value="high_to_low">Price: Highest to Lowest</option>
-                    </select>
-                    <input type="submit" value="submit">
-                </form>
-
-            <p>
-                {% if result_count == 0 %}
-                    No results found •   <a href="http://127.0.0.1:8000/home/">home</a> • 
-
-                
-                {% elif result_count == 1 %}
-                    1 result found • 
-                
-                {% elif result_count > 1 %}
-
-                    {{ result_count }} results found • 
-                
+                {% else %}
+                    <h2>Browse products</h2>
                 {% endif %}
 
-                {% if order == '-rating' %}
-                    Top Rated
-                {% endif %}
+            </div>    
+            <div class="products-grid">
+                {% for item in clothing %}
+                    <div class="product-card">
+                        <a href='{% url "product" item.product_id %}'>
+                            <img alt="product image" width="90%;" src="/media/{{ item.product_id }}/img1.webp">
+                            <div class="product-info">
+                                <p class="brand">{{ item.brand }}</p>
+                                <p class="category">{{ item.category }}</p>
+                                <h3 class="title">{{ item.name }}</h3>
+                                <p class="price">RM {{ item.price }}</p>
+                            </div>
+                        </a>
+                    </div>
 
-                {% if order == '-price' %}
-                    Highest Price
-                {% endif %}
-                
-                {% if order == '-created' %}
-                    Latest
-                {% endif %}
-
-                {% if order == 'created' %}
-                    Oldest
-                {% endif %}
-                
-                {% if order == 'price' %}
-                    Lowest Price
-                {% endif %}
-
-            <p>
-            
-            {% for item in clothing %}
-                <h2><a href='{% url "product" item.product_id %}'>     {{ item.name }}</a></h2>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 

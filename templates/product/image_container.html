@@ -1,29 +1,16 @@
 <style>
-    p {
-        font-size: 3.5vh;
-    }
+
 
     .sizes {
         border: 2px black solid;
         padding: 1.5px
     }
 
-    .room-container {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-    }
-
-
-    .img-container {
-        padding: 20px;
-
-    }
-
 
     .product-img {
         padding: 5px;
         transition: transform .2s;
-        height: 44vh;
+        height: 40vh;
         margin: 0 auto;
     }
     .product-img:hover {
@@ -34,7 +21,16 @@
         transform: scale(1.5); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
         padding: 5px;  
     }
+    .img-container {
+        width: 100%;
+    }
 
+    @media screen and (max-width: 600px) {
+
+        .product-img {
+            height: 35vh;
+        }
+    }
 
     
 </style>

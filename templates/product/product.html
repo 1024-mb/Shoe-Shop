@@ -1,174 +1,345 @@
-{% extends "base.html" %}
-    {% block content %}
-    
-        <style>
-            .notAvailable {
-                color: red;
-                font-size: 1rem;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
 
-            p {
-                font-size: 3.5vh;
-            }
+        #stars {
+            font-size: 100%;
 
-            .sizes {
-                border: 2px black solid;
-                padding: 1.5px
+        }
+
+        .ratings {
+            position: relative;
+            vertical-align: middle;
+            display: inline-block;
+            color: black;
+            overflow: hidden;
+        }
+        .full-stars {
+            position: absolute;
+            left: 0;
+            top: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #E31E27;
+        }
+        
+
+        .empty-stars:before, .full-stars:before {
+            content:"\2605\2605\2605\2605\2605";
+            font-size: 14pt;
+        }
+        .empty-stars:before {
+            -webkit-text-stroke: 1px black;
+        }
+        .full-stars:before {
+            -webkit-text-stroke: 1px #E31E27;
+        }
+        /* Webkit-text-stroke is not supported on firefox or IE */
+
+        /* Firefox */
+        @-moz-document url-prefix() {
+            .full-stars {
+                color: #E31E27;
+            }
+        }
+
+
+        .room-container {
+            word-wrap: break-word;
+            display: grid;
+            
+            grid-template-columns: 2fr 1fr;
+            margin: 1em;
+            margin-bottom: 0;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+
+        .right-side {
+            background-color: #fff;
+            border-left: 1px solid #ccc;
+            position: sticky;
+
+            right: 0;
+            height: 100%;
+            box-sizing: border-box;
+            min-height: 100px;
+            padding: 2vw;
+            word-wrap: break-word;
+            padding: 2vw;
+
+        }
+
+
+
+            /* Responsive stacking  */
+        @media screen and (max-width: 760px) {
+
+            .product-img {
+                height: 2vh;
             }
 
             .right-side {
-                position: fixed;
-                right: 0;
-                width: 370px;
+                all: initial;
             }
-        </style>
+
+            .right-side {
+                background-color: #fff;
+                border-left: 1px solid #ccc;
+                padding: 1em;
+                box-sizing: border-box;
+                width: 100%;
+                display: block;
+                position: relative;
+                border-left: none;
+                margin-top: 2vh;
+            }
+
+            .room-container {
+                display: block;
+                grid-template-columns: 1fr;
+            }
+
+            .left-side,
+            .right-side {
+                padding: 1em;
+                box-sizing: border-box;
+            }
+
+
+        }
+        
+
+        h1 {
+            font-size: 150%;
+            
+        }
+
+        p {
+            font-size: 100%;
+            line-height: 1.5;
+        }
+
+        select, input[type="submit"] {
+            width: 100%;
+            padding: 0.5em;
+            margin-top: 0.5em;
+            font-size: 105%;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #000;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #444;
+        }
+
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+
+{% extends "base.html" %}
+    {% block content %}
+    
+
         <body>
             <div class="room-container">
-                <div class="left-side" style="border-right: 1px solid black;">
-                    <h1>{{ clothing.brand }}</h1>
+                <div class="left-side">
+                    <div class="inside" style="margin-top: 10vh;">
+                        <h1 style="width: 100%;"><a href="/home/?q={{ clothing.brand }}" style="color: #E31E27">{{ clothing.brand }}</a> / <a href="/home/?q={{ clothing.brand }}" style="color: black"> {{ clothing.category }} </a>/ {{ clothing.name }}</h1>
 
-                    <h1>{{ clothing.name }}</h1>
+                        <h1></h1>
 
-                    {% include 'product/image_container.html' %}
-                    
-                    <h1>Description</h1>
-                    <p>{{ clothing.details }}</p>
+                        {% include 'product/image_container.html' %}
+                        
+                        <h1>Description</h1>
+                        <p>{{ clothing.details }}</p>
 
-                    <h1>Details</h1>
+                        <h1>Details</h1>
 
-                    {% for item in description %}
-                        <p>{{ item }}</p>
+                        {% for item in description %}
+                            <p>{{ item }}</p>
 
-                    {% endfor %}
-                    
-                    {% include 'product/reviews_bar.html' %}
-
+                        {% endfor %}
+                        
+                        {% include 'product/reviews_bar.html' %}
+                    </div>
                 </div>
-                <div class="right-side">
+                <div class="right-side">    
                     {% if clothing.gender == 'M' %}
-                        <p>Men • {{ clothing.category }}</p>
+                            <p>Men • {{ clothing.category }}</p>
 
-                    {% elif clothing.gender == 'F' %}
-                        <p>Women • {{ clothing.category }}</p>
+                        {% elif clothing.gender == 'F' %}
+                            <p>Women • {{ clothing.category }}</p>
 
+                        {% elif clothing.gender == 'C' %}
+                            <p>Kids • {{ clothing.category }}</p>
 
-                    {% elif clothing.gender == 'C' %}
-                        <p>Kids • {{ clothing.category }}</p>
-
-                    {% elif clothing.gender == 'U' %}
-                        <p>Unisex •  {{ clothing.category }}</p>
+                        {% elif clothing.gender == 'U' %}
+                            <p>Unisex •  {{ clothing.category }}</p>
 
                     {% endif %}
 
-                    <p>S${{ clothing.price }}</p>
-                    <a href="#reviews">{{ overall }} • ({{ num_reviews }})</a> 
-
-                    <form action="" method="POST" style="margin-top: 10vh">
-                        {% csrf_token %}
-                    
-                        <label for="size">Size</label>
-                        <select title="size" id="size" value="size" name="size" style="height: 4vh">
-                            {% for size in sizes %}
-                                <option class="size-label" name="size" title="size" id="size">{{ size }}</option>
-                            {% endfor %}
-                        </select>
+                        <div class="container" >
+                            <a href="#reviews">
+                                <div class="ratings">
+                                    <div class="empty-stars"></div>
+                                    <div id="full-stars" class="full-stars"></div>
+                                </div>
+                            </a>
+                        </div>
 
 
-                        <label for="color"></label>
-
-                        {% if colors %}
-                            <select title="color" id="color" value="color" name="color" style="height: 4vh"> 
-                                    {% for color, colorID in colors %} 
-                                            <option class="color-label" title="{{ colorID }}" value="{{ colorID }}" id="{{ colorID }}" name="{{ colorID }}">{{ color }}</option>
-                                    {% endfor %}
-                            </select>
+                    <div class="interior" style="margin-top: 5vh; margin-bottom: 0;">
                         
-                        {% endif %}
 
-                        <p id="notAvailable" style="color:red"></p>
+                        <p>S${{ clothing.price }}</p>
 
-                        <input type="submit" id="add_cart" value="Add to cart">
+                        <form action="" method="POST" style="margin-top: 15vh;">
+                            {% csrf_token %}
+                        
+                            <label for="size"></label>
+                            <select title="size" id="size" value="size" name="size" placeholder="size" required>
+                                <option value="" disabled selected>Size</option>
+                                {% for size in sizes %}
+                                    <option class="size-label" name="size" title="size" id="size">{{ size }}</option>
+                                {% endfor %}
+                            </select>
 
-                    </form>
+
+                            <label for="color"></label>
+
+                            {% if colors %}
+                                <select title="color" id="color" value="color" name="color" required> 
+                                    <option value="" disabled selected>Color</option>
+                                    {% for color, colorID in colors %} 
+                                            <option style="font-size: 105%;" class="color-label" title="{{ colorID }}" value="{{ colorID }}" id="{{ colorID }}" name="{{ colorID }}">{{ color }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            
+                            {% endif %}
+
+                            <p id="notAvailable" style="color: #E31E27"></p>
+
+                            <div class="payment-methods" style="margin-top: 20vh;display: flex; gap: 1em; align-items: center; margin-top: 2em;">
+                                <svg style="height: 5vh;" viewBox="0 -9 58 58" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="57" height="39" rx="3.5" fill="white" stroke="#F3F3F3"/><path d="M25.7516 27.4332H21.8901L24.3054 13.4325H28.1667L25.7516 27.4332Z" fill="#15195A"/><path d="M39.7499 13.7748C38.9882 13.4915 37.7802 13.1787 36.2865 13.1787C32.4731 13.1787 29.7878 15.0851 29.7713 17.8106C29.7396 19.8215 31.6939 20.9384 33.1556 21.6089C34.6495 22.2941 35.1574 22.7413 35.1574 23.352C35.1422 24.29 33.9502 24.7223 32.8384 24.7223C31.2967 24.7223 30.4707 24.4994 29.2153 23.9776L28.7069 23.7539L28.1665 26.8967C29.0722 27.2835 30.7408 27.6268 32.4731 27.6419C36.5249 27.6419 39.1627 25.765 39.1939 22.8605C39.2093 21.2667 38.1774 20.0454 35.9526 19.0475C34.602 18.4069 33.7749 17.9749 33.7749 17.3195C33.7908 16.7236 34.4745 16.1133 35.9991 16.1133C37.2544 16.0834 38.1768 16.3663 38.8755 16.6494L39.2247 16.7981L39.7499 13.7748V13.7748V13.7748Z" fill="#15195A"/><path fill-rule="evenodd" clip-rule="evenodd" d="M46.6618 13.4325H49.6486L52.7639 27.433H49.1885C49.1885 27.433 48.8386 25.8244 48.7278 25.3328H43.7699C43.6266 25.705 42.9595 27.433 42.9595 27.433H38.9078L44.6435 14.5941C45.0409 13.6855 45.7407 13.4325 46.6618 13.4325ZM46.4238 18.556C46.4238 18.556 45.2001 21.6689 44.8821 22.4732H48.0918C47.933 21.7733 47.2017 18.4219 47.2017 18.4219L46.9319 17.2156C46.8182 17.5262 46.6539 17.9533 46.543 18.2414C46.4679 18.4366 46.4173 18.568 46.4238 18.556Z" fill="#15195A"/><path fill-rule="evenodd" clip-rule="evenodd" d="M5.1589 13.4325H11.3716C12.2138 13.462 12.8971 13.7152 13.1194 14.6094L14.4696 21.0422C14.4697 21.0426 14.4699 21.043 14.47 21.0434L14.8832 22.9796L18.6649 13.4325H22.7481L16.6785 27.4184H12.5951L9.15337 15.253C7.96587 14.6021 6.6106 14.0786 5.09534 13.7154L5.1589 13.4325Z" fill="#15195A"/></svg>
+                                <svg style="height: 5vh;" viewBox="0 -9 58 58" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="57" height="39" rx="3.5" fill="white" stroke="#F3F3F3"/><path fill-rule="evenodd" clip-rule="evenodd" d="M21.2489 30.8906V32.3674V33.8443H20.6016V33.4857C20.3963 33.7517 20.0848 33.9186 19.6614 33.9186C18.8266 33.9186 18.1722 33.27 18.1722 32.3674C18.1722 31.4656 18.8266 30.8163 19.6614 30.8163C20.0848 30.8163 20.3963 30.9832 20.6016 31.2492V30.8906H21.2489ZM19.7419 31.4218C19.1816 31.4218 18.8387 31.8483 18.8387 32.3674C18.8387 32.8866 19.1816 33.3131 19.7419 33.3131C20.2773 33.3131 20.6387 32.905 20.6387 32.3674C20.6387 31.8299 20.2773 31.4218 19.7419 31.4218ZM43.1228 32.3674C43.1228 31.8483 43.4657 31.4218 44.026 31.4218C44.5621 31.4218 44.9228 31.8299 44.9228 32.3674C44.9228 32.905 44.5621 33.3131 44.026 33.3131C43.4657 33.3131 43.1228 32.8866 43.1228 32.3674ZM45.5338 29.7044V32.3674V33.8443H44.8858V33.4857C44.6804 33.7517 44.3689 33.9186 43.9455 33.9186C43.1107 33.9186 42.4563 33.27 42.4563 32.3674C42.4563 31.4656 43.1107 30.8163 43.9455 30.8163C44.3689 30.8163 44.6804 30.9832 44.8858 31.2492V29.7044H45.5338ZM29.2838 31.3914C29.7008 31.3914 29.9688 31.6509 30.0373 32.1079H28.4925C28.5616 31.6814 28.8225 31.3914 29.2838 31.3914ZM27.8138 32.3674C27.8138 31.4465 28.424 30.8163 29.2966 30.8163C30.1307 30.8163 30.7038 31.4465 30.7102 32.3674C30.7102 32.4537 30.7038 32.5344 30.6974 32.6143H28.4868C28.5802 33.1462 28.9601 33.3379 29.3771 33.3379C29.6758 33.3379 29.9938 33.2261 30.2433 33.0288L30.5605 33.5048C30.1991 33.8075 29.7885 33.9186 29.3401 33.9186C28.449 33.9186 27.8138 33.3068 27.8138 32.3674ZM37.1126 32.3674C37.1126 31.8483 37.4555 31.4218 38.0158 31.4218C38.5511 31.4218 38.9126 31.8299 38.9126 32.3674C38.9126 32.905 38.5511 33.3131 38.0158 33.3131C37.4555 33.3131 37.1126 32.8866 37.1126 32.3674ZM39.5228 30.8906V32.3674V33.8443H38.8755V33.4857C38.6695 33.7517 38.3587 33.9186 37.9352 33.9186C37.1004 33.9186 36.446 33.27 36.446 32.3674C36.446 31.4656 37.1004 30.8163 37.9352 30.8163C38.3587 30.8163 38.6695 30.9832 38.8755 31.2492V30.8906H39.5228ZM33.4569 32.3674C33.4569 33.2636 34.0857 33.9186 35.0452 33.9186C35.4936 33.9186 35.7923 33.8196 36.116 33.5663L35.8051 33.0472C35.5621 33.2205 35.3068 33.3131 35.026 33.3131C34.5091 33.3068 34.1292 32.9361 34.1292 32.3674C34.1292 31.7988 34.5091 31.4281 35.026 31.4218C35.3068 31.4218 35.5621 31.5144 35.8051 31.6877L36.116 31.1685C35.7923 30.9153 35.4936 30.8163 35.0452 30.8163C34.0857 30.8163 33.4569 31.4713 33.4569 32.3674ZM41.0177 31.2492C41.1859 30.9896 41.429 30.8163 41.8026 30.8163C41.9337 30.8163 42.1205 30.8411 42.2638 30.8969L42.0642 31.5024C41.9273 31.4465 41.7904 31.4281 41.6593 31.4281C41.2358 31.4281 41.0241 31.6997 41.0241 32.1885V33.8443H40.3761V30.8906H41.0177V31.2492ZM24.4505 31.1254C24.1389 30.9217 23.7098 30.8163 23.2364 30.8163C22.4822 30.8163 21.9967 31.1749 21.9967 31.762C21.9967 32.2437 22.3582 32.5407 23.024 32.6334L23.3298 32.6765C23.6848 32.7261 23.8524 32.8187 23.8524 32.9856C23.8524 33.2141 23.6157 33.3442 23.1737 33.3442C22.7253 33.3442 22.4017 33.2021 22.1835 33.0351L21.8784 33.5352C22.2334 33.7948 22.6818 33.9186 23.1673 33.9186C24.027 33.9186 24.5253 33.5168 24.5253 32.9545C24.5253 32.4353 24.1332 32.1637 23.4852 32.0711L23.1801 32.0272C22.9 31.9904 22.6754 31.9353 22.6754 31.7372C22.6754 31.5208 22.8871 31.3914 23.2421 31.3914C23.6221 31.3914 23.9899 31.5335 24.1703 31.6446L24.4505 31.1254ZM32.0184 31.2492C32.1859 30.9896 32.429 30.8163 32.8025 30.8163C32.9337 30.8163 33.1205 30.8411 33.2637 30.8969L33.0641 31.5024C32.9273 31.4465 32.7904 31.4281 32.6592 31.4281C32.2358 31.4281 32.0241 31.6997 32.0241 32.1885V33.8443H31.3768V30.8906H32.0184V31.2492ZM27.2784 30.8906H26.2198V29.9944H25.5654V30.8906H24.9616V31.4776H25.5654V32.8251C25.5654 33.5105 25.8334 33.9186 26.5991 33.9186C26.8799 33.9186 27.2036 33.8323 27.4089 33.6901L27.2221 33.1398C27.0289 33.2509 26.8172 33.3068 26.649 33.3068C26.3253 33.3068 26.2198 33.1087 26.2198 32.8123V31.4776H27.2784V30.8906ZM17.5997 31.9904V33.8443H16.9453V32.2005C16.9453 31.6997 16.7336 31.4218 16.2916 31.4218C15.8617 31.4218 15.563 31.6941 15.563 32.2069V33.8443H14.9086V32.2005C14.9086 31.6997 14.6912 31.4218 14.2613 31.4218C13.8186 31.4218 13.5321 31.6941 13.5321 32.2069V33.8443H12.8784V30.8906H13.5264V31.2548C13.7695 30.909 14.0803 30.8163 14.3982 30.8163C14.853 30.8163 15.1767 31.0144 15.382 31.3418C15.6564 30.9274 16.0485 30.8099 16.4285 30.8163C17.1513 30.8227 17.5997 31.2923 17.5997 31.9904Z" fill="#231F20"/><path d="M34.0465 25.8715H24.2359V8.3783H34.0465V25.8715Z" fill="#FF5F00"/><path d="M24.8583 17.1253C24.8583 13.5767 26.5328 10.4157 29.1405 8.37867C27.2336 6.88907 24.8269 5.99998 22.2114 5.99998C16.0194 5.99998 11 10.9809 11 17.1253C11 23.2697 16.0194 28.2506 22.2114 28.2506C24.8269 28.2506 27.2336 27.3615 29.1405 25.8719C26.5328 23.8349 24.8583 20.6739 24.8583 17.1253" fill="#EB001B"/><path d="M47.2818 17.1253C47.2818 23.2697 42.2624 28.2506 36.0704 28.2506C33.4548 28.2506 31.0482 27.3615 29.1405 25.8719C31.7489 23.8349 33.4235 20.6739 33.4235 17.1253C33.4235 13.5767 31.7489 10.4157 29.1405 8.37867C31.0482 6.88907 33.4548 5.99998 36.0704 5.99998C42.2624 5.99998 47.2818 10.9809 47.2818 17.1253" fill="#F79E1B"/></svg>                                <svg style="height: 5%;" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m16.709 10.364l6.053 4.793c.726.574 1.75.574 2.476 0l6.053-4.793l-4.793 6.054a1.994 1.994 0 0 0 0 2.475l4.793 6.054l-6.053-4.793a1.994 1.994 0 0 0-2.476 0l-6.053 4.793l4.793-6.054a1.994 1.994 0 0 0 0-2.475z" stroke-width="1"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M35.615 22.964c-1.317-2.46-1.428-3.312-1.428-5.308s.111-2.85 1.427-5.308a2.47 2.47 0 0 0-1.01-3.34a2.45 2.45 0 0 0-1.745-.211a2.44 2.44 0 0 0-.213-1.746a2.47 2.47 0 0 0-3.337-1.01C26.849 7.356 25.996 7.467 24 7.467s-2.849-.11-5.308-1.427a2.47 2.47 0 0 0-3.338 1.01a2.45 2.45 0 0 0-.213 1.746a2.44 2.44 0 0 0-1.745.212a2.47 2.47 0 0 0-1.01 3.338c1.316 2.46 1.427 3.312 1.427 5.309s-.111 2.848-1.427 5.307a2.47 2.47 0 0 0 2.17 3.632c.195 0 .39-.03.584-.077a2.44 2.44 0 0 0 .214 1.742a2.47 2.47 0 0 0 3.338 1.01c2.46-1.317 3.312-1.428 5.308-1.428s2.849.111 5.308 1.428a2.47 2.47 0 0 0 3.338-1.009a2.44 2.44 0 0 0 .214-1.743c.194.047.39.077.584.077a2.47 2.47 0 0 0 2.17-3.631m-10.016 7.564v8.766h4.383m-24.481 0v-8.766h2.87c1.622 0 2.938 1.318 2.938 2.944s-1.316 2.944-2.938 2.944H5.5m17.907.686v2.959c0 1.21-.981 2.191-2.191 2.191h0a2.2 2.2 0 0 1-1.55-.641" stroke-width="1"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M23.407 33.485v3.616c0 1.21-.981 2.192-2.191 2.192h0a2.19 2.19 0 0 1-2.192-2.192v-3.616m19.093-2.958v8.766m0-3.616c0-1.21.981-2.192 2.192-2.192h0c1.21 0 2.191.982 2.191 2.192v3.616m-25.411-2.192c0 1.21-.982 2.192-2.192 2.192h0a2.19 2.19 0 0 1-2.191-2.192v-1.424c0-1.21.98-2.192 2.191-2.192h0c1.21 0 2.192.982 2.192 2.192m0 3.616v-5.808m18.763 3.616c0 1.21-.98 2.192-2.191 2.192h0a2.19 2.19 0 0 1-2.192-2.192v-1.424c0-1.21.981-2.192 2.192-2.192h0c1.21 0 2.191.982 2.191 2.192m0 3.616v-5.808" stroke-width="1"/></svg>
+                                <svg style="height: 5vh;" viewBox="0 -160.65 522.6 522.6" id="Layer_1" xmlns="http://www.w3.org/2000/svg"><style>.st0{fill:#00b45e}</style><path class="st0" d="M415.9 63.4V0h13v54.5c-3.6 1.8-8.5 5.2-13 8.9zm-22.6 19.1c4-4.8 8.1-9.6 13-13.7V0h-13v82.5zm-150.6 50.4c0 16.9 6.7 33 19 45.3 12.2 12.2 28.3 19 45.3 19 7.2 0 14.6-1.5 19.8-4.1v-13c-6.1 2.6-13.5 4.1-19.8 4.1-27.8 0-51.2-23.4-51.2-51.2v-11.7c0-27.8 23.5-51.2 51.2-51.2 13.8 0 26.7 5.3 36.3 14.9 9.6 9.6 14.9 22.5 14.9 36.3v76h13v-78.5c-.8-16.6-7.9-32.1-19.9-43.7-12.1-11.6-27.8-18-44.3-18-16.9 0-33 6.7-45.3 19-12.2 12.2-19 28.3-19 45.3v11.5zm194.6-31.2c5.9-5.9 13.5-9.2 21-9.2 16.1 0 28.6 12.6 28.6 28.6v11.7c0 16.1-12.6 28.6-28.6 28.6-7.8 0-15.3-4.3-21.2-12-5.2-6.8-8.6-16.1-9.1-24.4l-10.5 13c2.1 9.8 7.2 19.3 14.5 25.9 7.5 6.8 16.9 10.6 26.3 10.6 23 0 41.7-18.7 41.7-41.6v-11.7c0-10.9-4.4-21.3-12.4-29.2-8-8-18.4-12.4-29.3-12.4-6.9 0-17.8 2.5-30.8 14.2-3.5 3.5-11.7 11.7-16.7 17.5-8.4 9.2-20.5 22.9-30.9 36.8v20.3c11.5-14.8 18.1-23.1 29-35.6 9.6-11.4 21.6-25.1 28.4-31.1zM130.1 77.2V61.8c-11.8-6.3-24.6-9.1-41.6-9.1-17.4 0-33.9 6.4-46.4 17.9-12.6 11.6-19.5 26.8-19.5 43v4.2c0 33.6 26.9 60.9 60.1 60.9 26.9 0 38-8.8 40.8-11.6V128h-44v13h31.8v19.6h-.1c-4.1 1.6-12.6 5-28.5 5-12.6 0-24.5-4.9-33.3-13.9-8.9-9-13.7-21-13.7-34v-4.2c0-25.9 24.2-47.9 52.9-47.9 19.7.1 31.5 3.4 41.5 11.6zm94.8 15.3c4.9 0 9.1.8 12.5 2.4 1.6-4 3.3-7.4 5.7-11.4-3.5-2.5-12-4.1-18.2-4.1-23.7 0-41.6 17.9-41.6 41.7v76h13v-76c0-16.8 11.7-28.6 28.6-28.6zM0 113.6v4.2c0 22.6 8.6 43.6 24.1 59.3 15.5 15.6 36.3 24.2 58.5 24.2 17.9 0 33.7-4 47.1-12 11-6.6 15.9-13.2 16.3-13.8v-70H79.5v13H133v53.1c-6.3 6.3-21.2 16.8-50.3 16.8-19 0-36.6-7.3-49.6-20.5-12.9-13.1-20-30.9-20-50v-4.2c0-18.1 8.1-36.1 22.3-49.4 14.5-13.6 33.4-21.1 53.2-21.1 18.5 0 31.3 2.8 41.6 9.1V37.6C119.4 33 106.5 31 88.5 31 40.5 31 0 68.8 0 113.6zm348.5 83.5v-76c0-23.4-18.3-41.7-41.7-41.7-10.9 0-21.3 4.4-29.3 12.4s-12.4 18.4-12.4 29.2v11.7c0 22.6 19.1 41.6 41.6 41.6 6.2 0 14.6-1.5 19.8-5.8V155c-5.1 4.1-12.4 6.5-19.8 6.5-16 0-28.6-12.6-28.6-28.6v-11.7c0-16.1 12.6-28.6 28.6-28.6 16.1 0 28.6 12.6 28.6 28.6v76h13.2zM224.9 69.9c8.8 0 16.5 1.9 23.4 5.8 3.2-4.1 6.5-7.3 9-9.8-7.3-5.6-19.7-9-32.3-9-18.1 0-34.5 6.5-46.2 18.4-11.6 11.7-18 28-18 45.9v76h13v-76c-.1-30.2 20.9-51.3 51.1-51.3zm278.7 6c-12.2-12.2-28.3-19-45.3-19-12.4 0-24.8 4.6-31.7 9.2-14.2 9.4-25.8 19.7-46.8 46.8v19.5c17.8-23.2 34.6-41.4 47.4-51.5 8.4-6.7 20.3-10.9 31.1-10.9 27.8 0 51.2 23.5 51.2 51.2v11.7c0 13.7-5.4 26.6-15.2 36.3-9.7 9.6-22.5 14.9-36 14.9-22.8 0-42.9-15.7-48.3-37l-9.2 11.1c6.7 22.4 30.9 38.9 57.5 38.9 17 0 33-6.8 45.3-19 12.2-12.3 19-28.3 19-45.3v-11.7c0-16.9-6.8-33-19-45.2z"/></svg>
+                                <svg style="height: 5vh;" xmlns="http://www.w3.org/2000/svg" viewBox="-128.24955 -74.99925 1111.4961 449.9955"><path fill="#00a1e9" d="M48.508 0C21.694 0 0 21.511 0 48.068v203.87c0 26.536 21.694 48.059 48.508 48.059h205.81c26.793 0 48.496-21.522 48.496-48.059v-2.086c-.902-.372-78.698-32.52-118.24-51.357-26.677 32.524-61.086 52.256-96.812 52.256-60.412 0-80.927-52.38-52.322-86.86 6.237-7.517 16.847-14.698 33.314-18.718 25.76-6.27 66.756 3.915 105.18 16.477 6.912-12.614 12.726-26.506 17.057-41.297H72.581v-11.88h61.057V87.168H59.687V75.28h73.951V44.89s0-5.119 5.236-5.119h29.848v35.508h73.107V87.17h-73.107v21.303h59.674c-5.71 23.176-14.38 44.509-25.264 63.236 18.111 6.49 34.368 12.646 46.484 16.666 40.413 13.397 51.74 15.034 53.201 15.205V48.069c0-26.557-21.704-48.068-48.496-48.068H48.511zm33.207 162.54a91.24 91.24 0 00-7.822.426c-7.565.753-21.768 4.06-29.533 10.865-23.274 20.109-9.344 56.87 37.762 56.87 27.383 0 54.743-17.343 76.236-45.114-27.71-13.395-51.576-23.335-76.643-23.047z"/><path fill="#3f3b3a" d="M829.48 208.55l-13.517 29.164-13.718-29.164h-13.402l20.871 40.322v28.127h12.295v-28.127l.074-.157 20.787-40.165zm-98.969 17.644l9.535 28.389h-19.407zm12.464 37.015l4.594 13.786h12.885l-25.37-68.45h-9.851l-25.286 68.45h12.896l4.793-13.786zm-96.164-21.937h-13.686v-23.417h13.686c6.88 0 10.989 5.977 10.989 11.755 0 5.653-3.846 11.661-10.989 11.661m.695-32.723h-26.772v68.45h12.39v-26.316h14.381c13.36 0 22.694-8.667 22.694-21.072s-9.334-21.061-22.694-21.061m-89.406 68.45H570.5v-68.45h-12.4zm-87.163-68.449V277h41.711v-9.327h-29.32V208.55zm-70.587 17.644l9.525 28.389h-19.396zm12.464 37.015l4.594 13.786h12.875l-25.37-68.45h-9.84l-25.287 68.45h12.885l4.794-13.786zm87.23-188.47H446.89V55.813h61.635V44.026H446.89V20.044h-27.477c-3.013 0-5.447 2.512-5.447 5.6v18.382h-61.203v11.787h61.203V74.74H362.31v11.776H465.2s-5.7 22.12-33.925 45.891c-25.286-19.02-33.736-34.167-33.736-34.167h-27.604c11.168 19.23 27.035 34.628 44.124 46.844-15.698 10.133-36.054 19.9-62.372 27.72v14.11s40.605-7.61 79.851-30.587c39.31 22.8 78.787 30.587 78.787 30.587v-13.357c-25.265-9.138-45.283-19.188-61.002-28.88 22.768-16.76 42.723-39.507 50.72-69.937m172.66-52.334h-27.668V51.13h-68.198v11.567h68.198v103.27c-.242 2.366-2.117 4.208-4.467 4.334h-14.065v11.965h35.864c5.679-.23 10.21-4.91 10.336-10.709V62.696h11.231V51.129h-11.23zm-58.349 59.777c-1.011-2.051-3.076-3.465-5.478-3.486h-23.052l17.964 56.192h27.267zm-68.092-61.137L514.527 95.63h24.348v88.747H565.5V66.656h-9.65l20.05-45.609zm308.73 159.26l-9.724-32.639c-.653-2.083-2.55-3.59-4.805-3.59h-25.78l7.48 25.07H791.85v-48.57h59.517V109.02H791.85V86.157h59.517V74.6h-148.52v11.557h59.506v22.862h-59.506v11.557h59.506v48.57h-59.506v11.558h152.15l-.127-.398zm-121.2-133.28h86.678v17.052h30.965V43.874c-.01-.042-.01-.063-.01-.115 0-4.543-3.582-8.217-8.018-8.29h-50.108V19.568H760.9v15.9h-58.063v28.61h30.954z"/></svg>
+                                <svg style="height: 5vh;" viewBox="0 -34.55 120.3 120.3" xmlns="http://www.w3.org/2000/svg"><path d="M22.8 6.6c1.4-1.8 2.4-4.2 2.1-6.6-2.1.1-4.6 1.4-6.1 3.1-1.3 1.5-2.5 4-2.2 6.3 2.4.3 4.7-1 6.2-2.8M24.9 10c-3.4-.2-6.3 1.9-7.9 1.9-1.6 0-4.1-1.8-6.8-1.8-3.5.1-6.7 2-8.5 5.2-3.6 6.3-1 15.6 2.6 20.7 1.7 2.5 3.8 5.3 6.5 5.2 2.6-.1 3.6-1.7 6.7-1.7s4 1.7 6.8 1.6 4.6-2.5 6.3-5.1c2-2.9 2.8-5.7 2.8-5.8-.1-.1-5.5-2.1-5.5-8.3-.1-5.2 4.2-7.7 4.4-7.8-2.3-3.6-6.1-4-7.4-4.1"/><g><path d="M54.3 2.9c7.4 0 12.5 5.1 12.5 12.4 0 7.4-5.2 12.5-12.7 12.5H46v12.9h-5.9V2.9h14.2zm-8.3 20h6.7c5.1 0 8-2.8 8-7.5 0-4.8-2.9-7.5-8-7.5h-6.8v15h.1zM68.3 33c0-4.8 3.7-7.8 10.3-8.2l7.6-.4v-2.1c0-3.1-2.1-4.9-5.5-4.9-3.3 0-5.3 1.6-5.8 4h-5.4c.3-5 4.6-8.7 11.4-8.7 6.7 0 11 3.5 11 9.1v19h-5.4v-4.5h-.1c-1.6 3.1-5.1 5-8.7 5-5.6 0-9.4-3.4-9.4-8.3zm17.9-2.5v-2.2l-6.8.4c-3.4.2-5.3 1.7-5.3 4.1 0 2.4 2 4 5 4 4 0 7.1-2.7 7.1-6.3zM96.9 51v-4.6c.4.1 1.4.1 1.8.1 2.6 0 4-1.1 4.9-3.9 0-.1.5-1.7.5-1.7l-10-27.6h6.1l7 22.5h.1l7-22.5h6L110 42.4c-2.4 6.7-5.1 8.8-10.8 8.8-.4-.1-1.8-.1-2.3-.2z"/></g></svg>
+                                <svg style="height: 5vh;" viewBox="0 -9 58 58" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="57" height="39" rx="3.5" fill="white" stroke="#F3F3F3"/><path fill-rule="evenodd" clip-rule="evenodd" d="M27.9174 24.1182V19.6071V19.6062H30.3578C31.3639 19.6068 32.2095 19.2907 32.8945 18.6578C33.5868 18.0571 33.9738 17.1935 33.9541 16.2934C33.9678 15.3982 33.5815 14.541 32.8945 13.9422C32.2155 13.3059 31.3023 12.9587 30.3578 12.9778H26.4404V24.1182H27.9174ZM27.9174 18.2382V14.3494V14.3485H30.3945C30.9466 14.3334 31.4788 14.5487 31.856 14.9396C32.2355 15.2971 32.4496 15.7881 32.4496 16.3009C32.4496 16.8137 32.2355 17.3048 31.856 17.6622C31.4741 18.0449 30.9436 18.254 30.3945 18.2382H27.9174Z" fill="#5F6368"/><path fill-rule="evenodd" clip-rule="evenodd" d="M39.9431 17.0951C39.3113 16.5297 38.4496 16.2471 37.3578 16.2471C35.9554 16.2471 34.8963 16.7448 34.1807 17.7404L35.4817 18.5342C35.9624 17.8598 36.6153 17.5226 37.4404 17.5226C37.9664 17.5167 38.4755 17.703 38.8661 18.0444C39.2555 18.3564 39.4795 18.8215 39.4762 19.3111V19.6382C38.9086 19.3271 38.1863 19.1715 37.3092 19.1715C36.2817 19.1727 35.4603 19.4062 34.845 19.872C34.2297 20.3377 33.922 20.965 33.922 21.7537C33.9086 22.4719 34.2302 23.1577 34.7973 23.6204C35.3807 24.1182 36.1058 24.3671 36.9725 24.3671C37.9878 24.3671 38.8012 23.9315 39.4129 23.0604H39.4771V24.1182H40.8899V19.4204C40.8905 18.4355 40.5749 17.6604 39.9431 17.0951ZM35.9367 22.7182C35.6273 22.5021 35.4448 22.1544 35.4468 21.7848C35.4468 21.3697 35.6477 21.024 36.0523 20.7395C36.4529 20.4592 36.9532 20.3191 37.5532 20.3191C38.3771 20.3191 39.0193 20.4968 39.4798 20.8524C39.4798 21.4533 39.2352 21.9768 38.7459 22.4231C38.3052 22.8501 37.7077 23.0905 37.0844 23.0915C36.6689 23.099 36.2634 22.9672 35.9367 22.7182Z" fill="#5F6368"/><path fill-rule="evenodd" clip-rule="evenodd" d="M49 16.496L44.0679 27.4782H42.5431L44.3734 23.6355L41.1303 16.496H42.7358L45.0798 21.9715H45.1119L47.3917 16.496H49Z" fill="#5F6368"/><path fill-rule="evenodd" clip-rule="evenodd" d="M21.9486 18.6347C21.9492 18.1986 21.9111 17.7632 21.8349 17.3334H15.6055V19.7983H19.1734C19.0259 20.5938 18.5493 21.2964 17.8541 21.7432V23.3432H19.9835C21.2303 22.2294 21.9486 20.5823 21.9486 18.6347Z" fill="#4285F4"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.6055 24.8889C17.3881 24.8889 18.889 24.3217 19.9835 23.344L17.8541 21.744C17.2615 22.1333 16.4982 22.3555 15.6055 22.3555C13.8826 22.3555 12.4202 21.2302 11.8973 19.7137H9.70367V21.3626C10.8249 23.5244 13.1085 24.8887 15.6055 24.8889Z" fill="#34A853"/><path fill-rule="evenodd" clip-rule="evenodd" d="M11.8973 19.7138C11.6208 18.9192 11.6208 18.0586 11.8973 17.264V15.6151H9.70367C8.76585 17.4232 8.76585 19.5546 9.70367 21.3627L11.8973 19.7138Z" fill="#FBBC04"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.6055 14.6223C16.5475 14.6073 17.4577 14.9522 18.1395 15.5823V15.5823L20.0248 13.7556C18.8293 12.6677 17.2455 12.0704 15.6055 12.0889C13.1085 12.089 10.8249 13.4534 9.70367 15.6151L11.8973 17.264C12.4202 15.7476 13.8826 14.6223 15.6055 14.6223Z" fill="#EA4335"/></svg>
+                            </div>
+                            <input style="background-color: red; font-size: 105%;" type="submit" id="add_cart" value="Add to cart">
+
+                        </form>
+                    </div>
                 </div>
             </div>
 
             {{ variant_dicts|json_script:"variant_dicts" }}
+            {{ name|json_script:"name" }}
+            {{ overall|json_script:"overall" }}
 
             <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const variant_dicts = JSON.parse(document.getElementById("variant_dicts").textContent);
-                
-                console.log(variant_dicts);
+                document.addEventListener("DOMContentLoaded", () => {
+                    const name = JSON.parse(document.getElementById("name").textContent);
+                    const variant_dicts = JSON.parse(document.getElementById("variant_dicts").textContent);
+                    let rating = JSON.parse(document.getElementById("overall").textContent);
 
-                console.log(typeof variant_dicts); // should be 'object'
-                console.log(Array.isArray(variant_dicts)); // should be true
 
-                const sizeSelected = document.getElementById("size");
-                const colorSelected = document.getElementById("color");
-                const notAvailable = document.getElementById("notAvailable");
-                const addCart = document.getElementById("add_cart");
+                    document.title = name + ' | SHOEciety';
 
-                function CalcStock() {
-                    let size = null;
-                    let color = null;
 
-                    if (sizeSelected != null) {
-                        size = sizeSelected.value;
-                        console.log(size);
+
+                    const sizeSelected = document.getElementById("size");
+                    const colorSelected = document.getElementById("color");
+                    const notAvailable = document.getElementById("notAvailable");
+                    const addCart = document.getElementById("add_cart");
+                    const reviews = document.getElementById("reviews");
+                    const shading = document.getElementById("full-stars");
+
+                    console.log(rating);
+                    rating = Number(rating);
+                    
+                    percentage = ((rating/5) * 100);
+                    console.log(percentage);
+
+                    if(percentage >= 0) {
+                        shading.style.width = `${percentage}%`;
+                        console.log(shading.style.width);
+                    }
+                    
+
+                    function CalcStock() {
+                        let size = null;
+                        let color = null;
+
+                        if (sizeSelected != null) {
+                            size = sizeSelected.value;
+
+                        }
+
+                        if (colorSelected != null) {
+                            color = colorSelected.value;
+                        }
+
+                        let match = null;
+
+                        if (size && color) {
+                            match = variant_dicts.find(variant =>
+                                variant.size === size && variant.color === color,
+
+                            );
+                        } else if (color) {
+                            match = variant_dicts.find(variant =>
+                                variant.color === color,
+
+                            );
+                        } else if (size) {
+                            match = variant_dicts.find(variant =>
+                                variant.size === size,
+
+                            );
+                        }
+
+                        let stock = match.stock;
+
+
+
+                        if(!match || stock <= 4){
+                            notAvailable.style.display = 'block';
+                            notAvailable.textContent = 'Sorry - this size and color is not in stock';
+                            add_cart.disabled = true;
+                        } else {
+                            notAvailable.style.display = 'none';
+                            add_cart.disabled = false;
+                        }
+
                     }
 
-                    if (colorSelected != null) {
-                        color = colorSelected.value;
-                        console.log(color);
-                    }
+                    
 
-                    let match = null;
+                        if (sizeSelected != null) {
+                            sizeSelected.addEventListener("change", CalcStock);
+                        }
 
-                    if (size && color) {
-                        match = variant_dicts.find(variant =>
-                            variant.size === size && variant.color === color,
+                        if (colorSelected != null) {
+                            colorSelected.addEventListener("change", CalcStock);
+                        }
 
-                        );
-                    } else if (color) {
-                        match = variant_dicts.find(variant =>
-                            variant.color === color,
-
-                        );
-                    } else if (size) {
-                        match = variant_dicts.find(variant =>
-                            variant.size === size,
-
-                        );
-                    }
-
-                    let stock = match.stock;
-
-
-
-                    if(!match || stock <= 4){
-                        notAvailable.style.display = 'block';
-                        notAvailable.textContent = 'Sorry - this size and color is not in stock';
-                        add_cart.disabled = true;
-                    } else {
-                        notAvailable.style.display = 'none';
-                        add_cart.disabled = false;
-                    }
-
-                }
-
-                
-
-                    if (sizeSelected != null) {
-                        sizeSelected.addEventListener("change", CalcStock);
-                    }
-
-                    if (colorSelected != null) {
-                        colorSelected.addEventListener("change", CalcStock);
-                    }
-
-                    CalcStock();
-            });
+                });
 
             
             </script>

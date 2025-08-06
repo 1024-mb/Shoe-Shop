@@ -1,18 +1,162 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<div id="top" class="navbar" style="position:sticky">
-    <a href="http://127.0.0.1:8000/home">HOME</a>
-    <form method="GET" action="{% url 'home' %}">
-        <input type="text" name="q" placeholder="Search products...">                                        
+<style>
+    .search-box {
+        
+        display: flex;
+        align-items: center;
+        border: 2px solid #E31E27;
+        border-radius: 5px;
+        padding: 5px 10px;
+        width: 90%;
+        
+    }
+
+    .search-box input {
+        height: 4vh;
+        border: none;
+        outline: none;
+        flex: 1;
+        padding: 5px;
+        font-size: 3vh;
+        color: #e31e289d;
+        align-items: center;
+    }
+
+    .search-box input::placeholder {
+        color: #e31e289d;
+    }
+
+    .search-box button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 3vh;
+    }
+
+    .search {
+        border-color: #E31E27;
+        color: #E31E27;
+        outline: #E31E27;
+        
+    }
+    .search::placeholder {
+        color: #E31E27
+    }
+
+    .navbar a {
+        color: #E31E27;
+        font-size: 3vh;
+    }
+
+    .navbar {
+        position: fixed; /* or sticky */
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background-color: white;
+        border-bottom: 1px solid #ccc;
+        padding: 1em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-sizing: border-box;
+        
+        
+    }
+    
+    body {
+        padding-top: 70px; /* Adjust based on navbar height */
+    }
+
+    button {
+
+        height: 100%
+    }
+
+    .navbar {
+        display: flex; 
+        align-items: center;
+    }
+
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        float: none;
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #ddd;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+</style>
+
+
+<div class="navbar">
+    <div style="display: flex;">
+        <div>
+            {% if request.path == "/home" or request.path == "/home/" or request.path == "" or request.path == "/" %}
+                <div id="menu" style="margin-right: 1.0vw;" onclick="w3_open()"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="black" class="bi bi-layout-sidebar-inset" viewBox="0 0 16 16"> <path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/> <path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/> </svg></div> 
+                
+            {% else %}
+                <a href="http://127.0.0.1:8000/home" style="margin-right: 1.0vw;"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16"> <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/> </svg></a>
+            {% endif %}
+        </div>
+        <div style="margin-right: 0.5vw;">
+            
+            <div class="dropdown">
+                <svg xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/> </svg>
+                <div class="dropdown-content">
+
+                    {% if request.user.is_authenticated %}
+                        <a href="#">Link 1</a>
+                    {% else %}
+                        <a href="#">Link 2</a>
+                    {% endif %}
+                    <a href="#">Link 3</a>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <form method="GET" action="{% url 'home' %}" style="margin: 0">
+        
+        <div class="search-box" style="display: flex; position: relative;">
+            {% if query == None %}
+                <input type="text" class="search" height="4vh" name="q" placeholder="Search...">
+                <button class="search-button"><svg style="color: #E31E27" xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></button>
+
+            {% else %}
+                <input type="text" class="search" name="q" value="{{ query }}" placeholder="Search...">
+                <button class="search-button"><svg style="color:#E31E27" xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg></button>
+
+            {% endif %}
+        </div>
+        
     </form>
 
-    {% if request.user.is_authenticated %}
-        <a href="{% url 'logout' %}">Logout</a>
 
-    {% else %}
-        <a href="{% url 'login' %}">Login</a>
-
-    {% endif %}
-
-    <hr>
 
 </div>

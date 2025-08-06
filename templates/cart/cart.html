@@ -1,16 +1,23 @@
+<head>
+    <title>My Cart | SHOEciety</title>
+    <style>
+        .product {
+            display: grid;
+            grid-template-columns: 0.2fr 1fr;
+        }
+
+        a {
+            font-size: 80%;
+        }
+
+
+
+    </style>
+
+</head>
 {% extends 'base.html' %}
 
-
 {% block content %}
-
-
-<style>
-    .product {
-        display: grid;
-        grid-template-columns: 0.2fr 1fr;
-    }
-</style>
-
 
 <body>
     <h1>Your Cart</h1>
@@ -44,7 +51,7 @@
                                         <p><input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="{{ qty }}" max="{{ stock }}" min="0" data-price="{{ item.price }}">  </p>
 
                                     {% elif stock <= 4 %}
-                                        <p style="color:red">Sorry, this item is currently out of stock.
+                                        <p style="color: #E31E27">Sorry, this item is currently out of stock.
                                         <input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="0" max="0" min="0" data-price="{{ item.price }}">  </p>
                                     {% endif %}
                                     

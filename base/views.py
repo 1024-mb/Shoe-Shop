@@ -210,6 +210,7 @@ def home(request):
                    'all_categories': all_categories,
                     'mens_categories': men_categories,
                     'womens_categories': women_categories,
+                    'query': None,
                     'child_categories': children_categories,
                     'order': order}
 
@@ -274,7 +275,7 @@ def user_profile(request):
 def logout_page(request):
     if request.user.is_authenticated:
 
-        messages.success(request, 'Successfully logged out!')
+        messages.success(request, 'Logged out')
         logout(request)
         return redirect('home')
 

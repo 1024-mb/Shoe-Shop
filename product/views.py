@@ -54,6 +54,7 @@ def product(request, pk):
 
         print(key)
 
+        print(pk)
         if Clothing.objects.filter(product_id=pk).exists():
             try:
                 item = Clothing.objects.get(product_id=pk)
@@ -70,7 +71,7 @@ def product(request, pk):
                     messages.error(request, 'Item out of stock')
                     return redirect('home')
 
-                elif stock < cart[key]:
+                elif stock <= cart[key]:
                     cart[key] = stock - 4
                     return redirect('home')                     
                 
@@ -78,12 +79,18 @@ def product(request, pk):
                     messages.error(request, 'Maximum order number per item is 20')
                     return redirect('home')    
 
+
             except KeyError as e:
                 cart[key] = 1
                 request.session['cart'] = cart
 
                 messages.success(request, 'Added to cart')
                 return redirect('home')
+
+        else:
+            messages.error(request, 'Product does not exist')
+            return redirect('home')
+
     
     elif Clothing.objects.filter(product_id=pk).exists():
         pk = uuid.UUID(pk)
@@ -135,6 +142,7 @@ def product(request, pk):
         try:
             user = User.objects.get(username=request.user)
             context = {
+                "name": item.brand + ' ' + item.name,
                 "clothing": item,
                 "reviews": Reviews,
                 "description": description,
@@ -150,6 +158,7 @@ def product(request, pk):
 
         except User.DoesNotExist:
             context = {
+                "name": item.name,
                 "clothing": item,
                 "reviews": Reviews,
                 "description": description,

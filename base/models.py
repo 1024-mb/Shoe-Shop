@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import uuid
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.text import slugify
 
 # Create your models here.
 
@@ -33,7 +34,6 @@ class Clothing(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-    
 
 class ClothingColor(models.Model):
     color_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -51,8 +51,6 @@ class ProductVariant(models.Model):
 
     size = models.CharField(max_length=10)  # e.g. US 9
     stock = models.PositiveIntegerField(default=0)
-
-
 
 class Review(models.Model):
     #Unique ID for each review

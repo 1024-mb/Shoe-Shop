@@ -1,15 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head> 
+    <head>
+
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Checkout Page</title>
+        <title>Checkout | SHOEciety</title>
     </head>
     <style>
         .product {
             display: grid;
             grid-template-columns: 0.2fr 1fr;
+            position:sticky;
         }
+
+        .item-payment-container {
+            display: grid;
+            grid-template-columns: 2.3fr 2fr;
+            gap: 2rem;
+            border: 1px black;
+
+        }
+        
+        .form-container {
+            font-size: 80%;
+            width: 100%;
+            border: 1px solid black;
+            
+        }
+
+
     </style>
 
     <body>
@@ -17,221 +36,231 @@
         <a href="{% url 'cart' %}"><</a>
 
 
-        {% if total > 0.0 %}
-            {% for item, qty, id, price in items %}
-                {% if qty > 0.0 %}
-                    <hr>
-                    <div class="product">
-                        <div class="left-side">
-                            <img style="height: 30vh" src="/media/{{ id }}/img1.webp" alt="product-image">
-                        </div>
+        <div class="item-payment-container">
+            <div class="products">
+                {% if total > 0.0 %}
+                    {% for item, qty, id, price in items %}
+                        {% if qty > 0.0 %}
+                            <hr>
+                            <div class="product">
+                                <div class="left-side">
+                                    <img style="height: 30vh" src="/media/{{ id }}/img1.webp" alt="product-image">
+                                </div>
 
-                        <div class="right-side">
-                            <a href="{% url 'product' id %}">{{ item.name }}    </a>
-                            <h4>S$ {{ price|floatformat:2 }}</h4>
-                            <p>Quantity: {{ qty }}</p>
+                                <div class="right-side">
+                                    <a style="margin-top: 10px" href="{% url 'product' id %}">{{ item.name }}    </a>
+                                    <h4>S$ {{ price|floatformat:2 }}</h4>
+                                    <p>Quantity: {{ qty }}</p>
+                                        
+                                    <p>{{ item.description|truncatewords:10 }}</p>
+                                </div>
+                            </div>
+                    
+                            {% endif %}
+                
+                    
+                    {% empty %}    
+                        <p><a href="{% url 'home' %}">Shop</a> to add products to cart</p>
+                
+                    {% endfor %}
+                    <hr>
+            </div>
+
+            <div class="payment-info">
+                    <hr>
+                    <p>Your Total: S$ {{ total|floatformat:2 }}</p>
+
+                        <div class="billing-details">
+                            <script src="https://js.stripe.com/v3/"></script>
+                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+
+                            <div class="form-container" style="width: 100%">
+                                <form id="payment-form" method="POST" action="">
+                                    <table>
+                                    <p>
+                                        <label for="address-input">Address</label>
+                                        <input name="address-input" id="address-input" type="text" placeholder="Enter your address" size="30" autocomplete="off" required>
+                                        <ul id="suggestions-list"></ul>
+                                    </p>
+
+                                    <p>
+                                        <label for="postcode">Postcode</label>
+                                        <input name="postcode" id="postcode" type="text" size="6" placeholder="Postcode" maxlength="6" required>
+                                    </p>
+
+                                    <p>
+                                        <label for="phone">Phone Number</label>
+                                        <input type="tel" name="phone" id="phone" size="20" required>
+                                    </p>
+
+                                    <p>
+                                        <div id="card-element"></div>
+                                    </p>
+
+                                    <hr>
+                                    <p>
+                                        <button id="submit" style="padding: 5px" onclick="disable_button()">Pay</button>
+                                    </p>
+
+                                    <h4 id="loading" style="display: none">Processing</h4>
+                                </form>
                                 
-                            <p>{{ item.description|truncatewords:10 }}</p>
                         </div>
                     </div>
-            
-                    {% endif %}
-            
-                {% empty %}    
-                    <p><a href="{% url 'home' %}">Shop</a> to add products to cart</p>
-            
-                {% endfor %}
+                    
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
 
-        
-            <hr>
-            <strong>Your Total: S$ {{ total|floatformat:2 }}</strong>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", async function () {
+                            // 🔐 Stripe setup
+                            const stripe = Stripe("pk_test_51Rp61ECiz5Qob8MPz2fKkvsX7PTHrvon8wrBE2jpna2vYdKq621Zg5pvl0W4OEhoRpwsmaiKBzwUGbSA3mhpdEpV00REGIOpI5");
+                            const elements = stripe.elements();
+                            const card = elements.create("card");
+                            card.mount("#card-element");
 
-            <script src="https://js.stripe.com/v3/"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
-
-            <div class="form-container" style="width: 70%">
-                <form id="payment-form" method="POST" action="">
-                    <p>
-                        <label for="address-input">Address</label>
-                        <input name="address-input" id="address-input" type="text" placeholder="Enter your address" size="30" autocomplete="off" required>
-                        <ul id="suggestions-list"></ul>
-                    </p>
-
-                    <p>
-                        <label for="postcode">Postcode</label>
-                        <input name="postcode" id="postcode" type="text" size="6" placeholder="Postcode" maxlength="6" required>
-                    </p>
-
-                    <p>
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" name="phone" id="phone" size="20" required>
-                    </p>
-
-                    <p>
-                        <div id="card-element"></div>
-                    </p>
-
-                    <p>
-                        <button id="submit" style="padding: 5px" onclick="disable_button()">Pay</button>
-                    </p>
-
-                    <h4 id="loading" style="display: none">Processing</h4>
-                </form>
-            </div>
-            
-            
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"></script>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", async function () {
-                    // 🔐 Stripe setup
-                    const stripe = Stripe("pk_test_51Rp61ECiz5Qob8MPz2fKkvsX7PTHrvon8wrBE2jpna2vYdKq621Zg5pvl0W4OEhoRpwsmaiKBzwUGbSA3mhpdEpV00REGIOpI5");
-                    const elements = stripe.elements();
-                    const card = elements.create("card");
-                    card.mount("#card-element");
-
-                    // 📞 intl-tel-input setup
-                    const phoneInputField = document.querySelector("#phone");
-                    const phoneInput = window.intlTelInput(phoneInputField, {
-                        onlyCountries: ["sg"],
-                        initialCountry: "sg",
-                        nationalMode: false,
-                        formatOnDisplay: true,
-                        separateDialCode: true,
-                        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
-                    });
-
-                    // 🧠 Autocomplete setup
-                    const sessionToken = crypto.randomUUID();
-                    const inputBox = document.getElementById("address-input");
-                    const suggestionsList = document.getElementById("suggestions-list");
-
-                    let debounceTimer;
-                    inputBox.addEventListener("input", () => {
-                        clearTimeout(debounceTimer);
-                        debounceTimer = setTimeout(fetchSuggestions, 300);
-                    });
-
-                    async function fetchSuggestions() {
-                        try {
-                            const requestBody = {
-                                input: inputBox.value,
-                                locationBias: {
-                                    circle: {
-                                        center: { latitude: 1.5584, longitude: 103.6670 },
-                                        radius: 50000.0
-                                    }
-                                },
-                                sessionToken: sessionToken
-                            };
-
-                            const response = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "X-Goog-Api-Key": "AIzaSyDNZzfTqz-metD4fAhrQ5nIVXAB2TP1fq8",
-                                    "X-Goog-FieldMask": "suggestions.placePrediction.text.text,suggestions.placePrediction.placeId"
-                                },
-                                body: JSON.stringify(requestBody)
+                            // 📞 intl-tel-input setup
+                            const phoneInputField = document.querySelector("#phone");
+                            const phoneInput = window.intlTelInput(phoneInputField, {
+                                onlyCountries: ["sg"],
+                                initialCountry: "sg",
+                                nationalMode: false,
+                                formatOnDisplay: true,
+                                separateDialCode: true,
+                                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
                             });
 
-                            if (!response.ok) {
-                                throw new Error(`API error: ${response.status}`);
+                            // 🧠 Autocomplete setup
+                            const sessionToken = crypto.randomUUID();
+                            const inputBox = document.getElementById("address-input");
+                            const suggestionsList = document.getElementById("suggestions-list");
+
+                            let debounceTimer;
+                            inputBox.addEventListener("input", () => {
+                                clearTimeout(debounceTimer);
+                                debounceTimer = setTimeout(fetchSuggestions, 300);
+                            });
+
+                            async function fetchSuggestions() {
+                                try {
+                                    const requestBody = {
+                                        input: inputBox.value,
+                                        locationBias: {
+                                            circle: {
+                                                center: { latitude: 1.5584, longitude: 103.6670 },
+                                                radius: 50000.0
+                                            }
+                                        },
+                                        sessionToken: sessionToken
+                                    };
+
+                                    const response = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                            "X-Goog-Api-Key": "AIzaSyDNZzfTqz-metD4fAhrQ5nIVXAB2TP1fq8",
+                                            "X-Goog-FieldMask": "suggestions.placePrediction.text.text,suggestions.placePrediction.placeId"
+                                        },
+                                        body: JSON.stringify(requestBody)
+                                    });
+
+                                    if (!response.ok) {
+                                        throw new Error(`API error: ${response.status}`);
+                                    }
+
+                                    const data = await response.json();
+                                    suggestionsList.innerHTML = "";
+
+                                    data.suggestions?.forEach(suggestion => {
+                                        const text = suggestion.placePrediction?.text?.text;
+                                        if (text) {
+                                            const li = document.createElement("li");
+                                            li.textContent = text;
+                                            li.onclick = () => {
+                                                inputBox.value = text;
+                                                suggestionsList.innerHTML = "";
+                                            };
+                                            suggestionsList.appendChild(li);
+                                        }
+                                    });
+                                } catch (error) {
+                                    console.error("Autocomplete error:", error);
+                                    suggestionsList.innerHTML = "<li>Error fetching suggestions</li>";
+                                }
                             }
 
-                            const data = await response.json();
-                            suggestionsList.innerHTML = "";
+                            // 🧾 Form submission
+                            document.getElementById("submit").addEventListener("click", async (e) => {
+                                e.preventDefault();
+                                disable_button();
 
-                            data.suggestions?.forEach(suggestion => {
-                                const text = suggestion.placePrediction?.text?.text;
-                                if (text) {
-                                    const li = document.createElement("li");
-                                    li.textContent = text;
-                                    li.onclick = () => {
-                                        inputBox.value = text;
-                                        suggestionsList.innerHTML = "";
-                                    };
-                                    suggestionsList.appendChild(li);
+                                const formElement = document.getElementById("payment-form");
+                                if (!formElement.checkValidity()) {
+                                    formElement.reportValidity();
+                                    return;
+                                }
+
+                                // Format phone number
+                                const fullNumber = phoneInput.getNumber();
+                                document.querySelector("#phone").value = fullNumber;
+
+                                const formData = new FormData(formElement);
+
+                                try {
+                                    const response = await fetch("/checkout/", {
+                                        method: "POST",
+                                        body: formData
+                                    });
+
+                                    if (!response.ok) {
+                                        throw new Error("Checkout failed");
+                                    }
+
+                                    const { client_secret } = await response.json();
+
+                                    const result = await stripe.confirmCardPayment(client_secret, {
+                                        payment_method: { card: card }
+                                    });
+
+                                    if (result.error) {
+                                        alert(result.error.message);
+                                        window.location.href = "payment_failed/";
+                                    } else if (result.paymentIntent.status === "succeeded") {
+                                        window.location.href = "payment_succeeded/";
+                                    } else {
+                                        window.location.href = "payment_failed/";
+                                    }
+                                } catch (error) {
+                                    console.error("Payment error:", error);
+                                    window.location.href = "payment_failed/";
                                 }
                             });
-                        } catch (error) {
-                            console.error("Autocomplete error:", error);
-                            suggestionsList.innerHTML = "<li>Error fetching suggestions</li>";
-                        }
-                    }
 
-                    // 🧾 Form submission
-                    document.getElementById("submit").addEventListener("click", async (e) => {
-                        e.preventDefault();
-                        disable_button();
+                            // 🕐 Loading animation
+                            const loadingElement = document.getElementById("loading");
+                            let dots = "";
 
-                        const formElement = document.getElementById("payment-form");
-                        if (!formElement.checkValidity()) {
-                            formElement.reportValidity();
-                            return;
-                        }
-
-                        // Format phone number
-                        const fullNumber = phoneInput.getNumber();
-                        document.querySelector("#phone").value = fullNumber;
-
-                        const formData = new FormData(formElement);
-
-                        try {
-                            const response = await fetch("/checkout/", {
-                                method: "POST",
-                                body: formData
-                            });
-
-                            if (!response.ok) {
-                                throw new Error("Checkout failed");
+                            function disable_button() {
+                                const submit = document.getElementById("submit");
+                                submit.disabled = true;
+                                submit.style.display = "block";
+                                loadingDots();
                             }
 
-                            const { client_secret } = await response.json();
-
-                            const result = await stripe.confirmCardPayment(client_secret, {
-                                payment_method: { card: card }
-                            });
-
-                            if (result.error) {
-                                alert(result.error.message);
-                                window.location.href = "payment_failed/";
-                            } else if (result.paymentIntent.status === "succeeded") {
-                                window.location.href = "payment_succeeded/";
-                            } else {
-                                window.location.href = "payment_failed/";
+                            function loadingDots() {
+                                setInterval(() => {
+                                    dots = dots.length < 3 ? dots + "." : "";
+                                    submit.textContent = `Processing${dots}`;
+                                }, 500);
                             }
-                        } catch (error) {
-                            console.error("Payment error:", error);
-                            window.location.href = "payment_failed/";
-                        }
-                    });
+                        });
+                    </script>
+                {% else %}
+                    <p><a href="{% url 'home' %}">Shop</a> to add products to cart</p>
 
-                    // 🕐 Loading animation
-                    const loadingElement = document.getElementById("loading");
-                    let dots = "";
-
-                    function disable_button() {
-                        const submit = document.getElementById("submit");
-                        submit.disabled = true;
-                        submit.style.display = "block";
-                        loadingDots();
-                    }
-
-                    function loadingDots() {
-                        setInterval(() => {
-                            dots = dots.length < 3 ? dots + "." : "";
-                            submit.textContent = `Processing${dots}`;
-                        }, 500);
-                    }
-                });
-            </script>
-        {% else %}
-            <p><a href="{% url 'home' %}">Shop</a> to add products to cart</p>
-
-        {% endif %}
-
+                {% endif %}
+            </div>
+        </div>
         
         
     </body>

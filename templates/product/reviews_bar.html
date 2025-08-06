@@ -1,26 +1,29 @@
-{% if reviews %}
-    <h2 id="reviews">Reviews</h1>
-    <a href="{% url 'create_review' clothing.product_id %}">create review</a>
-    {% for item in reviews %}
-        {% if item.is_active == True %}
-            <hr>
-            {% if request.user.is_authenticated %}
-                {% if curr_usr != None %}
-                    {% if item.user_id == curr_usr %}
-                        <a href="{% url 'update_review' clothing.product_id %}">Edit review</a>
-                        <a href="{% url 'delete_review' clothing.product_id %}">Delete review</a>
+<div class="reviews" style="border-top: 1px solid #ccc; margin-left: 0;">
+    {% if reviews %}
+        
+        <h2 id="reviews">Reviews ({{num_reviews}})</h1>
+        <a href="{% url 'create_review' clothing.product_id %}">create review</a>
+        {% for item in reviews %}
+            {% if item.is_active == True %}
+                {% if request.user.is_authenticated %}
+                    {% if curr_usr != None %}
+                        {% if item.user_id == curr_usr %}
+                            <a href="{% url 'update_review' clothing.product_id %}">Edit review</a>
+                            <a href="{% url 'delete_review' clothing.product_id %}">Delete review</a>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
+
+                <h6>{{ item.stars }}</h6>
+                <p>{{ item.user_id }}  •   {{ item.created|date:"M Y" }}</p>
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description_review }}</p>
             {% endif %}
+        {% endfor %}
 
-            <h6>{{ item.stars }}</h6>
-            <p>{{ item.user_id }}  •   {{ item.created|date:"M Y" }}</p>
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.description_review }}</p>
-        {% endif %}
-    {% endfor %}
-
-{% else %}    
-    <h2 id="reviews">No reviews</h2>
-    <a href="{% url 'create_review' clothing.product_id %}">create review</a>  
-{% endif %}
+    {% else %}    
+        <h2 id="reviews">No reviews</h2>
+        <a href="{% url 'create_review' clothing.product_id %}">create review</a>  
+        
+    {% endif %}
+</div>
