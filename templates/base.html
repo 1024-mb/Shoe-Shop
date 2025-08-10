@@ -8,8 +8,79 @@
         
         <script src="https://js.stripe.com/v3/"></script>
         
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <!--GOOGLE FONTS-->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+
+
         <title>Home Page</title>
         <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
+
+
+
+            .content-wrap {
+                flex: 1;
+            }
+
+            .footer {
+                background: #000;
+                color: #aaa;
+                padding: 30px 0;
+                text-align: center;
+            }
+
+
+
+            .footer .row{
+                width:100%;
+                margin:1% 0%;
+                padding:0.6% 0%;
+                color:rgb(167, 166, 166);
+                font-size:0.8em;
+            }
+
+            .footer .row a{
+                text-decoration:none;
+                color:rgb(167, 166, 166);
+                transition:0.5s;
+            }
+
+            .footer .row a:hover{
+                color:#fff;
+            }
+
+
+
+            .footer .row ul li{
+                display:inline-block;
+                margin:0px 30px;
+            }
+
+            .footer .row a i{
+                font-size:2em;
+                margin:0% 1%;
+            }
+
+            @media (max-width:720px){
+                .footer{
+                    padding:5%;
+                }
+                .footer .row ul li{
+                    display:block;
+                    margin:10px 0px;
+                    text-align:left;
+                }
+                .footer .row a i{
+                    margin:0% 3%;
+                }
+            }
+
             
             hr {
                 border: 1px solid #ccc;
@@ -18,6 +89,11 @@
 
             #menu {
                 display: none;
+            }
+
+            p {
+                font-family: Arial, Helvetica, sans-serif;
+                
             }
 
             @media screen and (max-width: 600px) {
@@ -38,18 +114,8 @@
                 text-decoration: none;
             }
 
-
-
             a:hover {
                 text-decoration: underline dashed;
-            }
-
-            .footer {
-                text-align: center;
-            }
-
-            body {
-                font-family: Arial, Helvetica, sans-serif;
             }
 
             .msg-container {
@@ -68,7 +134,6 @@
                 margin-left: 3vw;
             }
 
-
             #success {
                 background-color: green;
                 color: white;
@@ -86,69 +151,277 @@
             
             
             body {
+                zoom: 100%;
                 margin: 0;
                 padding: 0;
                 overflow-x: hidden;
+                font-family: Arial, Helvetica, sans-serif;
+
+                width: 100%;
+            }
+            .return-message {
+                text-align: center;
+
+            }
+            .return-message a{
+                color: #E31E27; 
+                text-decoration: underline;
+            }
+
+            .full {
+                display: flex;
+                justify-content: center;
             }
 
 
+            .container {
+
+                min-height: 67vh;
+            }
+            .reviews {
+                margin-right: 0.5vw;
+            }
+            .outer-payment {
+                text-align: center;
+                padding: 20px;
+            }
+
+            .payment-response {
+                text-align: center;
+                margin-top: 10vh;
+            }
+            .payment-response a {
+                color: #E31E27;
+            }
+            .payment-response {
+                background-color: #E31E27;
+                color: white;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                padding: 0.5em;
+                margin-top: 0.5em;
+                
+                border-radius: 8px;
+                border: 1px solid #ccc;
+            }
+
+            .payment-response a {
+                font-size: 105%;
+                color: white;
+                text-decoration: none
+            }
+            .payment-response a:hover {
+                text-decoration: none
+            }
+            .wrapper {
+                max-width: 500px;
+                width: 100%;
+                background: #fff;
+                border-radius: 5px;
+                box-shadow: 0px 4px 10px 1px rgba(0, 0, 0, 0.1);
+            
+            
+            }
+            .wrapper .title {
+                height: 120px;
+                background: #E31E27;
+                border-radius: 5px 5px 0 0;
+                color: #fff;
+                font-size: 30px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .wrapper form {
+                padding: 25px 35px;
+            }
+            .wrapper form .row {
+                height: 60px;
+                margin-top: 15px;
+                position: relative;
+            }
+            .wrapper form .row input {
+                height: 100%;
+                width: 100%;
+                outline: none;
+                padding-left: 70px;
+                font-size: 2vh;
+                border-radius: 5px;
+                border: 1px solid lightgrey;
+                transition: all 0.3s ease;
+                color: #e31e289d;
+            }
+            form .row input:focus {
+                border-color: #E31E27;
+            }
+            form .row input::placeholder {
+                color: #e31e289d;
+            }
+            .wrapper form .row i {
+                position: absolute;
+                width: 55px;
+                height: 100%;
+                color: #fff;
+                font-size: 2vh;
+                background: #E31E27;
+                border: 1px solid #E31E27;
+                border-radius: 5px 0 0 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .wrapper form .pass {
+                margin-top: 12px;
+            }
+            .wrapper form .pass a {
+                color: #E31E27;
+                font-size: 17px;
+                text-decoration: none;
+            }
+            .wrapper form .pass a:hover {
+                text-decoration: underline;
+            }
+            .wrapper form .button input {
+                margin-top: 20px;
+                color: #fff;
+                font-size: 20px;
+                font-weight: 500;
+                padding-left: 0px;
+                background: #E31E27;
+                border: 1px solid #E31E27;
+                cursor: pointer;
+            }
+            form .button input:hover {
+                background: #E31E27;
+            }
+            .wrapper form .signup-link {
+                text-align: center;
+                margin-top: 45px;
+                font-size: 17px;
+            }
+            .wrapper form .signup-link a {
+                color: #E31E27;
+                text-decoration: none;
+            }
+            form .signup-link a:hover {
+                text-decoration: underline;
+            }
 
         </style>
     </head>
-
     <body>
-        <div id="top"></div>
-        {% if messages %}
-            {% for message in messages %}
+        <div class="container">
+            <div id="top">
+                {% if messages %}
+                    {% for message in messages %}
 
-                {% if message.tags == 'success' %}
-                    <div id="{{ message.tags }}" class="msg-container" style="display: flex; align-items: center; gap: 20px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> 
-                        {{ message }}
-                    </div>
+                        {% if message.tags == 'success' %}
+                            <div id="{{ message.tags }}" class="msg-container" style="display: flex; align-items: center; gap: 20px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg> 
+                                <p>{{ message }}</p>
+                                </div>
 
-                {% elif message.tags == 'warning' %}
-                    <div id="{{ message.tags }}" class="msg-container" style="display: flex; align-items: center; gap: 20px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>
-                        {{ message }}
-                    </div>
+                        {% elif message.tags == 'warning' %}
+                            <div id="{{ message.tags }}" class="msg-container" style="display: flex; align-items: center; gap: 20px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></svg>
+                                <p>{{ message }}</p>
+                            </div>
 
-                {% elif message.tags == 'error' %}
-                    <div id="{{ message.tags }}" class="msg-container" style="display: flex; align-items: center; gap: 20px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/></svg>
-                        {{ message }}
-                    </div>
+                        {% elif message.tags == 'error' %}
+                            <div id="{{ message.tags }}" class="msg-container" style="display: flex; align-items: center; gap: 20px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/></svg>
+                                <p>{{ message }}</p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <br>
+                    <br>
                 {% endif %}
-            {% endfor %}
-            <br>
-            <br>
-        {% endif %}
+            </div>
+            <div class="content-wrap">
+                {% include 'navbar.html' %}
 
 
-        {% include 'navbar.html' %}
+                {% block content %}
 
 
-        {% block content %}
-
-
-        {% endblock %}
-
-
-        <div class="footer" style="width: 100%; border-top: 1px solid #ccc; margin-top: 0;">
-            <a style="color: #E31E27;" href="#top">To top</a>
+                {% endblock %}
+            </div>
         </div>
+            <div class="footer">
+                <a style="color: #E31E27; padding: 5vh;" href="#top">To top</a>
+                <div class="row" style="margin-top: 3vh;">
+                    <a href="#"><i class="fa fa-facebook"></i></a>
+                    <a href="#"><i class="fa fa-instagram"></i></a>
+                    <a href="#"><i class="fa fa-youtube"></i></a>
+                    <a href="#"><i class="fa fa-twitter"></i></a>
+                </div>
 
+                <div class="row">
+                    <ul>
+                        <li><a href="#">Contact us</a></li>
+                        <li><a href="#">Our Services</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                        <li><a href="#">Career</a></li>
+                    </ul>
+                    </div>
+
+                    <div class="row">
+                        © 2025 ShoeCIETY - All rights reserved
+                        | Moiz Sajjad 
+                    </div>
+                </div>
+            </div>
+        
+        
+    
         <script>
+            const toggleBtn = document.querySelector('.search-toggle');
+            const closeBtn = document.querySelector('.close-search');
+            const searchWrapper = document.querySelector('.search-wrapper');
+            const searchForm = document.querySelector('.search-form');
+            const dropdown = document.getElementById('dropdown-content');
+            
+
+            let menu_opened = true;
+
+
+            function w3_open() {;
+                if (menu_opened==true) {
+                    menu_opened = false;
+                    document.getElementById("left-side").style.display = "block";
+                    document.getElementById("left-side").style.marginTop = "5vh";
+
+                } else {
+                    menu_opened = true;
+                    document.getElementById("left-side").style.display = "none";
+
+                }
+            };
             /*
             width: 80vw;
             padding: 5px 10px;
             border: 2px solid #E31E27;
-            */
-            const toggleBtn = document.querySelector('.search-toggle');
-            const closeBtn = document.querySelector('.close-search');
-            const searchWrapper = document.querySelector('.search-wrapper');
-            const searchForm = document.querySelector('.search-form')
-                
+            */       
+            
+            let dropdown_opened = true;
+
+            function dropdownShow() {
+                if (dropdown_opened==true) {
+                    dropdown_opened = false;
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown_opened = true;
+                    dropdown.style.display = 'none';
+
+
+                }
+
+            };
+            
+            
             toggleBtn.addEventListener('click', () => {
                 searchWrapper.classList.toggle('active');
                 searchForm.style.width = '70vw';
@@ -174,25 +447,8 @@
             });
 
 
-            let opened = true;
 
-
-            function w3_open() {
-                console.log('here');
-                if (opened==true) {
-                    console.log('139');
-                    opened = false;
-                    document.getElementById("left-side").style.display = "block";
-                    document.getElementById("left-side").style.marginTop = "5vh";
-
-                } else {
-                    console.log('143');
-                    opened = true;
-                    document.getElementById("left-side").style.display = "none";
-
-                }
-            };
-          
+            
 
             document.addEventListener("DOMContentLoaded", () => {
                 let elements = document.getElementsByClassName('msg-container');

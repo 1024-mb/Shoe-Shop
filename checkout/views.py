@@ -12,11 +12,12 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
+import time
 
 from djstripe.models import Event, Charge, PaymentMethod
 from base.models import Clothing, Order, OrderItem, User, ProductVariant
 
-import time
+from datetime import datetime
 import hmac
 import hashlib
 import stripe
@@ -94,6 +95,7 @@ def create_quotation(latitude, longitude, location_address, quantity):
 
     # ✅ Handle the response
     if response.status_code == 201:
+        print(response.json())
         return response.json()  # Parsed JSON response
     
     else:
@@ -199,6 +201,7 @@ def checkout(request):
                 order = place_order(api_key, api_secret, quotation_id, stop_ids,
                                     request.user.first_name+' '+request.user.last_name, phone, id)
 
+                print(order)
 
                 request.session['request_id'] = str(uuid.uuid4())
 
@@ -224,7 +227,7 @@ def checkout(request):
 
                 client_secret_str = str(payment_intent.client_secret)
 
-                request.session['cart'] = {}
+                
                 return JsonResponse({'client_secret': str(client_secret_str),
                                     'quotation': quotation})
         

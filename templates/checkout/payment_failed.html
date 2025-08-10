@@ -8,7 +8,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    
+<div class="outer-payment">
     <h1>Payment failed</h1>
-    <a href="/home">home</a>
-
+    <p>The contents of your cart have been saved. We are unable to process your order. Please try again later.</p>
+    <a href="/home">
+        <div class="payment-response">
+            home
+        </div>
+    </a>
+</div>
 {% endblock %}

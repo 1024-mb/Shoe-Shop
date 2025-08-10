@@ -3,6 +3,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Review | SHOEciety</title>
+    <style>
+
+            .wrapper form .row input {
+                padding: 0;
+            }
+            
+            .row textarea {
+                align-items: center;
+                justify-content: center;
+                
+
+                height: 100%;
+                width: 100%;
+                outline: none;
+                padding-left: 70px;
+                font-size: 2vh;
+                border-radius: 5px;
+                border: 1px solid lightgrey;
+                transition: all 0.3s ease;
+                color: #e31e289d;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .row textarea::placeholder {
+                color: #e31e289d;
+            }
+
+            .wrapper {
+                display: flex;
+                flex-direction: column;
+            
+            }
+
+    </style>
+
+
 </head>
 
 
@@ -10,42 +46,60 @@
 {% block content %}
 
 <div>
-    <form method='POST' action=''>
-        {% csrf_token %}
+    
+        
         {% if curr_title %}
-            <p>
-                <label for='title'>Title (7 words or less): </label>
-                <input title='title' type='text' name='title' value='{{ curr_title }}'>
-            </p>
-            <p>
-                <label for='description_review'>Review Body (20 words or less): </label>
-                <textarea title='description_review' name='description_review' rows="20" cols="50">{{ curr_desc }}</textarea>
-            </p>
-            <p>
-                <label for='stars'>Stars (1-5): </label>
-                <input title='number' type='number' value='{{ curr_stars }}' name='stars' min='1' max='5'>
-            </p>
-            <p>
-                <input type='submit' value='submit'/>
-            </p>
-
+            <div class="full">
+                <div class="login-wrapper">
+                    <div class="wrapper" style="width: 100%;">
+                        <form method='POST' action=''>
+                            {% csrf_token %}
+                            <div class="row">
+                                <i style="font-size: 15px; font-style: normal;">Title</i>
+                                        
+                                <input style="color: #E31E27; padding: 0px; text-align: center;" type="text" value="{{ curr_title }}" name="title" placeholder="Review Title" required />
+                            </div>
+                            <div class="row" style="height: 20vh;">
+                                <i style="font-size: 10px; font-style: normal;">Description</i>
+                                <textarea name="description_review" rows="4" cols="35" required>{{ curr_desc }}</textarea>
+                            </div>
+                            <div class="row">
+                                <i style="font-size: 15px; font-style: normal;">Stars</i>
+                                <input style="color: #E31E27; padding: 0px; text-align: center;" maxlength="1" max="5" min="1" type="number" name="stars" value="{{ curr_stars }}" placeholder="Rating (1-5)" required />
+                            </div>
+                            <div class="row button">
+                                <input id="submit" type="submit" value="Update" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
         {% else %}
-            <p>
-                <label for='title'>Title (7 words or less): </label>
-                <input title='title' type='text' name='title'>
-            </p>
-            <p>
-                <label for='description_review'>Review Body (20 words or less): </label>
-                <textarea title='description_review' name='description_review'></textarea>
-            </p>
-            <p>
-                <label for='stars'>Stars (1-5): </label>
-                <input title='stars' type='number' name='stars' min='1' max='5'>
-            </p>
-            <p>
-                <input type='submit' value='submit'/>
-            </p>
+            <div class="full">
+                <div class="login-wrapper">
+                    <div class="wrapper" style="width: 100%;">
+                        <form method='POST' action=''>
+                            {% csrf_token %}
+                            <div class="row">
+                                <i style="font-size: 15px; font-style: normal;">Title</i>
+                                <input style="color: #e31e289d;" type="text" name="title" placeholder="Review Title" required />
+                            </div>
+                            <div class="row" style="height: 20vh;">
+                                <i style="font-size: 10px; font-style: normal;">Description</i>
+                                <textarea name="description_review" rows="4" cols="35" placeholder="Review Body" required></textarea>
+                            </div>
+                            <div class="row">
+                                <i style="font-size: 15px; font-style: normal;">Stars</i>
+                                <input style="color: #e31e289d;" type="number" maxlength="1" max="5" min="1" name="stars" placeholder="Rating (1-5)" required />
+                            </div>
+                            <div class="row button">
+                                <input id="submit" type="submit" value="Create" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
         {% endif %}
     </form>

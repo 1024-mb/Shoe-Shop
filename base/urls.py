@@ -14,9 +14,9 @@ urlpatterns = [
     path('login/', views.login_page, name='login'),
     path('register/', views.register, name='register'),
 
-    path('lougout/', views.logout_page, name='logout'),
+    path('logout/', views.logout_page, name='logout'),
 
-    path('profile/', views.user_profile, name='profile'),
+    path('profile/', include('user_profile.urls'), name='profile'),
 
     path('stripe/webhook', views.stripe_webhook, name='stripe_webhook')
 ]

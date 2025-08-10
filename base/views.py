@@ -5,9 +5,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
+from datetime import datetime
+
 from django.contrib.auth.models import User
 
-
+from django.forms import ValidationError
 from .forms import SignUpForm, UpdateForm
 from django.db.models import Q
 from django.contrib import messages
@@ -81,71 +83,54 @@ def login_page(request):
         return render(request, 'login_register.html', context)
 
 def register(request):
-    signup_form = SignUpForm()
 
     if request.method == "POST":
-        form = SignUpForm(request.POST)
+        if '@' not in request.POST.get('email'):
+            context = {'operation': 'Signup',
+                       'error': 'Error: invalid e-mail'}
+
+            return render(request, 'login_register.html', context)
+            
+            
         
-        if form.is_valid():
-            if '@' not in request.POST.get('email'):
-                raise form.ValidationError('email is invalid')
-            
-            if len(request.POST.get('username')) > 150:
-                raise form.ValidationError('username is too long')
-            
+        if len(request.POST.get('username')) > 150:
+            context = {'operation': 'Signup',
+                       'error': 'Username must be less than 150 characters'}
 
-            try:
-                userchecked = User.objects.get(username__exact=request.POST.get('username'))
-                raise form.ValidationError('username is already in use')
-            
-            except User.DoesNotExist:
-                user = form.save(commit=False)
-                user.username = user.username
-                user.save()
+            return render(request, 'login_register.html', context)
+        
 
-                login(request, user)
-                messages.success(request, 'Account created')
+        if request.POST.get('password1') != request.POST.get('password2'):
+            context = {'operation': 'Signup',
+                       'error': 'Passwords do not match'}
 
-                return redirect('home')
+            return render(request, 'login_register.html', context)
+
+        if User.objects.filter(username=request.POST.get('username')).exists() == False:
+            context = {'operation': 'Signup',
+                       'error': 'Username already in use'}
+
+            return render(request, 'login_register.html', context)
 
         else:
-            if '@' not in request.POST.get('email'):
-                messages.error(request, 'Please enter a valid email address')
-                context = {'operation': 'Signup',
-                           'form': signup_form}
-                
-                return render(request, 'login_register.html', context)
-            
-            if len(request.POST.get('username')) > 150:
-                messages.error(request, 'Username is greater than 150 characters')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            password = request.POST.get('password1')
 
-                context = {'operation': 'Signup',
-                        'form': signup_form}
-                
-                return render(request, 'login_register.html', context)
-            
-            try:
-                userchecked = User.objects.get(username=request.POST.get('username'))
-                messages.error(request, 'Username is already taken')
-                
-                context = {'operation': 'Signup',
-                        'form': signup_form}
-                
-                return render(request, 'login_register.html', context)
-            
-            except:
-                pass
 
-            context = {'operation': 'Signup',
-                    'form': signup_form}
-            
-            return render(request, 'login_register.html', context)
+            user = User(username=username, email=email, last_name=last_name, first_name=first_name)
+            user.set_password(password)
+
+            user.save()
+
+            messages.success(request, 'Account created!')
+            return redirect('login')
 
 
     else:
-        context = {'operation': 'Signup',
-                   'form': signup_form}
-        
+        context = {'operation': 'Signup'}
         return render(request, 'login_register.html', context)
 
 # Create your views here.
@@ -216,60 +201,6 @@ def home(request):
 
         return render(request, 'base/home.html', context)
 
-@login_required(login_url='login')
-def user_profile(request):
-    update_detail = UpdateForm()
-    user = User.objects.get(username=request.user)
-
-    try:
-        reviews = Review.objects.filter(user_id=user.id)
-        reviews = list(reviews)
-
-    except Review.DoesNotExist:
-        reviews = None
-
-    context = {'user_profile': user,
-        'update_detail': update_detail,
-        'reviews': reviews}
-
-
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name') if request.POST.get('first_name') != "" else None
-        last_name = request.POST.get('last_name') if request.POST.get('last_name') != "" else None
-        email = request.POST.get('email') if request.POST.get('email') != "" else None
-
-        if email:
-            if '@' not in email or '.' not in email:
-                messages.warning(request, 'invalid email address')
-                return render(request, 'user_profile.html', context)
-
-
-        if request.POST.get('password1') != "" and request.POST.get('password2') != "":
-            password1 = request.POST.get('password1')
-            password2 = request.POST.get('password2')
-
-            if password1 != password2:
-                messages.warning(request, 'invalid password - passwords must match')
-                return render(request, 'user_profile.html', context)
-            
-            else:
-                user.password = password1
-
-        if first_name != None:
-            user.first_name = first_name
-
-        if last_name != None:
-            user.last_name = last_name
-
-        if email != None:
-            user.email = email
-
-        user.save()
-
-        return render(request, 'user_profile.html', context)
-    
-    else:
-        return render(request, 'user_profile.html', context)
 
 @login_required(login_url='login')
 def logout_page(request):
@@ -300,7 +231,12 @@ def stripe_webhook(request):
     print('299')
 
     if event['type'] == 'charge.succeeded':
+        request.session['cart'] = {}
         order_return.paid = True
+        paid_time = datetime.now()
+        order_return.paid_time = paid_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        order_return.save()
         items = OrderItem.objects.filter(purchase_id=order_id)
 
         receipt_items = []
@@ -369,7 +305,7 @@ def stripe_webhook(request):
                     <td>{item.category}</td>
                     <td>{item.name}</td>
                     <td>{quantity}</td>
-                    <td>S$ {price:.2f}</td>
+                    <td>MYR {price:.2f}</td>
                 </tr>
                 """
 
@@ -379,7 +315,7 @@ def stripe_webhook(request):
             </table>
 
             <hr>
-            Total amount: S$ {total:.2f}
+            Total amount: MYR {total:.2f}
             <hr>
 
             <p>Thank you for shopping with HeatSneakers. We wish you all
@@ -404,20 +340,23 @@ def stripe_webhook(request):
 
     elif event['type'] == 'payment_intent.payment_failed':
         order_return.paid = False
-        
+        order_return.save()
 
     elif event['type'] == 'payment_intent.canceled':
         order_return.paid = False
-
+        order_return.save()
 
     elif event['type'] == 'payment_intent.processing':
         order_return.paid = False
+        order_return.save()
 
     elif event['type'] == 'payment_intent.confirmed':
         order_return.paid = False
+        order_return.save()
 
         
     try:
+        print('here')
         order_return.save()
         return HttpResponse(status=200)
 

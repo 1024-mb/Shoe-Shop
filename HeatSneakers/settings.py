@@ -31,7 +31,6 @@ DEBUG = True
 # Get a variable with no default
 value = os.getenv('stripekey')
 
-ALLOWED_HOSTS = ['192.168.0.13', '127.0.0.1']
 
 STRIPE_LIVE_MODE = False  # Change to True in production
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = 'id'

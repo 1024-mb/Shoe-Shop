@@ -26,6 +26,12 @@
         color: #e31e289d;
     }
 
+    .search-form input::placeholder {
+
+        font-size: 16px;
+        color: #e31e289d;
+    }
+
     .search-form button {
         background: none;
         border: none;
@@ -42,6 +48,8 @@
             border: none;
         }
 
+        
+
     }
 
     @media screen and (min-width: 600px){
@@ -51,19 +59,20 @@
     }
 
     .close-search {
-        height: 4vh;
+        height: 3vh;
         background-color: white;
         outline: none;
         border: none;
-        color: red;
+        color: #E31E27;
     }
 
+
     .search-toggle {
-        height: 4vh;
+        height: 3vh;
         background-color: white;
         outline: none;
         border: none;
-        color: red;
+        color: #E31E27;
 
     }
 
@@ -79,7 +88,7 @@
     }
 
     .search-box input {
-        height: 4vh;
+        height: 3vh;
         border: none;
         outline: none;
         flex: 1;
@@ -136,10 +145,7 @@
         padding-top: 70px; /* Adjust based on navbar height */
     }
 
-    button {
 
-        height: 100%
-    }
 
     .navbar {
         display: flex; 
@@ -151,8 +157,8 @@
         display: none;
         position: absolute;
         background-color: #f9f9f9;
-        min-width: 100px;
-        width: 100px;
+        min-width: 15px;
+
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 1;
     }
@@ -166,12 +172,10 @@
         text-align: left;
     }
 
-    .dropdown-content a:hover {
-        background-color: #ddd;
-    }
 
-    .dropdown:hover .dropdown-content {
-        display: block;
+
+    .dropdown-content a {
+        font-size: 2vh;
     }
 
 </style>
@@ -179,18 +183,18 @@
 
 <div class="navbar">
     <div style="display: flex;" id="items">
-        <div style="margin-right: 0.5vw;" class="dropdown"> 
+        <div style="margin-right: 0.5vw;" class="dropdown"  onclick="dropdownShow()"> 
             
                 <div style="color: #E31E27;">
-                    <svg xmlns="http://www.w3.org/2000/svg"  width="4vh" height="4vh" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/> </svg>                
-                    <div class="dropdown-content" style="color: #E31E27;">
+                    <svg xmlns="http://www.w3.org/2000/svg"  width="3vh" height="3vh" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/> </svg>                
+                    <div id="dropdown-content" class="dropdown-content" style="color: #E31E27;">
                         {% if request.user.is_authenticated %}
-                            
-                            
+                            <a href="/profile" style="color: #E31E27; font-size: 3vh;"><svg xmlns="http://www.w3.org/2000/svg" width="3vh" height="3vh" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16"> <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/> </svg></a>
+                            <a href="/logout" style="color: #E31E27; font-size: 3vh;"><svg xmlns="http://www.w3.org/2000/svg" width="3vh" height="3vh" fill="currentColor" class="bi bi-box-arrow-left" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/> <path fill-rule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/> </svg></a>
                         {% else %}
-                            <a href="#">Link 2</a>
+                            <a href="/login" style="color: #E31E27; font-size: 3vh;"><svg xmlns="http://www.w3.org/2000/svg" width="3vh" height="3vh" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"/> <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/> </svg></a>
                         {% endif %}
-                        <a href="#">Link 3</a>
+                        
                     </div>
                      
                 </div>
@@ -198,10 +202,10 @@
         </div>
         <div class="menu-home"  style="margin-left: 2vw; color: #E31E27;" >
             {% if request.path == "/home" or request.path == "/home/" or request.path == "" or request.path == "/" %}
-                <div id="menu" style="margin-right: 1.0vw;"  onclick="w3_open()"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-layout-sidebar-inset" viewBox="0 0 16 16"> <path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/> <path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/> </svg></div> 
+                <div id="menu" style="margin-right: 1.0vw;"  onclick="w3_open()"><svg xmlns="http://www.w3.org/2000/svg" width="3vh" height="3vh" fill="currentColor" class="bi bi-layout-sidebar-inset" viewBox="0 0 16 16"> <path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/> <path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/> </svg></div> 
                 
             {% else %}
-                <a href="/home" style="margin-right: 1.0vw;"><svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16"> <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/> </svg></a>
+                <a href="/home" style="margin-right: 1.0vw;"><svg xmlns="http://www.w3.org/2000/svg" width="3vh" height="3vh" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16"> <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/> </svg></a>
             {% endif %}
         </div>
  
@@ -213,9 +217,9 @@
 
 
     <div class="search-wrapper">
-        <a id="cart" href="/cart" style="font-size: 3vh; color:black; margin-right: 2vw;"><svg xmlns="http://www.w3.org/2000/svg" style="font-size: 3vh; color: #E31E27;" width="4vh" height="4vh" fill="currentColor" style="margin-right: 5px;" class="bi bi-cart" viewBox="0 0 16 16"> <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></a>
+        <a id="cart" href="/cart" style="font-size: 3vh; color:black; margin-right: 2vw;"><svg xmlns="http://www.w3.org/2000/svg" style="font-size: 3vh; color: #E31E27;" width="3vh" height="3vh" fill="currentColor" style="margin-right: 5px;" class="bi bi-cart" viewBox="0 0 16 16"> <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/> </svg></a>
         <button class="search-toggle" id="search-toggle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="4vh" height="4vh" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/> </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="3vh" height="3vh" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"> <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/> </svg>
         </button>
         <form method="GET" action="{% url 'home' %}" style="margin-bottom: 0;" class="search-form">
             <input type="text" name="q" placeholder="Search..." />
@@ -224,7 +228,7 @@
             </button>
             
         </form>
-        <button type="submit" class="close-search" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" height="4vh" width="4vh" class="bi bi-x-circle" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/> <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/> </svg></button>
+        <button type="submit" class="close-search" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" height="3vh" width="3vh" class="bi bi-x-circle" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/> <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/> </svg></button>
     </div>
 
 

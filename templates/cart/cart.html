@@ -1,16 +1,225 @@
 <head>
     <title>My Cart | SHOEciety</title>
     <style>
-        .product {
-            display: grid;
-            grid-template-columns: 0.2fr 1fr;
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            max-width: 300px;
+            margin: auto;
+            transition: box-shadow 0.3s ease;
         }
+
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding-top: 1em;
+        }
+
+        .product-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #E31E27;
+            margin-bottom: 0.5em;
+        }
+
+        .product-description {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 1em;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #777;
+            margin-bottom: 1em;
+        }
+
+        .product-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quantity-selector {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .product-price {
+            font-weight: bold;
+            color: #E31E27;
+        }
+
+        .cart-page {
+            margin: 0;
+            border-top: 1px solid #ccc;
+        }
+     
 
         a {
             font-size: 80%;
         }
 
 
+        .whole-page {
+            display: grid;
+            grid-template-columns: auto auto; 
+            margin: 0;
+        }
+
+       select, input[type="submit"] {
+            width: 80%;
+            padding: 0.5em;
+            margin-top: 0.5em;
+            font-size: 105%;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            background-color: #E31E27;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cart-page {
+            margin: 0;
+        }
+
+
+
+        .left-side {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2em;
+            padding: 2em;
+        }
+
+        .right-side {
+            background-color: #fff;
+            border-left: 1px solid #ccc;
+            position: sticky;
+
+            right: 0;
+            height: 100%;
+            box-sizing: border-box;
+            min-height: 100px;
+            padding: 2vw;
+            word-wrap: break-word;
+            padding: 2vw;
+        }
+
+        .right-side input {
+            width: 100%;
+        }
+
+        @media (max-width: 700px) {
+            .product-card {
+                max-width: 100%;
+            }
+            .whole-page {
+                grid-template-columns: 1fr;
+                
+            }
+            .left-side {
+                grid-template-columns: 1fr;
+                justify-content: center;
+            }
+            
+            .right-side, .right-side input {
+                width: 100%;
+                display: block;
+            }
+
+
+        }
+
+
+
+        .left-side {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2em;
+            padding: 2em;
+        }
+
+        .right-side {
+            background-color: #fff;
+            border-left: 1px solid #ccc;
+            position: sticky;
+
+            right: 0;
+            height: 100%;
+            box-sizing: border-box;
+            min-height: 100px;
+            padding: 2vw;
+            word-wrap: break-word;
+            padding: 2vw;
+        }
+
+        .right-side input {
+            width: 100%;
+        }
+
+        @media (max-width: 700px) {
+            .product-card {
+                max-width: 100%;
+            }
+            .whole-page {
+                grid-template-columns: 1fr;
+                
+            }
+            .left-side {
+                grid-template-columns: 1fr;
+                justify-content: center;
+            }
+            
+            .right-side, .right-side input {
+                width: 100%;
+                display: block;
+            }
+
+
+        }
+        .cart-clear {
+            
+            background-color: #E31E27;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            padding: 0.5em;
+            margin-top: 0.5em;
+            
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .cart-clear a {
+            font-size: 105%;
+            color: white;
+            text-decoration: none
+        }
+        .cart-clear a:hover {
+            text-decoration: none
+        }
 
     </style>
 
@@ -18,94 +227,109 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<body>
-    <h1>Your Cart</h1>
-
-    {% if products|length > 0 %}
-        
-        <form method="POST" action="">
-            {% csrf_token %}
-            {% for id, item, qty, stock, size, color in products %}
-                    <hr>
-                    <div class="product">
+        <h1 style="margin-left: 2vw;">Your Cart</h1>
+        <div class="cart-page">
+            {% if products|length > 0 %}
+                
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <div class="whole-page" style="border-top: 1px solid #ccc;">
                         <div class="left-side">
-                            <img style="height: 30vh" src="/media/{{ item.product_id }}/img1.webp" alt="product-image">
-                        </div>
+                            {% for id, item, qty, stock, size, color in products %}
+                                
+                                <div class="product-card">
+                                    <img src="/media/{{ item.product_id }}/img1.webp" alt="{{ item.name }}" class="product-image">
+                                    <div class="product-details">
+                                        <h3 class="product-title">{{ item.name }} </h3>
+                                        <p class="product-description">{{ item.description|truncatewords:10 }}</p>
+                                        <div class="product-meta">
+                                            {% if size %}
+                                                <span class="product-size">Size: {{ size }}</span>
+                                            {% endif %}
 
-                        <div class="right-side">
-                            <a href="{% url 'product' item.product_id %}">{{ item.name }}    </a>
-                            <h4>S$ {{ item.price|floatformat:2}}</h4>
+                                            {% if color %}
+                                                <span class="product-color">Color: {{ color }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="product-actions">
 
-                            <p>Size: {{ size }}</p>
-                            {% if color %}
-                                <p>Color: {{ color }}</p>
-                            {% endif %}
-                                {% if stock > 4 %}
-                                    <label for="{{ id|cut:'-' }}">Quantity (max 20)</label> 
-                                    <p><input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="{{ qty }}" max="20" min="0" data-price="{{ item.price }}"></p>
-                                {% else %}
-                                    <label for="{{ id }}">Quantity (max {{ stock }})</label>
-                                    {% if qty >= stock and stock != 0 %}
-                                        <p style="color:rgb(255, 86, 86)">You’ve requested more items than are currently available. Please reduce the quantity.</p>
-                                        <p><input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="{{ qty }}" max="{{ stock }}" min="0" data-price="{{ item.price }}">  </p>
-
-                                    {% elif stock <= 4 %}
-                                        <p style="color: #E31E27">Sorry, this item is currently out of stock.
-                                        <input title="{{ id|cut:'-' }}" class="quantity-input" name="{{ id|cut:'-' }}" type="number" value="0" max="0" min="0" data-price="{{ item.price }}">  </p>
-                                    {% endif %}
-                                    
-                                {% endif %}
+                                            {% if stock > 4 and stock > 20 %}
+                                                <label for="{{ id }}">Quantity (max 20)</label>
+                                                <input title="{{ id|cut:'-' }}" name="{{ id|cut:'-' }}" type="number" min="1" max="{{ stock }}" value="{{ qty }}" class="quantity-selector" data-price="{{ item.price }}">
+                                            
+                                            {% elif stock > 4 %}
+                                                <label for="{{ id }}">Quantity (max {{ stock }})</label>
+                                                <input title="{{ id|cut:'-' }}" name="{{ id|cut:'-' }}" type="number" min="1" max="{{ stock }}" value="{{ qty }}" class="quantity-selector" data-price="{{ item.price }}">
                             
-                            <p>{{ item.description|truncatewords:10 }}</p>
+                                            {% else %}
+                                                <label for="{{ id }}">Quantity (max {{ stock }})</label>
+                                                {% if qty >= stock and stock != 0 %}
+                                                    <p style="color:#E31E27">You’ve requested more items than are currently available. Please reduce the quantity.</p>
+                                                    <input title="{{ id|cut:'-' }}" name="{{ id|cut:'-' }}" type="number" min="1" max="{{ stock }}" value="{{ stock }}" class="quantity-selector" data-price="{{ item.price }}">
+                                                {% elif stock <= 4 %}
+                                                    <p style="color:#E31E27">This product is out of stock</p>
+                                                    <input title="{{ id|cut:'-' }}" name="{{ id|cut:'-' }}" type="number" min="0" max="0" value="0" class="quantity-selector" data-price="{{ item.price }}">
+                                                {% endif %}
+                                                
+                                            {% endif %}
+                                            <span class="product-price">RM {{ item.price|floatformat:2}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="right-side" style="text-align: center;">
+                            <p>
+                                <strong>Your total is: RM <span id="total-amt">{{ total|floatformat:2 }}</span> </strong>
+                                <br>
+                                <br>
+                                <input type="submit" value="Checkout"></input>
+                            </p>
+                </form>
+                            
+                            
+                            <div class="cart-clear">
+                                <a href="clear_cart">Clear Cart</a>
+                            </div>
                         </div>
                     </div>
-
-            {% endfor %}
-            <hr>
-            <p>
-                <strong>Your total is:  <span id="total-amt">S$ {{ total|floatformat:2 }}</span> </strong>
-
-                <input type="submit" value="Checkout"></input>
-            </p>
-        </form>
-
-        <hr>
-        <form method="GET" action="/cart/clear_cart/">
-            <input type="submit" value="Empty Cart"></input>
-        </form>
-
-    {% else %}
-    <p><a href="{% url 'home' %}">Shop</a> to add products to cart</p>
-    {% endif %}
-
-
-<script>
+                
 
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const quantityInputs = document.querySelectorAll('.quantity-input');
-        const totalDisplay = document.getElementById('total-amt');
+            {% else %}
+                <div class="return-message">
+                    <h2>No items in cart</h2>
+                    <a href="/home">Shop to add items to your cart</a>
+                </div>    
+            {% endif %}
+        </div>
 
-        function updateTotal() {
-            let total = 0;
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quantityInputs = document.querySelectorAll('.quantity-selector');
+            const totalDisplay = document.getElementById('total-amt');
+
+            const calculateTotal = () => {
+                let total = 0;
+
+                quantityInputs.forEach(input => {
+                    const quantity = Number(input.value) || 0;
+                    const price = Number(input.dataset.price) || 0;
+                    total += quantity * price;
+                });
+
+                totalDisplay.textContent = total.toFixed(2);
+            };
+
             quantityInputs.forEach(input => {
-                const quantity = parseInt(input.value) || 0;
-                const price = parseFloat(input.dataset.price) || 0;
-                total += quantity * price;
+                input.addEventListener('input', calculateTotal);
             });
-            totalDisplay.textContent = 'S$ ' + total.toFixed(2);
-        }
 
-        quantityInputs.forEach(input => {
-            input.addEventListener('input', updateTotal);
+            calculateTotal(); // Run once on load
         });
 
-        // Initial total calculation
-        updateTotal();
-    });
-</script>
-</body>
+    </script>
+
 
 {% endblock %}

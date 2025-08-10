@@ -122,15 +122,20 @@ def product(request, pk):
 
         item = Clothing.objects.get(product_id=pk)
 
-        description = item.description
-        description = description.split(",")
+        details = item.details
+        details = details.split(",")
 
         Reviews = Review.objects.filter(product_ID=pk)
+
+        reviews = []
         avg = 0
         count = 0
 
         try:
             for review in Reviews:
+                percentage = 100 * (review.stars / 5)
+                reviews.append([percentage, review])
+
                 avg = avg + review.stars
                 count += 1
 
@@ -144,8 +149,8 @@ def product(request, pk):
             context = {
                 "name": item.brand + ' ' + item.name,
                 "clothing": item,
-                "reviews": Reviews,
-                "description": description,
+                "reviews": reviews,
+                "details": details,
                 "overall": avg,
                 "curr_usr": user,
                 "num_reviews": count,
@@ -160,8 +165,8 @@ def product(request, pk):
             context = {
                 "name": item.name,
                 "clothing": item,
-                "reviews": Reviews,
-                "description": description,
+                "reviews": reviews,
+                "details": details,
                 "overall": avg,
                 "num_reviews": count,
                 "variant_dicts": variant_dicts,

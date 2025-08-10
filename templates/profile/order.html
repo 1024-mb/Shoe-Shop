@@ -1,0 +1,159 @@
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | SHOEciety</title>
+    <style>
+        .container-profile {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            margin: 2vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .submit{
+            font-size: 50%;
+        }
+        .login-wrapper {
+            width: 70%;
+        }
+        .activity a {
+            color: #E31E27;
+        }
+
+        @media screen and (max-width: 600px) {
+
+            .activity {
+                width: 100%;
+            }
+
+            .details {
+                width: 100%;
+            }
+
+        }
+
+        .activity {
+            display: grid;
+            grid-template-columns: 3fr 1.7fr;
+        }
+        
+        .products-side {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            margin-bottom: 7vh;
+        }
+
+        .product-card {
+            margin: 2vh;
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            background-color: #fff;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            cursor: pointer;
+        }
+
+
+        .product-card:hover {
+            border: 1px solid #E31E27;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .right-side {
+            background-color: #fff;
+            border-left: 1px solid #ccc;
+            position: sticky;
+
+            right: 0;
+            height: 100%;
+            box-sizing: border-box;
+            min-height: 100px;
+
+            padding: 2vw;
+
+        }
+
+    </style>
+</head>
+
+
+{% extends 'base.html' %}
+{% include 'navbar.html' %}
+
+{% block content %}
+    <div class="activity">
+        <div class="products-side">
+            <h2 style="margin-left: 5vh; margin-bottom: 0;">Order ID:   {{ order_id }}</h2>
+            <h2 style="margin-left: 7vh; margin-bottom: 0;">Items</h2>
+            {% for product_id, description, size, name, color, quantity, price in items %}   
+                <a href="/product/{{ product_id  }}">
+                    <div class="product-card" style="margin-left: 7vh;">
+                        <img src="/media/{{ product_id }}/img1.webp" style="height: 40vh;" alt="{{ item.name }}" class="product-image">
+                        <div class="product-details" style="margin-left: 3vw;">
+                            <h3 class="product-title" style="color: black;">{{ name }} </h3>
+                            <p class="product-description">{{ description|truncatewords:10 }}</p>
+                            <div class="product-meta">
+                                {% if size %}
+                                    <span class="product-size">Size: {{ size }}</span>
+                                {% endif %}
+
+                                {% if color and size %}
+                                    <span class="product-color"> • Color: {{ color }}</span>
+                                
+                                {% elif color %}
+                                    <span class="product-color">Color: {{ color }}</span>
+                                {% endif %}
+
+
+                            </div>
+                            <div class="product-actions">
+                                <p>Price: RM {{ price }}</p>
+                                <p>Quantity: {{ quantity }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </a> 
+            {% endfor %}
+        </div>
+        <div class="right-side" style="margin-top: 0">
+            <h2>Payment Details</h2>
+            <div class="">
+                {% if order.paid == True %}
+                    <h3>Paid: {{ order.paid_time }}</h3>
+
+                    {% if tracker != None %}
+                        <h3>Undelivered</h3>
+                        <a href="{{ shareLink }}">Track order (LalaMove)</a>
+
+                    {% else %}
+                        <h3>Delivered at {{ time }}</h3>
+
+                        <a href="{{ proof_img }}">Proof of delivery</a>
+                    {% endif %}
+
+                    {% endif %}
+                {% endif %}
+
+
+                <h3></h3>
+            </div>
+        </div>
+
+            
+
+        
+    </div>    
+
+{% endblock %}
+
+
+
+
+
