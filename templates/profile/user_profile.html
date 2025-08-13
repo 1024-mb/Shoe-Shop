@@ -41,36 +41,82 @@
 
 {% block content %}
     <div class="order-activity" style="margin-bottom: 10vh">
-        <h2 style="margin-left: 5vh;">Order History</h2>
-            {% for order_id, amount, paid, time in orders %}    
-                <div class="product-card" style="width: 80%; margin-left: 7vh;">
-                    <a href="order/{{ order_id }}">
-                        <div class="header">
-                            <h3>Order ID: {{ order_id }}</h3>
-                            {% if paid == True %}
-                                
-                                <h3>Paid: {{ time|date:"l, d F Y H:i" }} </h3>
+        <h2 style="margin-left: 5vw;"><svg xmlns="http://www.w3.org/2000/svg" height="20" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16"> <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/> <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/> <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/> </svg>  Order History (last 4)</h2>
+            
+            {% if orders|length != 0 %}
+                {% for order_id, amount, paid, time in orders %}    
+                    <div class="product-card" style="width: 80%; margin-left: 5vw;">
+                        <a href="order/{{ order_id }}">
+                            <div class="header">
+                                <h3>Order ID: {{ order_id }}</h3>
+                                {% if paid == True %}
+                                    
+                                    <h3>Paid: {{ time|date:"l, d F Y H:i" }} UTC</h3>
 
-                            {% else %}
-                                <h3>Order not paid</h3>
+                                {% else %}
+                                    <h3>Order Unsuccessful</h3>
 
-                            {% endif %}
-                        </div>
+                                {% endif %}
+                            </div>
 
-                        <div class="details">
-                            <p>RM {{ amount|floatformat:2 }}</p>
+                            <div class="details">
+                                <p>RM {{ amount|floatformat:2 }}</p>
 
-                        </div>
-                    </a>
+                            </div>
+                        </a>
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+                <div class="error-msg" style="margin-left: 7vh;">
+                    <p>No orders placed.</p>
+                    <a href="/" style="color: #E31E27">home</a>
                 </div>
-                
-                
-
-
-            {% endfor %}
+            {% endif %}
 
         
-    </div>    
+    </div>  
+    <div class="order-activity" style="margin-bottom: 10vh">
+        <h2 style="margin-left: 5vw;"><svg xmlns="http://www.w3.org/2000/svg" height="20" fill="currentColor" class="bi bi-chat-right-quote" viewBox="0 0 16 16"> <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/> <path d="M7.066 4.76A1.665 1.665 0 0 0 4 5.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 1 0 .6.58c1.486-1.54 1.293-3.214.682-4.112zm4 0A1.665 1.665 0 0 0 8 5.668a1.667 1.667 0 0 0 2.561 1.406c-.131.389-.375.804-.777 1.22a.417.417 0 1 0 .6.58c1.486-1.54 1.293-3.214.682-4.112z"/> </svg>  Reviews (last 4)</h2>
+            {% if reviews|length != 0 %}
+                {% for product, title, desc, stars, created, updated in reviews %}
+                    <div class="product-card" style="width: 80%; margin-left: 5vw;">
+                        <a href="order/{{ order_id }}">
+                            <div class="header">
+                                    <a href="/product/{{product.product_id}}/update_review">Edit review |   </a>
+                                    <a href="/product/{{product.product_id}}/delete_review/">  Delete review</a>
+                                <h3>{{ product.name }}</h3>
+                                {% if updated == None %}
+                                    <h3>created review • {{ created }} UTC</h3>
+
+                                {% else %}
+                                    <h3>updated review • {{ updated }} UTC</h3>
+
+                                {% endif %}
+
+                                <h3>{{ title }} • {{ stars }}-star</h3>
+                                <p>{{ desc }}</p>
+
+
+                            </div>
+
+                        </a>
+                    </div>
+                    
+                    
+
+
+                {% endfor %}
+
+            {% else %}
+                <div class="error-msg" style="margin-left: 7vh;">
+                    <p>No reviews.</p>
+                    <a href="/" style="color: #E31E27">home</a>
+                </div>
+            {% endif %}
+        
+    </div>  
 
 {% endblock %}
 

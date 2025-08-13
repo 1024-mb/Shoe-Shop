@@ -144,6 +144,10 @@
 
         }
 
+        .error-message {
+            font-size: 0.8em;
+        }
+
         #submit {
             background-color: #E31E27;
             color: white;
@@ -170,7 +174,6 @@
             border-radius: 5px;
             flex: 1;
             padding: 5px;
-            font-size: 2.5vh;
             color: #e31e289d;
             align-items: center;
         }
@@ -265,8 +268,8 @@
                             <p style="color: #E31E27">
                                 <div class="address-input-container">
                                     <input name="address-input" id="address-input" type="text" placeholder="Enter your address" size="30" autocomplete="off" required>
-                                    <span id='suggestion-label' style="display: none; color: #e31e289d; font-size: 2vh;">Suggestions:</span>
-                                    <ul id="suggestions-list"></ul>
+                                    <span id='suggestion-label' style="display: none; color: #e31e289d; font-size: 0.9em; margin-top: 2vh;">Suggestions:</span>
+                                    <ul id="suggestions-list" style="font-size: 0.9em; margin-top: 2px"></ul>
                                 </div>
                             </p>
 
@@ -275,7 +278,7 @@
                             </p>
 
                             <p>
-                                <input type="tel" name="phone" id="phone" size="20" required>
+                                <input type="tel" name="phone" placeholder="Telephone number" id="phone" required>
                             </p>
 
                             <p>

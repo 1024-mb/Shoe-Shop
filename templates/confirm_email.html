@@ -1,0 +1,27 @@
+
+
+<form method="POST" id="OTPForm">
+    {% csrf_token %}
+    <input type="text" name="OTP" placeholder="Enter the OTP">
+
+    <input type="checkbox" id="resend" name="resend" value="resendOTP">
+    <label for="resend" id="resend-label"> resend OTP</label><br>
+
+    <button type="submit" id="submit">submit</button>
+</form>
+
+<script>
+    let count = 0;
+
+    let otp = document.getElementById('resend');
+    let submitBtn = document.getElementById('submit');
+    let label = document.getElementById('resend-label');
+
+    submitBtn.addEventListener("click", function() {
+        count += 1
+        if(count > 1) {
+            submitBtn.disabled = true;
+        }
+    });
+
+</script>

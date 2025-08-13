@@ -4,6 +4,7 @@ from .models import Clothing, Review, Order, OrderItem, ProductVariant
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from email.message import EmailMessage
 
 from datetime import datetime
 
@@ -18,10 +19,15 @@ from django.contrib.sessions.models import Session
 
 from email.message import EmailMessage
 
+import random
+import json
+
 import stripe
 import os
 import uuid
 import smtplib
+
+import random
 
 stripe.api_key = os.getenv('stripekey')
 
@@ -82,8 +88,133 @@ def login_page(request):
         context = {'operation': 'login'}
         return render(request, 'login_register.html', context)
 
-def register(request):
+def confirm_email(request):
+    if int(request.session.get('count', 0)) < 7:
+        if request.method == 'POST':
+            if request.POST.get('OTP') != '':
+                user_input = str(request.POST.get('OTP'))
+                stored_otp = str(request.session.get('otp'))
 
+                if user_input == stored_otp:
+                    messages.success(request, 'account created successfully')
+                    return redirect('login')
+
+
+                else:
+                    user_created = request.session.get('user_id')
+
+                    user_obj = User.objects.get(id=user_created)
+                    user_obj.delete()
+
+                    messages.error(request, 'Incorrect OTP entered')
+
+                    request.session['count'] = int(request.session.get('count', 0)) + 1
+
+                    return redirect('confirm_email')
+
+            else:
+                otp = str(random.randint(100000, 999999))  # 6-digit OTP
+                first_name = request.POST.get('first_name')
+
+                print(otp)
+
+                receipt = EmailMessage()
+                receipt['Subject'] = 'HeatSneakers | Confirm Account'
+                receipt['From'] = 'm.sajjad.2007.jan@gmail.com'
+                receipt['To'] = request.session['email']
+                first_name = request.session['first_name']
+
+                receipt.set_content('Email follows')
+
+                emailText = f"""
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <style>
+                    
+                    </style>
+                </head>
+
+                <body>
+                    <h2>Confirm your email address</h2>
+                    <p>Dear {first_name},
+                    Your OTP is: {otp}. This OTP is valid
+                    for 15 minutes.
+                    
+                    </p>
+                </body>
+
+                </html>
+
+                """
+
+                receipt.add_alternative(emailText, subtype='html')
+
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
+                    smtp.send_message(receipt)
+
+
+                # Optionally store OTP in session or database for verification
+                request.session['otp'] = str(otp)
+
+                request.session['count'] = int(request.session.get('count', 0)) + 1
+
+                return redirect('confirm_email')
+
+        else:
+            otp = str(random.randint(100000, 999999))  # 6-digit OTP
+
+            receipt = EmailMessage()
+            receipt['Subject'] = 'HeatSneakers | Confirm Account'
+            receipt['From'] = 'm.sajjad.2007.jan@gmail.com'
+            receipt['To'] = request.session['email']
+            first_name = request.session['first_name']
+
+            receipt.set_content('Email follows')
+
+            emailText = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <style></style>
+            </head>
+
+            <body>
+                <h2>Confirm your email address</h2>
+                <p>Dear {first_name},
+                Your OTP is: {otp}. This OTP is valid
+                for 15 minutes.
+                
+                </p>
+            </body>
+
+            </html>
+
+            """
+
+            receipt.add_alternative(emailText, subtype='html')
+
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
+                smtp.send_message(receipt)
+
+
+            # Optionally store OTP in session or database for verification
+            request.session['otp'] = otp
+
+            return render(request, 'confirm_email.html', context={})
+
+    else:
+        user_created = request.session.get('user_id')
+
+        user_obj = User.objects.get(id=user_created)
+        user_obj.delete()
+
+        messages.error(request, 'Too many unsuccessful attempts.')
+        return redirect('home')
+
+def register(request):
     if request.method == "POST":
         if '@' not in request.POST.get('email'):
             context = {'operation': 'Signup',
@@ -106,7 +237,7 @@ def register(request):
 
             return render(request, 'login_register.html', context)
 
-        if User.objects.filter(username=request.POST.get('username')).exists() == False:
+        if User.objects.filter(username=request.POST.get('username')).exists() == True:
             context = {'operation': 'Signup',
                        'error': 'Username already in use'}
 
@@ -119,14 +250,19 @@ def register(request):
             email = request.POST.get('email')
             password = request.POST.get('password1')
 
-
             user = User(username=username, email=email, last_name=last_name, first_name=first_name)
             user.set_password(password)
 
             user.save()
 
             messages.success(request, 'Account created!')
-            return redirect('login')
+
+            request.session['user_id'] = user.id
+            request.session['email'] = email
+            request.session['first_name'] = first_name
+            request.session['username'] = username
+
+            return redirect('confirm_email')
 
 
     else:
@@ -201,7 +337,6 @@ def home(request):
 
         return render(request, 'base/home.html', context)
 
-
 @login_required(login_url='login')
 def logout_page(request):
     if request.user.is_authenticated:
@@ -220,8 +355,11 @@ def stripe_webhook(request):
 
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     endpoint_secret = 'whsec_1709d3d9f617576b171944a41c57eb6ba8e8ac16682a96593015280d92de2763'
-
-    event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except Exception as e:
+        print(f"Webhook error: {e}")
+        return HttpResponse(status=400)
 
     intent = event['data']['object']
     order_id = intent['metadata'].get('order_id')
@@ -232,6 +370,11 @@ def stripe_webhook(request):
 
     if event['type'] == 'charge.succeeded':
         request.session['cart'] = {}
+        request.session['order_id'] = ''
+        print(request.session['cart'])
+
+        print('241')
+
         order_return.paid = True
         paid_time = datetime.now()
         order_return.paid_time = paid_time.strftime("%Y-%m-%d %H:%M:%S")

@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from base.models import Order, OrderItem
 
+from datetime import datetime, timedelta
+
 import json
 import requests
 from django.db.models import Q
@@ -71,13 +73,19 @@ def user_profile(request):
 @login_required(login_url='login')
 def activity(request):
     orders = []
+    reviews = []
 
     user_id = request.user.id
 
-    orders_recent = Order.objects.filter(user_id_id=user_id)
+    print(user_id)
+
+    orders_recent = Order.objects.filter(user_id_id=user_id).order_by('-created')
     orders_recent = orders_recent[:4]
 
-    print(orders_recent)
+    reviews_recent = Review.objects.filter(user_id_id=user_id).order_by('-created', '-updated')
+    reviews_recent = reviews_recent[:4]
+
+    print(reviews_recent)
 
     for item in orders_recent:
         amount = item.amount
@@ -85,11 +93,37 @@ def activity(request):
         time = item.paid_time
         order_id = item.purchase_id
 
-
         orders.append([str(order_id), float(amount), paid, time])
 
+    for review in reviews_recent:
+        title = review.title
+        desc = review.description_review
+        stars = review.stars
 
-    return render(request, 'profile/user_profile.html', context={'orders': orders})
+        print(title + desc)
+
+        created = review.created
+        updated = review.updated
+
+        product_id = review.product_ID_id
+
+        product = Clothing.objects.get(product_id=product_id)
+
+        threshold = timedelta(minutes=2)
+
+
+        if (updated - created) > threshold:
+            print('here')
+            reviews.append([product, title, desc, stars, created, updated])
+
+        else:
+            print('here1')
+            reviews.append([product, title, desc, stars, created, None])
+
+    print(reviews)
+
+    return render(request, 'profile/user_profile.html', context={'orders': orders,
+                                                                 'reviews': reviews})
 
 
 """

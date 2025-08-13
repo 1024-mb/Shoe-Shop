@@ -29,7 +29,8 @@
                 display: none;
                 width: 100%;
                 margin-left: 1em;
-                
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 12px;
             }
             .right-side {
                 width: 100%;
@@ -173,7 +174,7 @@
                     <form method="POST">
                         {% csrf_token %}
                         <div class="filter-dropdown">
-                            <select name="order" height="3vh" class="order" style="padding: 5px; outline: none; border-radius: 5px; font-size: 2vh;">
+                            <select name="order" height="3vh" class="order" style="padding: 5px; outline: none; border-radius: 5px; font-size: 0.8em;">
                                 <option name="top_rated" value="top_rated">Rating: Highest to Lowest</option>
                                 <option name="new_to_old" value="new_to_old">Added: Newest to Oldest</option>
                                 <option name="old_to_new" value="old_to_new">Added: Oldest to Newest</option>
@@ -189,7 +190,7 @@
 
                 </div>
                 <div class="result-count">
-                    <p style="color:#E31E27; font-size: 2vh; margin-left: 0.5vw;">
+                    <p style="color:#E31E27; font-size: 0.8em; margin-left: 0.5vw;">
                         {% if result_count == 0 %}
                             No results found •   <a href="http://127.0.0.1:8000/home/">home</a> • 
 

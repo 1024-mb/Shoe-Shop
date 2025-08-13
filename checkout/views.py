@@ -6,6 +6,8 @@ import json
 import stripe
 from geopy.geocoders import *
 
+import phonenumbers
+
 # Create your views here.
 from django.contrib import messages
 from django.http import HttpResponse
@@ -99,7 +101,6 @@ def create_quotation(latitude, longitude, location_address, quantity):
         return response.json()  # Parsed JSON response
     
     else:
-        print("Error:", response.status_code, response.text)
         return None
 
 def place_order(api_key, api_secret, quotation_id, stop_ids, name, number, order_id):
@@ -143,7 +144,14 @@ def place_order(api_key, api_secret, quotation_id, stop_ids, name, number, order
     }
 
     response = requests.post(url, headers=headers, data=body_json)
-    return response.json()
+    if response.status_code == 201:
+        print(response.json())
+        return response.json()  # Parsed JSON response
+    
+    else:
+        print("Error:", response.status_code, response.text)
+        return None
+
 
 def generate_signature(secret, method, path, body):
     timestamp = str(int(time.time() * 1000))
@@ -164,7 +172,7 @@ def checkout(request):
 
         order = Order.objects.get(purchase_id=order_id)
 
-        if request.method=='POST':
+        if request.method == 'POST':
             address = request.POST.get('address-input')
             postcode = request.POST.get('postcode')
             phone = request.POST.get('phone')
@@ -186,6 +194,18 @@ def checkout(request):
             
             quotation = create_quotation(latitude, longitude, address, quantity)
 
+            if not(phonenumbers.is_valid_number(phonenumbers.parse(phone, "SG"))):
+                total = round(float(order.amount), 2)
+                items = OrderItem.objects.filter(purchase_id=order_id)
+
+                for item in items:
+                    items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price])
+
+                
+                messages.error(request, 'Invalid phone number')
+                return render('checkout/checkout.html', context={})
+            
+
             if quotation:
                 quotation_id = quotation['data']
                 quotation_id = quotation_id['quotationId']
@@ -201,36 +221,36 @@ def checkout(request):
                 order = place_order(api_key, api_secret, quotation_id, stop_ids,
                                     request.user.first_name+' '+request.user.last_name, phone, id)
 
-                print(order)
+                if order:
+                    request.session['request_id'] = str(uuid.uuid4())
 
-                request.session['request_id'] = str(uuid.uuid4())
+                    items = OrderItem.objects.filter(order_id=order_id)
+                    order = Order.objects.get(purchase_id=order_id)
 
-                items = OrderItem.objects.filter(order_id=order_id)
-                order = Order.objects.get(purchase_id=order_id)
+                    total = round(float(order.amount), 2)
 
-                total = round(float(order.amount), 2)
+                    for item in items:
+                        strquantity = str(item.quantity)
+                        NewItem = Clothing.objects.get(product_id=item)
 
-                for item in items:
-                    strquantity = str(item.quantity)
-                    NewItem = Clothing.objects.get(product_id=item)
-
-                    description = description + strquantity + ' ' + NewItem.name[:20] + "... "
+                        description = description + strquantity + ' ' + NewItem.name[:20] + "... "
 
 
-                payment_intent = stripe.PaymentIntent.create(
-                    amount= int(total*100),
-                    currency='sgd',
-                    description=description,
-                    receipt_email=email,
-                    automatic_payment_methods={'enabled': True},
-                    metadata={"order_id": order_id},)
+                    payment_intent = stripe.PaymentIntent.create(
+                        amount= int(total*100),
+                        currency='sgd',
+                        description=description,
+                        receipt_email=email,
+                        automatic_payment_methods={'enabled': True},
+                        metadata={"order_id": order_id},)
 
-                client_secret_str = str(payment_intent.client_secret)
+                    client_secret_str = str(payment_intent.client_secret)
 
-                
-                return JsonResponse({'client_secret': str(client_secret_str),
-                                    'quotation': quotation})
+                    
+                    return JsonResponse({'client_secret': str(client_secret_str),
+                                        'quotation': quotation})
         
+
             else:
                 messages.error(request, 'Sorry, We are unable to process your order at the moment. Please try again later')
                 if order != None:
@@ -243,8 +263,10 @@ def checkout(request):
 
                     return render(request, 'checkout/checkout.html', context={'items': items_list,
                                                                             'total': total})
-                
+            
+
                 else:
+                    messages.error(request, 'Sorry - we are unable to process your order at this time.')
                     return redirect('cart')
 
         else:

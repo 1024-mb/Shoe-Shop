@@ -78,6 +78,7 @@ def cart(request):
 
         request.session['total'] = float(total)
         request.session['order_id'] = str(create_order.purchase_id)
+        request.session['cart'] = {}
 
         return redirect('checkout')
 

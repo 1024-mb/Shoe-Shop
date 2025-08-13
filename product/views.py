@@ -284,6 +284,8 @@ def delete_review(request, pk):
     usr = curr_user.id
 
     review = Review.objects.get(product_ID=queryreview, user_id=usr)
+    product = Clothing.objects.get(product_id=queryreview)
+
 
     if request.method == 'POST':
         review.delete()
@@ -292,7 +294,8 @@ def delete_review(request, pk):
         return redirect(f'http://127.0.0.1:8000/product/{url_add}')
 
     else:
-        context = {'review':review}
+        context = {'review':review,
+                   'product': product}
 
         return render(request, 'product/delete_review.html', context)
 
