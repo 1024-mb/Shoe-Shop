@@ -13,7 +13,7 @@
         }
 
         .submit{
-            font-size: 50%;
+            font-size: 0.3em;
         }
         .login-wrapper {
             width: 70%;
@@ -90,11 +90,11 @@
 {% block content %}
     <div class="activity">
         <div class="products-side">
-            <h2 style="margin-left: 5vh; margin-bottom: 0;">Order ID:   {{ order_id }}</h2>
-            <h2 style="margin-left: 7vh; margin-bottom: 0;">Items</h2>
+            <h2 style="margin-left: 5vw; margin-bottom: 0;">Order ID:   {{ order_id }}</h2>
+            <h2 style="margin-left: 7vw; margin-bottom: 0;">Items</h2>
             {% for product_id, description, size, name, color, quantity, price in items %}   
                 <a href="/product/{{ product_id  }}">
-                    <div class="product-card" style="margin-left: 7vh;">
+                    <div class="product-card" style="margin-left: 7vw;">
                         <img src="/media/{{ product_id }}/img1.webp" style="height: 40vh;" alt="{{ item.name }}" class="product-image">
                         <div class="product-details" style="margin-left: 3vw;">
                             <h3 class="product-title" style="color: black;">{{ name }} </h3>

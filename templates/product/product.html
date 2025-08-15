@@ -71,7 +71,7 @@
         }
 
         #stars {
-            font-size: 100%;
+            font-size: 1em;
 
         }
 
@@ -148,7 +148,7 @@
         
 
         h1 {
-            font-size: 150%;
+            font-size: 1.5em;
             
         }
 
@@ -285,11 +285,11 @@
 
                 {% endif %}
 
-                    <div class="container-ratings" >
+                    <div class="container-ratings" id="container-ratings">
                         <a href="#reviews">
                             <div class="ratings">
                                 <div class="empty-stars"></div>
-                                <div id="full-stars" class="full-stars"></div>
+                                <div id="overall-rating" class="full-stars"></div>
                             </div>
                         </a>
                     </div>
@@ -351,6 +351,7 @@
                 const name = JSON.parse(document.getElementById("name").textContent);
                 const variant_dicts = JSON.parse(document.getElementById("variant_dicts").textContent);
                 let rating = JSON.parse(document.getElementById("overall").textContent);
+                
 
                 document.title = name + ' | SHOEciety';
 
@@ -359,7 +360,8 @@
                 const notAvailable = document.getElementById("notAvailable");
                 const addCart = document.getElementById("add_cart");
                 const reviews = document.getElementById("reviews");
-                const shading = document.querySelectorAll("full-stars");
+                const shading = document.querySelectorAll("#overall-rating");
+                const containers = document.getElementsByClassName("container-ratings");
 
                 console.log(rating);
                 rating = Number(rating);
@@ -372,8 +374,8 @@
                         element.style.width = `${percentage}%`;
                         console.log(element.style.width);
 
-                    })};
-                
+                    })
+                };
 
                 function CalcStock() {
                     let size = null;

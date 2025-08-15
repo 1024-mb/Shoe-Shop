@@ -127,7 +127,7 @@
                 z-index: 1100; /* Higher than navbar */
                 text-align: center;
                 padding: 7px;
-                font-size: 0.8em;
+                font-size: 0.95em;
 
             }
 
@@ -176,25 +176,29 @@
 
 
             .container {
-
                 min-height: 67vh;
             }
             .reviews {
                 margin-right: 0.5vw;
             }
             .outer-payment {
-                text-align: center;
+                text-align: left;
                 padding: 20px;
+                width: 50%;
+                font-size: 0.8em;
+                margin-left: 0.9em;
             }
 
+
+            @media screen and (max-width: 800px) {
+                .outer-payment {
+                    width: 100%;
+                    padding: 0;
+                }
+            }
             .payment-response {
                 text-align: center;
                 margin-top: 5vh;
-            }
-            .payment-response a {
-                color: #E31E27;
-            }
-            .payment-response {
                 background-color: #E31E27;
                 color: white;
                 cursor: pointer;
@@ -204,20 +208,23 @@
                 
                 border-radius: 8px;
                 border: 1px solid #ccc;
+                
+            }
+            .payment-response a {
+                color: #E31E27;
             }
 
             .payment-response a {
-                font-size: 105%;
+                font-size: 1em;
                 color: white;
                 text-decoration: none
             }
             .payment-response a:hover {
                 text-decoration: none
             }
-            .login-wrapper {
+            .login-wrapper, .signup-wrapper {
                 width: 100%;
-                display: flex
-            ;
+                display: flex;
                 flex-direction: row;
                 justify-content: center;
             }
@@ -245,7 +252,7 @@
                 width: 100%;
                 outline: none;
                 padding-left: 70px;
-                font-size: 0.8em;
+                font-size: 1em;
                 border-radius: 5px;
                 border: 1px solid lightgrey;
                 transition: all 0.3s ease;
@@ -256,13 +263,14 @@
             }
             form .row input::placeholder {
                 color: #e31e289d;
+                font-size: 1em;
             }
             .wrapper form .row i {
                 position: absolute;
                 width: 55px;
                 height: 100%;
                 color: #fff;
-                font-size: 0.8em;
+                font-size: 1em;
                 background: #E31E27;
                 border: 1px solid #E31E27;
                 border-radius: 5px 0 0 5px;
@@ -275,7 +283,7 @@
             }
             .wrapper form .pass a {
                 color: #E31E27;
-                font-size: 0.8em;
+                font-size: 1em;
                 text-decoration: none;
             }
             .wrapper form .pass a:hover {
@@ -296,7 +304,7 @@
             .wrapper form .signup-link {
                 text-align: center;
                 margin-top: 45px;
-                font-size: 0.8em;
+                font-size: 1em;
             }
             .wrapper form .signup-link a {
                 color: #E31E27;

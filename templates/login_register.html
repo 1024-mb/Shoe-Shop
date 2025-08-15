@@ -11,176 +11,183 @@
             box-sizing: border-box;
         }
 
+        .navbar {
+            margin-top: 0;
+            display: none;
+        }
         
+        .container {
+            min-height: 67vh;
+        }
 
     </style>
 
 </head>
 {% extends 'base.html' %}
     {% block content %}
-                {% if operation == 'login' %}
-                    {% csrf_token %}
-                    <div class="full">
-                        <div class="login-wrapper">
-                            <div class="wrapper" style="width: 100%;">
-                                <form method="POST" action="?next={{ request.GET.next }}">
-                                    {% csrf_token %}
+        {% if operation == 'login' %}
 
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16"> <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/> </svg></i>
-                                        <input style="color: #e31e289d;" type="text" maxlength="150" name="username" placeholder="Username" required />
-                                    </div>
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16"> <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/> <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/> </svg></i>
-                                        <input style="color: #e31e289d;" type="password" maxlength="150" name="password" placeholder="Password" required />
-                                    </div>
-                                    <div class="pass"><a href="#">Forgot password?</a></div>
-                                    <div class="row button">
-                                        <input id="submit" type="submit" value="Login" />
-                                    </div>
-                                    <div class="signup-link">Not a member? <a href="{% url 'register' %}">Signup now</a></div>
-                                </form>
+            <div class="full">
+                <div class="login-wrapper">
+                    <div class="wrapper" style="width: 100%;">
+                        <form method="POST" action="?next={{ request.GET.next }}">
+                            {% csrf_token %}
+
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16"> <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/> </svg></i>
+                                <input style="color: #e31e289d;" type="text" maxlength="150" name="username" placeholder="Username" required />
                             </div>
-                        </div>         
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16"> <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/> <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/> </svg></i>
+                                <input style="color: #e31e289d;" type="password" maxlength="150" name="password" placeholder="Password" required />
+                            </div>
+                            <div class="pass"><a href="{% url 'reset_password' %}">Forgot password?</a></div>
+                            <div class="row button">
+                                <input id="submit" type="submit" value="Login" />
+                            </div>
+                            <div class="signup-link">Not a member? <a href="{% url 'register' %}">Signup now</a></div>
+                        </form>
                     </div>
-                {% else %}
-                    <div class="full">      
-                        <div class="signup-wrapper">
-                            <div class="wrapper" style="width: 100%;">
-                                <form method="POST" id="registerForm" action="?next={{ request.GET.next }}" onsubmit="return validate(error)">
-                                    {% csrf_token %}
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16"> <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/> <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/> </svg></i>
-                                        <input type="text" placeholder="First Name" name="first_name" id="first_name" maxlength="150" id="id_first_name" required>
-                                    </div>
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16"> <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/> <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/> </svg></i>
-                                        <input type="text" placeholder="Last Name" name="last_name" id="last_name" maxlength="150" id="id_last_name" required>
-                                    </div>
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-at" viewBox="0 0 16 16"> <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2zm3.708 6.208L1 11.105V5.383zM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2z"/> <path d="M14.247 14.269c1.01 0 1.587-.857 1.587-2.025v-.21C15.834 10.43 14.64 9 12.52 9h-.035C10.42 9 9 10.36 9 12.432v.214C9 14.82 10.438 16 12.358 16h.044c.594 0 1.018-.074 1.237-.175v-.73c-.245.11-.673.18-1.18.18h-.044c-1.334 0-2.571-.788-2.571-2.655v-.157c0-1.657 1.058-2.724 2.64-2.724h.04c1.535 0 2.484 1.05 2.484 2.326v.118c0 .975-.324 1.39-.639 1.39-.232 0-.41-.148-.41-.42v-2.19h-.906v.569h-.03c-.084-.298-.368-.63-.954-.63-.778 0-1.259.555-1.259 1.4v.528c0 .892.49 1.434 1.26 1.434.471 0 .896-.227 1.014-.643h.043c.118.42.617.648 1.12.648m-2.453-1.588v-.227c0-.546.227-.791.573-.791.297 0 .572.192.572.708v.367c0 .573-.253.744-.564.744-.354 0-.581-.215-.581-.8Z"/> </svg></i>
-                                        <input type="email" placeholder="Email" name="email" id="email" maxlength="254" id="id_email" required>
-                                    </div>
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16"> <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/> <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/> </svg></i>
-                                        <input type="text" placeholder="Username" name="username" id="username" maxlength="150" autofocus="" required="" aria-describedby="id_username_helptext" id="id_username" required>
-                                    </div>                        
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16"> <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/> <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/> </svg></i>
-                                        <input type="password" placeholder="Password" id="password1" name="password1" autocomplete="new-password" required="" aria-describedby="id_password1_helptext" id="id_password1" required>
-                                    </div>
-                                    <div class="row">
-                                        <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16"> <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/> <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/> </svg></i>
-                                        <input type="password" placeholder="Password (Repeat)" id="password2" name="password2" autocomplete="new-password" required="" aria-describedby="id_password2_helptext" id="id_password2" required>
-                                    </div>
-
-                                    <div class="error-message" style="width: 100%; text-align: center; margin-top: 2vh;">
-                                        {% if error %}
-                                            <p id="error-msg" style="color: #E31E27">{{ error }}</p>
-
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="row button">
-                                        <input id="submitSignUp" type="submit" value="Signup" />
-                                    </div>
-                                    <div class="signup-link">Already have an account? <a href="{% url 'login' %}">Login now</a></div>
-
-
-
-                                </form>
-
+                </div>         
+            </div>
+        {% else %}
+            <div class="full">      
+                <div class="signup-wrapper">
+                    <div class="wrapper" style="width: 100%;">
+                        <form method="POST" id="registerForm" action="?next={{ request.GET.next }}" onsubmit="return validate(error)">
+                            {% csrf_token %}
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16"> <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/> <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/> </svg></i>
+                                <input type="text" placeholder="First Name" name="first_name" id="first_name" maxlength="150" id="id_first_name" required>
                             </div>
-                        </div>   
-                    </div>  
-                {% endif %}
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16"> <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/> <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/> </svg></i>
+                                <input type="text" placeholder="Last Name" name="last_name" id="last_name" maxlength="150" id="id_last_name" required>
+                            </div>
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-at" viewBox="0 0 16 16"> <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2zm3.708 6.208L1 11.105V5.383zM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2z"/> <path d="M14.247 14.269c1.01 0 1.587-.857 1.587-2.025v-.21C15.834 10.43 14.64 9 12.52 9h-.035C10.42 9 9 10.36 9 12.432v.214C9 14.82 10.438 16 12.358 16h.044c.594 0 1.018-.074 1.237-.175v-.73c-.245.11-.673.18-1.18.18h-.044c-1.334 0-2.571-.788-2.571-2.655v-.157c0-1.657 1.058-2.724 2.64-2.724h.04c1.535 0 2.484 1.05 2.484 2.326v.118c0 .975-.324 1.39-.639 1.39-.232 0-.41-.148-.41-.42v-2.19h-.906v.569h-.03c-.084-.298-.368-.63-.954-.63-.778 0-1.259.555-1.259 1.4v.528c0 .892.49 1.434 1.26 1.434.471 0 .896-.227 1.014-.643h.043c.118.42.617.648 1.12.648m-2.453-1.588v-.227c0-.546.227-.791.573-.791.297 0 .572.192.572.708v.367c0 .573-.253.744-.564.744-.354 0-.581-.215-.581-.8Z"/> </svg></i>
+                                <input type="email" placeholder="Email" name="email" id="email" maxlength="254" id="id_email" required>
+                            </div>
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16"> <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/> <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/> </svg></i>
+                                <input type="text" placeholder="Username" name="username" id="username" maxlength="150" autofocus="" required="" aria-describedby="id_username_helptext" id="id_username" required>
+                            </div>                        
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16"> <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/> <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/> </svg></i>
+                                <input type="password" placeholder="Password" id="password1" name="password1" autocomplete="new-password" required="" aria-describedby="id_password1_helptext" id="id_password1" required>
+                            </div>
+                            <div class="row">
+                                <i><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16"> <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8m4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5"/> <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/> </svg></i>
+                                <input type="password" placeholder="Password (Repeat)" id="password2" name="password2" autocomplete="new-password" required="" aria-describedby="id_password2_helptext" id="id_password2" required>
+                            </div>
+
+                            <div class="error-message" style="width: 100%; text-align: center; margin-top: 2vh;">
+                                {% if error %}
+                                    <p id="error-msg" style="color: #E31E27">{{ error }}</p>
+
+                                {% endif %}
+                            </div>
+
+                            <div class="row button">
+                                <input id="submitSignUp" type="submit" value="Signup" />
+                            </div>
+                            <div class="signup-link">Already have an account? <a href="{% url 'login' %}">Login now</a></div>
+
+
+
+                        </form>
+
+                    </div>
+                </div>   
+            </div>  
+        {% endif %}
             
 
-            {{ operation|json_script:"operation" }}
+        {{ operation|json_script:"operation" }}
 
-            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-                <script type="text/javascript">
-                    (function() {
-                        // https://dashboard.emailjs.com/admin/account
-                        emailjs.init({
-                        publicKey: "YOUR_PUBLIC_KEY",
-                        });
-                    })();
-                </script>
-            </script>
-
-            <script src="https://smtpjs.com/v3/smtp.js"></script>
-            <script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+            <script type="text/javascript">
                 (function() {
                     // https://dashboard.emailjs.com/admin/account
                     emailjs.init({
-                    publicKey: "id7tcGK2KeT1JAkaF",
+                    publicKey: "YOUR_PUBLIC_KEY",
                     });
                 })();
+            </script>
+        </script>
 
-                const formSubmit = document.getElementById("registerForm");
+        <script src="https://smtpjs.com/v3/smtp.js"></script>
+        <script>
+            (function() {
+                // https://dashboard.emailjs.com/admin/account
+                emailjs.init({
+                publicKey: "id7tcGK2KeT1JAkaF",
+                });
+            })();
 
-                window.onload = function() {
-                    let rand_number = Math.floor(Math.random() * (999999 - 100000) ) + 100000;
+            const formSubmit = document.getElementById("registerForm");
 
-                    event.preventDefault();
-                    // these IDs from the previous steps
-                    let params = {
-                        name: document.getElementById('first_name'),
-                        email: document.getElementById('email'),
-                        passcode: rand_number,
-                    }
+            window.onload = function() {
+                let rand_number = Math.floor(Math.random() * (999999 - 100000) ) + 100000;
 
-                    emailjs.sendForm('service_k2w3zb7', 'template_btn14co', params)
-                        .then(() => {
-                            console.log('SUCCESS!');
-                        }, (error) => {
-                            console.log('FAILED...', error);
-                        });
-                    document.getElementById('registerForm').addEventListener('submit', function(event) {
-                        if(String(rand_number)!=codeEnter.textContent) {
-                            window.location.href='/register'
-                        }
-                    });
+                event.preventDefault();
+                // these IDs from the previous steps
+                let params = {
+                    name: document.getElementById('first_name'),
+                    email: document.getElementById('email'),
+                    passcode: rand_number,
                 }
 
-
-                const elements = document.getElementsByTagName("input"); // Select all <p> tags
-                for (let i = 0; i < elements.length; i++) {
-                    elements[i].required=true; // Change text color to blue
-                };
-
-
-                function validate(error) {
-                    if(request.getElementById('password1') != request.getElementById('password2')){
-                        event.preventDefault();
-                        document.getElementById('error-msg').textContent = 'Passwords must match';
-
-                    } else if(!('@' in request.getElementById('email'))) {
-                        event.preventDefault();
-                        document.getElementById('error-msg').textContent = 'Email is invalid';
-
-                    } else{
-                        return true;
+                emailjs.sendForm('service_k2w3zb7', 'template_btn14co', params)
+                    .then(() => {
+                        console.log('SUCCESS!');
+                    }, (error) => {
+                        console.log('FAILED...', error);
+                    });
+                document.getElementById('registerForm').addEventListener('submit', function(event) {
+                    if(String(rand_number)!=codeEnter.textContent) {
+                        window.location.href='/register'
                     }
-                        
-                };
-
-                document.addEventListener("DOMContentLoaded", () => {
-                    const operation = JSON.parse(document.getElementById("operation").textContent);
-                
-                    if (operation=='login'){
-                        document.title = 'Login | SHOEciety';
-                    } else{
-                        document.title = 'Sign up | SHOEciety'
-                    }
-
-                
                 });
+            }
+
+
+            const elements = document.getElementsByTagName("input"); // Select all <p> tags
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].required=true; // Change text color to blue
+            };
+
+
+            function validate(error) {
+                if(request.getElementById('password1') != request.getElementById('password2')){
+                    event.preventDefault();
+                    document.getElementById('error-msg').textContent = 'Passwords must match';
+
+                } else if(!('@' in request.getElementById('email'))) {
+                    event.preventDefault();
+                    document.getElementById('error-msg').textContent = 'Email is invalid';
+
+                } else{
+                    return true;
+                }
+                    
+            };
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const operation = JSON.parse(document.getElementById("operation").textContent);
+            
+                if (operation=='login'){
+                    document.title = 'Login | SHOEciety';
+                } else{
+                    document.title = 'Sign up | SHOEciety'
+                }
+
+            
+            });
 
 
 
-            </script>
+        </script>
     {% endblock %}
 
 

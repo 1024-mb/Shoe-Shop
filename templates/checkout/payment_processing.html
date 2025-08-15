@@ -1,38 +1,43 @@
 <head>
-    <title id="dots2">Processing... | SHOEciety</title>
+    <title>Processing... | SHOEciety</title>
 </head>
 
-<div class="outer-payment">
-    <h2 id="dots">Processing your payment...</h2>
-    <p>Please wait while we confirm your order.</p>
-</div>
-<script>
-    
+{% extends 'base.html' %}
+{% block content %}
 
-    const loadingElement = document.querySelectorAll("dots");
+    <div class="outer-payment">
+        <h2 id="dots">Processing your payment...</h2>
+        <p>Please wait while we confirm your order.</p>
+    </div>
+    <script>
+        
 
-    setInterval(() => {
-        dots = dots.length < 3 ? dots + "." : "";
-        loadingElement.textContent = `Loading${dots}`;
-    }, 500); // Adjust the interval as needed
+        const loadingElement = document.querySelectorAll("dots");
 
-    async function checkStatus() {
-        try {
-            const response = await fetch(`/checkout/get_order_status/`);
-            const data = await response.json();
+        setInterval(() => {
+            dots = dots.length < 3 ? dots + "." : "";
+            loadingElement.textContent = `Loading${dots}`;
+        }, 500); // Adjust the interval as needed
 
-            if (data.status === "confirmed") {
-                window.location.href = "/checkout/payment_succeeded/";
-            } else if (data.status === "failed") {
-                window.location.href = "/checkout/payment_failed/";
-            } else {
-                setTimeout(checkStatus, 3000); // Retry after 3 seconds
+        async function checkStatus() {
+            try {
+                const response = await fetch(`/checkout/get_order_status/`);
+                const data = await response.json();
+
+                if (data.status === "confirmed") {
+                    window.location.href = "/checkout/payment_succeeded/";
+                } else if (data.status === "failed") {
+                    window.location.href = "/checkout/payment_failed/";
+                } else {
+                    setTimeout(checkStatus, 3000); // Retry after 3 seconds
+                }
+            } catch (err) {
+                console.error("Error checking status:", err);
+                setTimeout(checkStatus, 5000);
             }
-        } catch (err) {
-            console.error("Error checking status:", err);
-            setTimeout(checkStatus, 5000);
         }
-    }
 
-    document.addEventListener("DOMContentLoaded", checkStatus);
-</script>
+        document.addEventListener("DOMContentLoaded", checkStatus);
+    </script>
+
+{% endblock %}

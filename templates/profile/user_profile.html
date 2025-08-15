@@ -46,32 +46,46 @@
             {% if orders|length != 0 %}
                 {% for order_id, amount, paid, time in orders %}    
                     <div class="product-card" style="width: 80%; margin-left: 5vw;">
-                        <a href="order/{{ order_id }}">
-                            <div class="header">
-                                <h3>Order ID: {{ order_id }}</h3>
-                                {% if paid == True %}
+                        {% if paid == True %}
+                            <a href="order/{{ order_id }}">
+                                <div class="header">
+                                    <h3>Order ID: {{ order_id }}</h3>
                                     
-                                    <h3>Paid: {{ time|date:"l, d F Y H:i" }} UTC</h3>
+                                        
+                                        <h3>Paid: {{ time|date:"l, d F Y H:i" }} UTC</h3>
 
-                                {% else %}
-                                    <h3>Order Unsuccessful</h3>
 
-                                {% endif %}
-                            </div>
+                                </div>
 
-                            <div class="details">
-                                <p>RM {{ amount|floatformat:2 }}</p>
+                                <div class="details">
+                                    <p>RM {{ amount|floatformat:2 }}</p>
 
-                            </div>
-                        </a>
+                                </div>
+                            </a>
+                        {% else %}
+                                <div class="header">
+                                    <h3>Order ID: {{ order_id }}</h3>
+                                    
+                                        
+                                        <h3>Order Failed</h3>
+
+
+                                </div>
+
+                                <div class="details">
+                                    <p>RM {{ amount|floatformat:2 }}</p>
+
+                                </div>
+
+                        {% endif %}
                     </div>
 
                 {% endfor %}
 
             {% else %}
-                <div class="error-msg" style="margin-left: 7vh;">
+                <div class="error-msg" style="margin-left: 7vw;">
                     <p>No orders placed.</p>
-                    <a href="/" style="color: #E31E27">home</a>
+                    <a href="/" style="color: #E31E27">Home</a>
                 </div>
             {% endif %}
 
@@ -110,9 +124,9 @@
                 {% endfor %}
 
             {% else %}
-                <div class="error-msg" style="margin-left: 7vh;">
+                <div class="error-msg" style="margin-left: 7vw;">
                     <p>No reviews.</p>
-                    <a href="/" style="color: #E31E27">home</a>
+                    <a href="/" style="color: #E31E27">Home</a>
                 </div>
             {% endif %}
         

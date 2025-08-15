@@ -8,6 +8,8 @@ from email.message import EmailMessage
 
 from datetime import datetime
 
+from datetime import datetime
+
 from django.contrib.auth.models import User
 
 from django.forms import ValidationError
@@ -64,13 +66,22 @@ def login_page(request):
             user = authenticate(request, username=username, password=password)
 
             try:
-                login(request, user)
+                if UserChecked.is_active == True:
+                    login(request, user)
 
-                if next_url:
-                    return redirect(next_url)
-                
+                    if next_url:
+                        return redirect(next_url)
+                    
+                    else:
+                        return redirect('home')
+                    
                 else:
-                    return redirect('home')
+                    request.session['user_id'] = UserChecked.id
+                    request.session['first_name'] = UserChecked.first_name
+                    request.session['email'] = UserChecked.email
+
+                    messages.error(request, 'Account setup not fully completed.')
+                    return redirect('confirm_email')
 
             except AttributeError:
                 messages.warning(request, "Password is incorrect")
@@ -91,26 +102,33 @@ def login_page(request):
 def confirm_email(request):
     if int(request.session.get('count', 0)) < 7:
         if request.method == 'POST':
-            if request.POST.get('OTP') != '':
+            datetime_object = datetime.strptime(request.session['time'],  '%Y-%m-%d %H:%M:%S.%f')
+            time_elapsed = datetime.now() - datetime_object
+            
+            if request.POST.get('OTP') != '' and time_elapsed.total_seconds() < 900:
                 user_input = str(request.POST.get('OTP'))
                 stored_otp = str(request.session.get('otp'))
 
                 if user_input == stored_otp:
-                    messages.success(request, 'account created successfully')
-                    return redirect('login')
+                    account = User.objects.get(id=request.session.get('user_id'))
 
+                    account.is_active = True
+                    account.save()
+
+                    return redirect('login')
 
                 else:
                     user_created = request.session.get('user_id')
-
-                    user_obj = User.objects.get(id=user_created)
-                    user_obj.delete()
 
                     messages.error(request, 'Incorrect OTP entered')
 
                     request.session['count'] = int(request.session.get('count', 0)) + 1
 
                     return redirect('confirm_email')
+
+            elif time_elapsed.total_seconds() >= 900:
+                messages.error(request, 'The OTP has expired')
+                return redirect('confirm_email')
 
             else:
                 otp = str(random.randint(100000, 999999))  # 6-digit OTP
@@ -153,6 +171,10 @@ def confirm_email(request):
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
                     smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
                     smtp.send_message(receipt)
+
+
+                    time = str(datetime.now())
+                    request.session['time'] = time
 
 
                 # Optionally store OTP in session or database for verification
@@ -198,6 +220,7 @@ def confirm_email(request):
             with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
                 smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
                 smtp.send_message(receipt)
+                request.session['time'] = str(datetime.now())
 
 
             # Optionally store OTP in session or database for verification
@@ -213,6 +236,126 @@ def confirm_email(request):
 
         messages.error(request, 'Too many unsuccessful attempts.')
         return redirect('home')
+
+
+def set_password(request):
+    if request.method == "POST":
+        try:
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
+
+            usr_email = request.session.get('email')
+            username = request.session.get('username')
+
+            ChangePassword = User.objects.get(email=usr_email, username=username)
+
+
+            if password1 == password2:
+                ChangePassword.set_password(password1)
+                ChangePassword.save()
+
+            else:
+                messages.error(request, 'Passwords much match')
+                return render(request, 'set_password.html', context={})
+
+
+            messages.success(request, 'Password changed successfully')
+            return redirect('login')
+
+            
+        except User.DoesNotExist:
+            messages.error(request, 'User does not exist')
+            return redirect('login')
+
+    else:
+        return render(request, 'set_password.html', context={})
+
+
+def enter_code(request):
+    if request.method == 'POST' and request.session.get('sentTime', None) != None:
+        code = str(request.POST.get('OTP'))
+        otp = str(request.session.get('OTP', None))
+        timeStart = datetime.strptime(request.session.get('sentTime', None),  '%Y-%m-%d %H:%M:%S.%f')
+        timeElapsed = datetime.now() - timeStart
+
+        email = request.session.get('email', None)
+
+
+        UserChecked = User.objects.filter(email__exact=email)
+        print(UserChecked)
+
+        if email and code == otp and UserChecked.exists() and timeElapsed.total_seconds() < 900:
+            return redirect('set_password')
+        
+        elif timeElapsed.total_seconds() > 900:
+            messages.error(request, 'Your session timed out. Please try again')
+            return redirect('reset_password')
+
+        else:
+            return redirect('login')
+
+
+    else:
+        return render(request, 'enter_code.html')
+
+def reset_password(request):
+    if request.method == 'POST':
+        usr_email = request.POST.get('email')
+        username = request.POST.get('username')
+        userAssociated = User.objects.filter(email=usr_email, username=username)
+
+        if userAssociated != []:
+            otp = random.randint(100000, 999999)
+            request.session['OTP'] = otp
+            request.session['email'] = usr_email
+            request.session['username'] = username
+            request.session['sentTime'] = str(datetime.now())
+
+            for item in userAssociated:
+                receipt = EmailMessage()
+                receipt['Subject'] = 'HeatSneakers | Reset Password'
+                receipt['From'] = 'm.sajjad.2007.jan@gmail.com'
+                receipt['To'] = usr_email
+                first_name = item.first_name
+
+                receipt.set_content('Email follows')
+
+                emailText = f"""
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <style>
+                    
+                    </style>
+                </head>
+
+                <body>
+                    <h2>Confirm your email address</h2>
+                    <p>Dear {first_name},
+                    Your OTP is: {otp}. This OTP is valid
+                    for 15 minutes.
+                    
+                    </p>
+                </body>
+
+                </html>
+
+                """
+
+                receipt.add_alternative(emailText, subtype='html')
+
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
+                    smtp.send_message(receipt)
+
+            return redirect('enter_code')
+        
+        else:
+            messages.error(request, "Account associated with this email doesn't exist")
+            return redirect('login')
+
+    else:
+        return render(request, 'reset_password.html')
 
 def register(request):
     if request.method == "POST":
@@ -253,6 +396,7 @@ def register(request):
             user = User(username=username, email=email, last_name=last_name, first_name=first_name)
             user.set_password(password)
 
+            user.is_active = False
             user.save()
 
             messages.success(request, 'Account created!')
@@ -506,6 +650,3 @@ def stripe_webhook(request):
     except Exception as e:
         print(e + 'line 421 views.py base')
         return HttpResponse(status=500)
-    
-    
-

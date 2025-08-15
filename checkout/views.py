@@ -199,12 +199,11 @@ def checkout(request):
                 items = OrderItem.objects.filter(purchase_id=order_id)
 
                 for item in items:
-                    items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price])
+                    items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price, item.purchase_price * item.quantity])
 
-                
-                messages.error(request, 'Invalid phone number')
-                return render('checkout/checkout.html', context={})
-            
+                print('266')
+                return render(request, 'checkout/checkout.html', context={'items': items_list, 'total': total})
+
 
             if quotation:
                 quotation_id = quotation['data']
@@ -224,7 +223,7 @@ def checkout(request):
                 if order:
                     request.session['request_id'] = str(uuid.uuid4())
 
-                    items = OrderItem.objects.filter(order_id=order_id)
+                    items = OrderItem.objects.filter(purchase_id=order_id)
                     order = Order.objects.get(purchase_id=order_id)
 
                     total = round(float(order.amount), 2)
@@ -247,48 +246,27 @@ def checkout(request):
                     client_secret_str = str(payment_intent.client_secret)
 
                     
+                    print('250')
                     return JsonResponse({'client_secret': str(client_secret_str),
                                         'quotation': quotation})
         
-
-            else:
-                messages.error(request, 'Sorry, We are unable to process your order at the moment. Please try again later')
-                if order != None:
-                    total = round(float(order.amount), 2)
-                    items = OrderItem.objects.filter(purchase_id=order_id)
-
-                    for item in items:
-                        items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price])
-
-
-                    return render(request, 'checkout/checkout.html', context={'items': items_list,
-                                                                            'total': total})
-            
-
                 else:
-                    messages.error(request, 'Sorry - we are unable to process your order at this time.')
+                    messages.error(request, 'Sorry, we are unable to process your order at the moment.')
                     return redirect('cart')
 
-        else:
-            items_list = []
-            if order != None:
-                total = round(float(order.amount), 2)
-
-                items = OrderItem.objects.filter(purchase_id=order_id)
-
-                for item in items:
-                    product_id = item.product_id_id
-                    product = Clothing.objects.get(product_id=product_id)
-                    qty = item.quantity
-                    price = item.purchase_price
-
-                    items_list.append([product, qty, product_id, price])
-
-                return render(request, 'checkout/checkout.html', context={'items': items_list,
-                                                                        'total': total})
-            
             else:
+                messages.error(request, 'Sorry, we are unable to process your order at the moment.')
                 return redirect('cart')
+
+        else:
+            total = round(float(order.amount), 2)
+            items = OrderItem.objects.filter(purchase_id=order_id)
+
+            for item in items:
+                items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price, item.purchase_price * item.quantity])
+
+            print('266')
+            return render(request, 'checkout/checkout.html', context={'items': items_list, 'total': total})
 
     else:
         return redirect('cart')

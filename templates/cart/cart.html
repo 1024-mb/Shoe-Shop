@@ -74,7 +74,7 @@
      
 
         a {
-            font-size: 80%;
+            font-size: 0.9em;
         }
 
 
@@ -88,7 +88,7 @@
             width: 80%;
             padding: 0.5em;
             margin-top: 0.5em;
-            font-size: 105%;
+            font-size: 0.95em;
             border-radius: 8px;
             border: 1px solid #ccc;
         }
@@ -213,7 +213,7 @@
         }
 
         .cart-clear a {
-            font-size: 105%;
+            font-size: 0.95em;
             color: white;
             text-decoration: none
         }
@@ -227,7 +227,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-        <h1 style="margin-left: 2vw;">Your Cart</h1>
+        <div style="margin-top: 2vh;">
+            <h1 style="margin-left: 2vw;">Your Cart</h1>
+        </div>
         <div class="cart-page">
             {% if products|length > 0 %}
                 

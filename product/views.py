@@ -133,7 +133,7 @@ def product(request, pk):
 
         try:
             for review in Reviews:
-                percentage = 100 * (review.stars / 5)
+                percentage = 100 * (float(review.stars) / 5.0)
                 reviews.append([percentage, review])
 
                 avg = avg + review.stars

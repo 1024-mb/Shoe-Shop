@@ -19,5 +19,11 @@ urlpatterns = [
 
     path('profile/', include('user_profile.urls'), name='profile'),
 
+    path('reset_password/', views.reset_password, name='reset_password'),
+
+    path('enter_code/', views.enter_code, name='enter_code'),
+
+    path('set_password/', views.set_password, name='set_password'),
+
     path('stripe/webhook', views.stripe_webhook, name='stripe_webhook')
 ]

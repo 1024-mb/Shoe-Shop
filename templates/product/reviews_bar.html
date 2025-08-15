@@ -6,11 +6,11 @@
                 <div>
                     <h2 id="reviews">Reviews ({{ reviews|length }})</h2>  
                 </div>
-                <div class="container-ratings" style="margin-top: 3vh; margin-right: 3vw;">
+                <div id="container-ratings" class="container-ratings" style="margin-top: 3vh; margin-right: 3vw;">
                     <a href="#reviews">
                         <div class="ratings">
                             <div class="empty-stars"></div>
-                            <div id="full-stars" class="full-stars"></div>
+                            <div id="overall-rating" class="full-stars"></div>
                         </div>
                     </a>
                 </div>
@@ -38,7 +38,7 @@
                             <div class="review-stars">
                                     <div class="ratings">
                                     <div class="empty-stars"></div>
-                                    <div id="full-stars" class="full-stars" width="{{ percentage }}%"></div>
+                                    <div id="full-stars" class="full-stars" style="width: {{ percentage }}%;"></div>
                                 </div>
                             </div>
                         </div>
