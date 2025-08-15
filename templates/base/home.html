@@ -27,10 +27,11 @@
         @media screen and (max-width: 600px) {
             .left-side {
                 display: none;
-                width: 100%;
-                margin-left: 0.205em;
+                width: 90%;
+                margin-left: 0.5em;
                 border-bottom: 1px solid #ccc;
                 padding-bottom: 12px;
+                border-right: none;
             }
             .right-side {
                 width: 100%;
@@ -48,7 +49,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 2em;
-            padding: 2em;
+            padding: 0.5em;
         }
 
         .product-card {
@@ -101,7 +102,11 @@
         }
 
         .top {
-            margin-left: 2em;
+            margin-left: 0.5em;
+        }
+
+        .top a {
+            color: #E31E27;
         }
 
         .filter-container {
@@ -158,6 +163,20 @@
         .filter-button svg {
             width: 0.7rem;
             height: 0.7rem;
+        }
+
+        .return-message {
+            margin-top: 10vh;
+        }
+
+        .return-message button {
+            background-color: #E31E27;
+            outline: none;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 0.9em;
         }
 
     </style>
@@ -239,7 +258,7 @@
                     {% if request.user.is_authenticated %}
                         {% if query != '' and query != None %}
                             <h2>Results for "{{ query }}"</h2>
-                            
+                             
                 
                         {% else %}
                             <h2>Welcome, {{ request.user }}</h2>
@@ -250,13 +269,14 @@
                         
                         {% if query != '' and query != None  %}
                             <h2>Results for "{{ query }}"</h2>
-                
+                             
                         {% else %}
                             <h2>Browse products</h2>
                         {% endif %}    
                     {% endif %}
 
-                </div>    
+                </div>
+                
                 <div class="products-grid">
                     {% for item in clothing %}
                         <div class="product-card">
@@ -274,11 +294,20 @@
                     {% endfor %}
                 </div>
 
+                {% if query != '' and query != None %}
+                    <div class="return-message" style="margin-bottom: 5vh;">
+                        <a href="/home">
+                            <button>Reset filters</button>
+                        </a> 
+                    </div>
+                {% endif %}
             {% else %}
-                <div class="return-message">
-                    <h2>No results found</h2>
-                    <a href="/home">reset filters</a>
-                </div>    
+                    <div class="return-message" style="margin-bottom: 5vh;">
+                        <h2>No results found</h2>
+                        <a href="/home">
+                            <button>Reset filters</button>
+                        </a> 
+                    </div>
             {% endif %}
         </div>
     </div>

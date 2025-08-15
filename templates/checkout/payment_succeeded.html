@@ -2,20 +2,20 @@
 
 
 {% block content %}
-<div class="outer-payment">
-    <h1>Payment succeeded</h1>
-    <h3>Thank you for shopping with us. We hope you had a pleasant experience</h3>
+    <div class="outer-payment">
+        <h1>Payment succeeded</h1>
+        <h3>Thank you for shopping with us. We hope you had a pleasant experience</h3>
 
-    <h3>Payment Details</h3>
-    <h4>Amount Paid: MYR {{ total|floatformat:2 }}    |    Order ID: {{ order_id }}</h4>
+        <h3>Payment Details</h3>
+        <h4>Amount Paid: MYR {{ total|floatformat:2 }}    |    Order ID: {{ order_id }}</h4>
 
-    <h4> A receipt of your purchase will be sent to your registered email</h4>
-    <a href="/home">
-        <div class="payment-response">
-            Home
-        </div>
-    </a>
-</div>
+        <h4> A receipt of your purchase will be sent to your registered email</h4>
+        <a href="/home">
+            <div class="payment-response">
+                Home
+            </div>
+        </a>
+    </div>
 {% endblock %}
 
 
