@@ -52,9 +52,9 @@ def send_otp(first_name, otp, usr_email, subject):
 
     <body>
         <h2>{subject}</h2>
-        <p>Dear {first_name},
+        <p>Dear Valued Customer,
         Your OTP is: {otp}. This OTP is valid
-        for 15 minutes.
+        for 15 minutes. If you did not request an OTP, please ignore this email.
         
         </p>
     </body>
@@ -499,18 +499,44 @@ def stripe_webhook(request):
         receipt.set_content('Email follows')
 
 
-        first_component = f"""
+        first_component = """
         <!DOCTYPE html>
         <html lang="en">
         <head>
-            <style></style>
-        </head>
+            <style>
+                h2 {
+                    color: #E31E27;
+                }
 
+                body {
+                    font-family: sans-serif;
+                }
+
+                a {
+                    color: #E31E27;
+                }
+
+                th {
+                    padding: 15px;
+                }
+
+                thead {
+                    padding: 10px;
+                    outline: 1px solid black
+                }
+
+                table {
+                    outline: none;
+                    border: none;
+                }
+            </style>
+        </head>
+        """ + f"""
         <body>
             <h2>Order ID: { order_id }</h2>
             <p>Dear {name.capitalize()},
                This is the receipt for your recent purchase on our website.
-               We hope you are satisfied with your purchase, and our service.
+               We hope you are satisfied with your purchase and our service.
                Should you have any queries, please don't hesitate to 
                <a href="mailto:m.sajjad.2007.jan@gmail.com"> reach out</a>
             

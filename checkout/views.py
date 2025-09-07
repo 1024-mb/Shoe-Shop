@@ -183,8 +183,13 @@ def checkout(request):
             # entering the location name
             location = loc.geocode(postcode + ', Singapore')
 
-            latitude = location.latitude
-            longitude = location.longitude
+            if location != None:
+                latitude = location.latitude
+                longitude = location.longitude
+
+            else:
+                messages.error(request, 'Error: invalid address')
+                return redirect('checkout')
 
             items = OrderItem.objects.filter(purchase_id=order_id)
             quantity = 0
@@ -194,15 +199,22 @@ def checkout(request):
             
             quotation = create_quotation(latitude, longitude, address, quantity)
 
-            if not(phonenumbers.is_valid_number(phonenumbers.parse(phone, "SG"))):
-                total = round(float(order.amount), 2)
-                items = OrderItem.objects.filter(purchase_id=order_id)
+            try:
+                if not(phonenumbers.is_valid_number(phonenumbers.parse(phone, "SG"))):
+                    total = round(float(order.amount), 2)
+                    items = OrderItem.objects.filter(purchase_id=order_id)
 
-                for item in items:
-                    items_list.append([item, item.quantity, str(item.product_id_id), item.purchase_price, item.purchase_price * item.quantity])
+                    for item in items:
+                        items_list.append([item, item.quantity, str(item.product_id_id), 
+                                           item.purchase_price, item.purchase_price * item.quantity])
 
-                print('266')
-                return render(request, 'checkout/checkout.html', context={'items': items_list, 'total': total})
+                    print('266')
+                    messages.error(request, 'invalid phone number')
+                    return redirect('checkout')
+
+            except:
+                messages.error(request, 'invalid phone number')
+                return redirect('checkout')
 
 
             if quotation:
