@@ -117,7 +117,7 @@ def place_order(api_key, api_secret, quotation_id, stop_ids, name, number, order
             "sender": {
                 "stopId": stop_ids[0],
                 "name": "Moiz",
-                "phone": "+6598367954"
+                "phone": os.getenv('phone')
             },
             "recipients": [
                 {
