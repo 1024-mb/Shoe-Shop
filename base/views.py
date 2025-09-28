@@ -66,7 +66,7 @@ def send_otp(first_name, otp, usr_email, subject):
     receipt.add_alternative(emailText, subtype='html')
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
+        smtp.login('############@gmail.com', '############')
         smtp.send_message(receipt)
 
 def set_review(id_product):
@@ -591,7 +591,7 @@ def stripe_webhook(request):
         receipt.add_alternative(first_component, subtype='html')
 
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login('m.sajjad.2007.jan@gmail.com', 'yufr nluw qvwy jaid')
+            smtp.login('#########@gmail.com', '###############')
             smtp.send_message(receipt)
 
 
