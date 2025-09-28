@@ -36,7 +36,7 @@ stripe.api_key = os.getenv('stripekey')
 def send_otp(first_name, otp, usr_email, subject):
     receipt = EmailMessage()
     receipt['Subject'] = subject
-    receipt['From'] = 'm.sajjad.2007.jan@gmail.com'
+    receipt['From'] = os.getenv('email')
     receipt['To'] = usr_email
     
     receipt.set_content('Email follows')
@@ -493,7 +493,7 @@ def stripe_webhook(request):
 
         receipt = EmailMessage()
         receipt['Subject'] = 'HeatSneakers | Receipt of purchase'
-        receipt['From'] = 'm.sajjad.2007.jan@gmail.com'
+        receipt['From'] = os.getenv('email')
         receipt['To'] = emailAddress
 
         receipt.set_content('Email follows')
@@ -538,7 +538,7 @@ def stripe_webhook(request):
                This is the receipt for your recent purchase on our website.
                We hope you are satisfied with your purchase and our service.
                Should you have any queries, please don't hesitate to 
-               <a href="mailto:m.sajjad.2007.jan@gmail.com"> reach out</a>
+               <a href=""" + os.getenv('email') + """> reach out</a>
             
             </p>
 
@@ -578,7 +578,7 @@ def stripe_webhook(request):
             <p>Thank you for shopping with HeatSneakers. We wish you all
                the best and hope our services are to your standards.
                Please do not heistate 
-               <a href="mailto:m.sajjad.2007.jan@gmail.com">to submit feedback.</a>
+               <a href=""" + os.getenv('email') + """>to submit feedback.</a>
                Your feedback is of immense value to our services
 
             </p>
