@@ -442,7 +442,7 @@ def stripe_webhook(request):
     payload = request.body
 
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    endpoint_secret = 'whsec_1709d3d9f617576b171944a41c57eb6ba8e8ac16682a96593015280d92de2763'
+    endpoint_secret = os.getenv('Stripe_endpoint_secret')
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
     except Exception as e:
