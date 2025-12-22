@@ -1,6 +1,7 @@
 # SHOE SHOP WEBSITE
 
-⚠️  Please watch my Demo (2 minute): https://youtu.be/gYFcIpTzfH0  ⚠️
+⚠️ Please watch my Demo (2-min): <a href="https://youtu.be/gYFcIpTzfH0" target="_blank">https://youtu.be/gYFcIpTzfH0</a> ⚠️
+
 
 ## Introduction
 This repository contains a fully-functional Django and HTML Shoe Shop website, complete with User Authentication, User Registration, Verification, Cart, Checkout, Review and Payment methods (embedded with Stripe). This app uses LalaMove to deliver goods and products. It is able to cancel, update, and view the status of orders.
