@@ -1,6 +1,6 @@
 # SHOE SHOP WEBSITE
 
-⚠️ Please watch my Demo (2-min): <a href="https://youtu.be/gYFcIpTzfH0" target="_blank">https://youtu.be/gYFcIpTzfH0</a> ⚠️
+⚠️ Please watch my Demo (2-min): https://youtu.be/D_WVxfMUiTU ⚠️
 
 
 ## Introduction
