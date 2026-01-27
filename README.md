@@ -1,37 +1,159 @@
-# SHOE SHOP WEBSITE
+# Shoe Shop – Full-Stack E-Commerce Website (Django)
 
-⚠️ Please watch my Demo (20s): https://youtu.be/D_WVxfMUiTU ⚠️
+⚠️ **20-second demo:** https://youtu.be/D_WVxfMUiTU  
 
+OE Shop is a fully functional e-commerce shoe store built with Django, featuring secure authentication, real-world payment processing, delivery integration, and end-to-end order management.
 
-## Introduction
-This repository contains a fully-functional Django and HTML Shoe Shop website, complete with User Authentication, User Registration, Verification, Cart, Checkout, Review and Payment methods (embedded with Stripe). This app uses LalaMove to deliver goods and products. It is able to cancel, update, and view the status of orders.
+This project goes beyond a basic CRUD application and integrates Stripe, Lalamove, and Google Maps to simulate a production-grade online store.
 
-## Directory Guide
-**base:** handles user login, logout, profile updates, registration and email confirmation as well as stripe webhook event handling.
+---
 
-**cart:** handles the cart page - GET to get the contents of the cart, POST to update the contents, clearing the cart.
+## Table of Contents
 
-**cart:** handles the checkout page - implemented Stripe embedded checkout that allows the user to enter a Singapore address and a valid phone number with full validation.
+- Key Features  
+- Project Structure  
+- Technologies Used  
+- Payment and Delivery Flow  
+- Setup Instructions  
+- Environment Variables  
+- Notes  
+- Why This Project Matters  
 
-**media:** contains product images for the product pages and home page, each stored according to its product id and sequence number.
+---
 
-**product:** responsible for the product page: gets product data from the server, select products based of size and color, intelligently processes stock data to provide users with error messages if the stock is below a certain level, and finally, allows authenticated users to add products to their carts.
+## Key Features
 
-**templates:** contains the HTML files used to render each of these pages
+- User registration, login, logout, and profile management  
+- Email verification and authentication flow  
+- Product browsing with size and color selection  
+- Intelligent stock validation with real-time error handling  
+- Shopping cart with dynamic updates  
+- Secure checkout using Stripe Embedded Checkout  
+- Webhook handling for payment confirmation  
+- Delivery booking and tracking via Lalamove API  
+- Order creation, cancellation, update, and status tracking  
+- User reviews for purchased products  
 
-## Languages, Frameworks and Technologies
-**Python** - uses the django framework to provide backend support, with databases and user authentication included. Used to store session data about orders and retrieve product data from databases as well as communicate with APIs from LalaMove and Gmail.
+---
 
-**JavaScript** - provides the user with interactive webpages with buttons that provide active feedback to the user.
+## Project Structure
 
-**HTML & CSS** - used for front-end web layout and styling
+```text
+├── base/
+│   ├── Authentication (login, logout, registration)
+│   ├── Email verification
+│   └── Stripe webhook handling
+│
+├── cart/
+│   ├── Cart management (GET, POST, clear)
+│   └── Checkout flow
+│
+├── product/
+│   ├── Product data retrieval
+│   ├── Stock and variant validation
+│   └── Add-to-cart logic
+│
+├── templates/
+│   └── HTML templates for all pages
+│
+├── media/
+│   └── Product images stored by product ID
+│
+└── db.sqlite3
+```
 
-**SQLite3** - lightweight database program used in this project
+---
 
-***
-**Lalamove API -** used by website to fulfil orders.
+## Technologies Used
 
-**Stripe -** used to ensure user payment.
+### Backend
+- Python (Django)
+- SQLite3 (development database)
+- Stripe API (payments and webhooks)
+- Lalamove API (delivery fulfillment and tracking)
+- Gmail API (email verification and notifications)
 
-**Google Maps API -** used to allow delivery address lookup
+### Frontend
+- HTML
+- CSS
+- JavaScript
 
+### External Services
+- Google Maps API (address autocomplete and validation)
+
+---
+
+## Payment and Delivery Flow
+
+1. User adds items to the cart and proceeds to checkout  
+2. Stripe Embedded Checkout validates:
+   - Singapore delivery address  
+   - Phone number  
+3. Successful payment triggers a Stripe webhook  
+4. Order is created server-side  
+5. Delivery request is sent to the Lalamove API  
+6. User can track, update, or cancel orders  
+
+---
+
+## Setup Instructions
+
+### Prerequisites
+- Python 3.10 or higher  
+- pip  
+- Virtual environment (recommended)  
+
+### Local Setup
+
+```bash
+git clone https://github.com/yourusername/oe-shop.git
+cd oe-shop
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+Application runs at:
+```
+http://127.0.0.1:8000/
+```
+
+---
+
+## Environment Variables
+
+```env
+DEBUG=True
+SECRET_KEY=
+
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+LALAMOVE_API_KEY=
+
+GOOGLE_MAPS_API_KEY=
+
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+```
+
+---
+
+## Notes
+
+- SQLite is used for development; PostgreSQL is recommended for production  
+- Stripe is configured in test mode  
+- Stripe webhooks require exposure via tools such as ngrok  
+- Delivery functionality assumes valid Singapore addresses  
+
+---
+
+## Why This Project Matters
+
+This project demonstrates:
+- Integration with real-world payment and logistics APIs  
+- Secure and scalable backend design using Django  
+- Full e-commerce order lifecycle management  
+- Practical full-stack engineering beyond coursework  
