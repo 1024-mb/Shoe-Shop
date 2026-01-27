@@ -150,10 +150,62 @@ EMAIL_HOST_PASSWORD=
 
 ---
 
+
 ## Why This Project Matters
 
 This project demonstrates:
 - Integration with real-world payment and logistics APIs  
 - Secure and scalable backend design using Django  
 - Full e-commerce order lifecycle management  
-- Practical full-stack engineering beyond coursework  
+- Practical full-stack engineering beyond coursework
+
+
+## Contributing
+
+Contributions are welcome and appreciated.
+
+If you would like to contribute to this project, please follow the guidelines below to ensure consistency and code quality.
+
+### How to Contribute
+
+1. Fork the repository to your own GitHub account  
+2. Create a new branch for your feature or fix  
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. Make focused, well-documented changes  
+4. Commit your changes with clear and descriptive messages  
+5. Push the branch to your fork  
+6. Open a pull request describing:
+   - The problem being solved
+   - The approach taken
+   - Any relevant implementation details
+
+### Contribution Guidelines
+
+- Keep pull requests small and focused
+- Follow existing Django project structure and conventions
+- Do not commit sensitive data (API keys, secrets, `.env` files)
+- Update templates, models, or migrations only when necessary
+- Ensure Stripe and Lalamove integrations remain in test/sandbox mode
+- Test changes locally before submitting a pull request
+
+### Reporting Issues
+
+If you encounter a bug or have a feature request:
+- Open an issue with clear reproduction steps
+- Include screenshots or logs where relevant
+- Specify your environment (OS, Python version, browser)
+
+### Code Style
+
+- Follow PEP 8 for Python code
+- Keep views, models, and business logic properly separated
+- Use meaningful variable and function names
+- Avoid unnecessary dependencies
+
+---
+
+Thank you for contributing and helping improve the project.
+
+
