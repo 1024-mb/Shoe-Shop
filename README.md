@@ -106,8 +106,8 @@ This project goes beyond a basic CRUD application and integrates Stripe, Lalamov
 ### Local Setup
 
 ```bash
-git clone https://github.com/yourusername/oe-shop.git
-cd oe-shop
+git clone ttps://github.com/1024-mb/Shoe-Shop/
+cd Shoe-Shop
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
