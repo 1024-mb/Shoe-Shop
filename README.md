@@ -2,7 +2,7 @@
 
 ⚠️ **20-second demo:** https://youtu.be/D_WVxfMUiTU  
 
-OE Shop is a fully functional e-commerce shoe store built with Django, featuring secure authentication, real-world payment processing, delivery integration, and end-to-end order management.
+Shoe Shop is a fully functional e-commerce shoe store built with Django, featuring secure authentication, real-world payment processing, delivery integration, and end-to-end order management.
 
 This project goes beyond a basic CRUD application and integrates Stripe, Lalamove, and Google Maps to simulate a production-grade online store.
 
