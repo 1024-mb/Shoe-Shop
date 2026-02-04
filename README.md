@@ -1,6 +1,6 @@
 # Shoe Shop – Full-Stack E-Commerce Website (Django)
 
-⚠️ **20-second demo:** https://youtu.be/D_WVxfMUiTU  
+⚠️ **20-second demo:** [https://youtu.be/D_WVxfMUiTU  ](https://www.youtube.com/watch?v=D_WVxfMUiTU&list=PLnL6WpWjTSrJmPOEB30jLO2XghAlz9ZEn&index=2)
 
 Shoe Shop is a fully functional e-commerce shoe store built with Django, featuring secure authentication, real-world payment processing, delivery integration, and end-to-end order management.
 
